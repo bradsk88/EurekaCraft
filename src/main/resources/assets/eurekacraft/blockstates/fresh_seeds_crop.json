@@ -1,0 +1,6 @@
+{
+	"variants": {
+		"age=0": {"model": "eurekacraft:block/fresh_seeds_crop_0" },
+		"age=1": {"model": "eurekacraft:block/fresh_seeds_crop_1" }
+	}
+}
