@@ -16,6 +16,7 @@ import net.minecraft.world.IBlockReader;
 
 public class FreshSeedsCrop extends CropsBlock {
 
+	public static final String BLOCK_ID = "fresh_seeds_crop";
 	public static final Double FULL_HEIGHT = 16.0D;
 
 	public static final IntegerProperty AGE = BlockStateProperties.AGE_1;

@@ -8,7 +8,7 @@
             "text": "つづく"
         },
         "icon": {
-            "item": "eurekacraft:fresh_seeds"
+            "item": "minecraft:emerald"
         },
         "frame": "goal",
         "show_toast": true,
@@ -22,7 +22,7 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "eurekacraft:fresh_seeds",
+                        "item": "eurekacraft:broken_ref_board",
                         "count": {
                             "min": 1
                         }

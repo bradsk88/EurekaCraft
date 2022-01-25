@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft;
 
+import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import net.minecraft.block.Block;
@@ -19,7 +20,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ca.bradj.eurekacraft.core.init.FreshSeedsCropInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 
 import java.util.stream.Collectors;
@@ -47,7 +47,7 @@ public class EurekaCraft {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-		FreshSeedsCropInit.BLOCKS.register(bus);
+		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.ITEMS.register(bus);
 		ReflectionFilmInit.ITEMS.register(bus);
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
@@ -62,7 +62,7 @@ public class EurekaCraft {
 	private void doClientStuff(final FMLClientSetupEvent event) {
 		// do something that can only be done on the client
 		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
-		FreshSeedsCropInit.RegisterTextures();
+		BlocksInit.RegisterTextures();
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {

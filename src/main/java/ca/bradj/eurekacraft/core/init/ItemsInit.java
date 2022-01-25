@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.materials.BrokenRefBoard;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
@@ -24,6 +25,14 @@ public class ItemsInit {
 			() -> new BlockItem(
 					ReflectionFilmScraperInit.REFLECTION_FILM_BLOCK.get(),
 					ReflectionFilmScraper.ITEM_PROPS
+			)
+	);
+
+	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
+			BrokenRefBoard.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.BROKEN_REF_BOARD.get(),
+					BrokenRefBoard.ITEM_PROPS
 			)
 	);
 	

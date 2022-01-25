@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.crop;
 
-import ca.bradj.eurekacraft.core.init.FreshSeedsCropInit;
+import ca.bradj.eurekacraft.core.init.BlocksInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockNamedItem;
 import net.minecraft.item.Item;
@@ -18,7 +18,7 @@ public class FreshSeeds extends BlockNamedItem implements IPlantable {
 	
 	public FreshSeeds() {
 		super(
-				FreshSeedsCropInit.FRESH_SEEDS_CROP.get(), FRESH_SEEDS_PROPS
+				BlocksInit.FRESH_SEEDS_CROP.get(), FRESH_SEEDS_PROPS
 		);
 	}
 
@@ -29,7 +29,7 @@ public class FreshSeeds extends BlockNamedItem implements IPlantable {
 
 	@Override
 	public BlockState getPlant(IBlockReader world, BlockPos pos) {
-		return FreshSeedsCropInit.FRESH_SEEDS_CROP.get().defaultBlockState();
+		return BlocksInit.FRESH_SEEDS_CROP.get().defaultBlockState();
 	}
 
 }

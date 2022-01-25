@@ -1,0 +1,43 @@
+{
+  "display": {
+    "title": {
+      "text": "TODO",
+      "color": "green"
+    },
+    "description": {
+      "text": "Get Fresh Seeds"
+    },
+    "icon": {
+      "item": "eurekacraft:fresh_seeds"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Seeds": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "eurekacraft:fresh_seeds",
+            "count": {
+              "min": 1
+            }
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Seeds"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  },
+  "parent": "eurekacraft:root"
+}
