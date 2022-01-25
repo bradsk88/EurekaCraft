@@ -1,0 +1,42 @@
+{
+    "display": {
+        "title": {
+            "text": "EurekaCraft",
+            "color": "green"
+        },
+        "description": {
+            "text": "つづく"
+        },
+        "icon": {
+            "item": "eurekacraft:fresh_seeds"
+        },
+        "frame": "goal",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false,
+        "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+    },
+    "criteria": {
+        "Seeds": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "item": "eurekacraft:fresh_seeds",
+                        "count": {
+                            "min": 1
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "requirements": [
+        [
+            "Seeds"
+        ]
+    ],
+    "rewards": {
+        "experience": 10
+    }
+}

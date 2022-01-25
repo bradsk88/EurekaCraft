@@ -1,5 +1,6 @@
-package ca.bradj.eurekacraft.core.init;
+package ca.bradj.eurekacraft.crop;
 
+import ca.bradj.eurekacraft.core.init.FreshSeedsCropInit;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockNamedItem;
 import net.minecraft.item.Item;
@@ -10,6 +11,8 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.PlantType;
 
 public class FreshSeeds extends BlockNamedItem implements IPlantable {
+
+	public static final String ITEM_ID = "fresh_seeds";
 
 	public static final Item.Properties FRESH_SEEDS_PROPS = new Item.Properties().tab(ItemGroup.TAB_MISC);
 	

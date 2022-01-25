@@ -1,5 +1,7 @@
 package ca.bradj.eurekacraft;
 
+import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,19 +20,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import ca.bradj.eurekacraft.core.init.FreshSeedsCropInit;
-import ca.bradj.eurekacraft.core.init.FreshSeedsInit;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(ExampleMod.MODID)
-public class ExampleMod {
+@Mod(EurekaCraft.MODID)
+public class EurekaCraft {
 	public static final String MODID = "eurekacraft";
 
 	// Directly reference a log4j logger.
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public ExampleMod() {
+	public EurekaCraft() {
 		// Register the setup method for modloading
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		// Register the enqueueIMC method for modloading
@@ -46,7 +48,9 @@ public class ExampleMod {
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
 		FreshSeedsCropInit.BLOCKS.register(bus);
-		FreshSeedsInit.ITEMS.register(bus);
+		ItemsInit.ITEMS.register(bus);
+		ReflectionFilmInit.ITEMS.register(bus);
+		ReflectionFilmScraperInit.BLOCKS.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
