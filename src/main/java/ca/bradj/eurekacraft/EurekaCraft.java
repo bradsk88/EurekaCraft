@@ -1,14 +1,19 @@
 package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.passive.AmbientEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -49,14 +54,14 @@ public class EurekaCraft {
 
 		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.ITEMS.register(bus);
+		EntitiesInit.ENTITIES.register(bus);
 		ReflectionFilmInit.ITEMS.register(bus);
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		// some preinit code
-		LOGGER.info("HELLO FROM PREINIT");
-		LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+		DeferredWorkQueue.runLater(() -> {
+		});
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
