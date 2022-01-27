@@ -51,6 +51,7 @@ public class RefBoard extends Item {
     }
 
     private static void despawnGlider(PlayerEntity player, EntityRefBoard glider) {
+        glider.kill();
         spawnedGlidersMap.remove(player);
     }
 }
