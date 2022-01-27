@@ -17,16 +17,25 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Stack;
+
 // TODO: Destroy ref board on player disconnect
 
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
+
+    private static final float runSpeed = 0.13f;
+    private static final float runEquivalent = 0.25f;
+
+    private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
+    private double lastSpeed;
+    private Vector3d lastPlayerPosition = new Vector3d(0, 0, 0);
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -36,7 +45,9 @@ public class EntityRefBoard extends Entity {
         super(EntitiesInit.REF_BOARD.get(), world);
         this.handHeld = hand;
         this.playerOrNull = player;
-        this.logger.debug("Ref board created with " + player + " and " + hand);
+        this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
+        this.lastSpeed = initialSpeed;
+        this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
     }
 
     public Hand getHandHeld() {
@@ -76,19 +87,21 @@ public class EntityRefBoard extends Entity {
 //        this.playerOrNull.push(4, 4, 4);
 //        this.logger.debug("Delta: " + this.playerOrNull.getDeltaMovement());
 
-        // TODO: Embed on board itself
-        double boardSpeed = 1.0;
-        double turnSpeed = 0.5;
-        double boardWeight = 0.25;
-        double liftFactor = 1.0;
-        double defaultFall = -0.05 * boardWeight;
-        double defaultLand = -4 * boardWeight;
+        // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
+        double boardWeight = 1.0;
+        double boardSpeed = 0.25; // This is a boost and is not coupled to weight
+        double turnSpeed = 0.25; // This is a boost and is not coupled to weight
+        double liftFactor = 0.25; // This is a boost and is not coupled to weight
 
-        Vector3d impactPos = this.playerOrNull.position();
-        this.level.addParticle(ParticleTypes.POOF, impactPos.x, impactPos.y, impactPos.z, 0, 1, 0);
+        // Calculated base physics
+        double defaultFall = -0.05 * boardWeight;
+        double defaultAccel = 0.01 * boardWeight;
+        double defaultLand = -2 * Math.sqrt(boardWeight);
+        double defaultLandAccel = 2 * defaultAccel;
+        double defaultMaxSpeed = this.initialSpeed + (boardSpeed * runEquivalent);
 
         double liftOrFall = this.lastLift;
-
+        double flightSpeed = Math.max(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
         Block block = this.level.getBlockState(playerOrNull.blockPosition()).getBlock();
 
@@ -97,20 +110,29 @@ public class EntityRefBoard extends Entity {
             this.logger.debug("Block" + block);
             // TODO: Get "lift factor" from block
             double blockLift = 0.5;
-            liftOrFall = blockLift;
+            liftOrFall = blockLift * liftFactor;
         } else {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
         if (this.playerOrNull.isShiftKeyDown()) {
             liftOrFall = defaultLand;
-            boardSpeed = 1.5 * boardSpeed;
+            flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
 
         if (this.playerOrNull.isOnGround()) {
             this.kill();
         }
+
+        // TODO: Reset board speed (to slow) after a collision (e.g. tree)
+//        Vector3d posDiff = this.lastPlayerPosition.subtract(this.playerOrNull.position());
+//        logger.debug("PosDiff " + posDiff);
+//
+//        if (Math.max(Math.abs(posDiff.x), Math.abs(posDiff.z)) < 0.005) {
+//            logger.debug("collision");
+//            flightSpeed = 0.1; // TODO: Constant?
+//        }
 
         // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
         Vector3d look3D = this.playerOrNull.getViewVector(0);
@@ -134,12 +156,19 @@ public class EntityRefBoard extends Entity {
             this.lastDirection = nextDir;
         }
 
-        logger.debug("Lift: " + liftOrFall);
+//        logger.debug("Lift: " + liftOrFall);
         if (Math.abs(liftOrFall) > 0) {
             this.lastLift = liftOrFall;
         }
 
-        Vector3d go = nextDir.multiply(boardSpeed, 1.0, boardSpeed);
+//        logger.debug("Speed: " + flightSpeed);
+        if (Math.abs(flightSpeed) > 0) {
+            this.lastSpeed = flightSpeed;
+        }
+
+        this.lastPlayerPosition = this.playerOrNull.position();
+
+        Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
 
 //        this.logger.debug("add" + add + "go" + go);
 
