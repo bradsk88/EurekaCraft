@@ -23,6 +23,7 @@ public class EntityRefBoard extends Entity {
     private Hand handHeld;
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+    private Vector3d lastDirection = new Vector3d(0, 0, 0);
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -82,11 +83,25 @@ public class EntityRefBoard extends Entity {
 
         double boardSpeed = 0.4;
 
-        this.logger.debug("xRot", this.playerOrNull.getViewVector(0).xRot(0));
-        this.logger.debug("zRot", this.playerOrNull.getViewVector(0).zRot(0));
-
         // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
-        Vector3d go = this.playerOrNull.getViewVector(0).multiply(boardSpeed, 1.0, boardSpeed);
+        Vector3d look3D = this.playerOrNull.getViewVector(0);
+        Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
+
+        this.logger.debug("vect" + this.playerOrNull.getViewVector(0));
+        this.logger.debug("norm" + look2D);
+
+        if (look2D.x == 0 && look2D.z == 0) {
+            this.logger.debug("look is " + look2D);
+            this.logger.debug("using " + this.lastDirection);
+            look2D = this.lastDirection;
+        }
+
+        if (look2D.x > 0 || look2D.z > 0) {
+            this.lastDirection = look2D;
+        }
+
+        // TODO: instead of turning-on-a-dime, change lastDirection to gradually move toward look-direction
+        Vector3d go = look2D.multiply(boardSpeed, 1.0, boardSpeed);
 
         this.playerOrNull.setDeltaMovement(go.x, y, go.z);
         this.playerOrNull.hurtMarked = true;
