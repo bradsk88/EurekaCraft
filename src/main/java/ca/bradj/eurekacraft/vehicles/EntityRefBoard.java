@@ -63,8 +63,6 @@ public class EntityRefBoard extends Entity {
     @Override
     public void tick() {
 
-        this.logger.debug("Ticking ref board: ");
-
         super.tick();
         if (this.playerOrNull == null) {
             return;
@@ -73,7 +71,7 @@ public class EntityRefBoard extends Entity {
 //        this.playerOrNull.push(10, 5, 10);
 //        this.playerOrNull.hurt(DamageSource.OUT_OF_WORLD, 0);
 //        this.playerOrNull.push(4, 4, 4);
-        this.logger.debug("Delta: " + this.playerOrNull.getDeltaMovement());
+//        this.logger.debug("Delta: " + this.playerOrNull.getDeltaMovement());
 
         // TODO: Only ascend on trapar blocks
         double y = 0.1;
@@ -82,26 +80,33 @@ public class EntityRefBoard extends Entity {
         }
 
         double boardSpeed = 0.4;
+        double turnSpeed = 0.1;
 
         // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
         Vector3d look3D = this.playerOrNull.getViewVector(0);
         Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
 
-        this.logger.debug("vect" + this.playerOrNull.getViewVector(0));
-        this.logger.debug("norm" + look2D);
+        Vector3d add = look2D.multiply(turnSpeed, 1.0, turnSpeed);
+        Vector3d nextRaw = this.lastDirection.add(add);
+        Vector3d nextDir = nextRaw.normalize();
 
-        if (look2D.x == 0 && look2D.z == 0) {
-            this.logger.debug("look is " + look2D);
-            this.logger.debug("using " + this.lastDirection);
-            look2D = this.lastDirection;
+//        this.logger.debug("look2D" + look2D);
+//        this.logger.debug("add" + add);
+//        this.logger.debug("nextRaw" + nextRaw);
+
+        if (nextDir.x == 0 && nextDir.z == 0) {
+//            this.logger.debug("look is " + nextDir);
+//            this.logger.debug("using " + this.lastDirection);
+            nextDir = this.lastDirection;
         }
 
-        if (look2D.x > 0 || look2D.z > 0) {
-            this.lastDirection = look2D;
+        if (Math.abs(nextDir.x) > 0 || Math.abs(nextDir.z) > 0) {
+            this.lastDirection = nextDir;
         }
 
-        // TODO: instead of turning-on-a-dime, change lastDirection to gradually move toward look-direction
-        Vector3d go = look2D.multiply(boardSpeed, 1.0, boardSpeed);
+        Vector3d go = nextDir.multiply(boardSpeed, 1.0, boardSpeed);
+
+//        this.logger.debug("add" + add + "go" + go);
 
         this.playerOrNull.setDeltaMovement(go.x, y, go.z);
         this.playerOrNull.hurtMarked = true;
