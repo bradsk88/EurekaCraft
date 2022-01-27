@@ -30,7 +30,10 @@ public class RefBoard extends Item {
         boolean serverSide = !world.isClientSide;
         if (serverSide) {
             EntityRefBoard glider = spawnedGlidersMap.get(player);
-            if (glider != null) {
+            if (glider != null && !glider.isAlive()) {
+                despawnGlider(player, glider);
+            }
+            if (glider != null && glider.isAlive()) {
                 if (glider.getHandHeld() == hand) despawnGlider(player, glider);
                 // if deployed glider is in other hand, ignore
             } else spawnGlider(player, player.level, hand);

@@ -1,14 +1,16 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
-import net.minecraft.util.DamageSource;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -24,6 +26,7 @@ public class EntityRefBoard extends Entity {
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
+    private double lastLift = 0;
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -73,14 +76,41 @@ public class EntityRefBoard extends Entity {
 //        this.playerOrNull.push(4, 4, 4);
 //        this.logger.debug("Delta: " + this.playerOrNull.getDeltaMovement());
 
-        // TODO: Only ascend on trapar blocks
-        double y = 0.1;
-        if (this.playerOrNull.isShiftKeyDown()) {
-            y = -0.1;
+        // TODO: Embed on board itself
+        double boardSpeed = 1.0;
+        double turnSpeed = 0.5;
+        double boardWeight = 0.25;
+        double liftFactor = 1.0;
+        double defaultFall = -0.05 * boardWeight;
+        double defaultLand = -4 * boardWeight;
+
+        Vector3d impactPos = this.playerOrNull.position();
+        this.level.addParticle(ParticleTypes.POOF, impactPos.x, impactPos.y, impactPos.z, 0, 1, 0);
+
+        double liftOrFall = this.lastLift;
+
+
+        Block block = this.level.getBlockState(playerOrNull.blockPosition()).getBlock();
+
+        if (block.is(BlocksInit.TRAPAR_WAVE_BLOCK.get())) {
+            // Apply lift
+            this.logger.debug("Block" + block);
+            // TODO: Get "lift factor" from block
+            double blockLift = 0.5;
+            liftOrFall = blockLift;
+        } else {
+            liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        double boardSpeed = 0.4;
-        double turnSpeed = 0.1;
+        if (this.playerOrNull.isShiftKeyDown()) {
+            liftOrFall = defaultLand;
+            boardSpeed = 1.5 * boardSpeed;
+            turnSpeed = 0.5 * turnSpeed;
+        }
+
+        if (this.playerOrNull.isOnGround()) {
+            this.kill();
+        }
 
         // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
         Vector3d look3D = this.playerOrNull.getViewVector(0);
@@ -104,12 +134,18 @@ public class EntityRefBoard extends Entity {
             this.lastDirection = nextDir;
         }
 
+        logger.debug("Lift: " + liftOrFall);
+        if (Math.abs(liftOrFall) > 0) {
+            this.lastLift = liftOrFall;
+        }
+
         Vector3d go = nextDir.multiply(boardSpeed, 1.0, boardSpeed);
 
 //        this.logger.debug("add" + add + "go" + go);
 
-        this.playerOrNull.setDeltaMovement(go.x, y, go.z);
+        this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
+        this.playerOrNull.fallDistance = 0; // To not die!
     }
 
 

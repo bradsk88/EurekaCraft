@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
@@ -34,6 +35,13 @@ public class ItemsInit {
 			() -> new BlockItem(
 					BlocksInit.BROKEN_REF_BOARD.get(),
 					BrokenRefBoard.ITEM_PROPS
+			)
+	);
+	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
+			TraparWaveBlock.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.TRAPAR_WAVE_BLOCK.get(),
+					TraparWaveBlock.ITEM_PROPS
 			)
 	);
 

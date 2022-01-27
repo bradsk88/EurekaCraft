@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoard;
 import net.minecraft.block.Block;
@@ -20,6 +21,9 @@ public class BlocksInit {
 	);
 	public static final RegistryObject<Block> BROKEN_REF_BOARD = BLOCKS.register(
 			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
+	);
+	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
+			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
 	);
 
 	public static void RegisterTextures() {
