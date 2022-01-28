@@ -2,13 +2,11 @@ package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.core.init.FeaturesInit;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
-import net.minecraft.entity.passive.AmbientEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -24,8 +22,6 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import ca.bradj.eurekacraft.core.init.ItemsInit;
 
 import java.util.stream.Collectors;
 
@@ -57,6 +53,8 @@ public class EurekaCraft {
 		EntitiesInit.ENTITIES.register(bus);
 		ReflectionFilmInit.ITEMS.register(bus);
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
+		FeaturesInit.PLACEMENTS.register(bus);
+		FeaturesInit.FEATURES.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {

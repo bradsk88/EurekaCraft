@@ -30,6 +30,7 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
+    private final RefBoardStats stats = RefBoardStats.StandardBoard;
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
@@ -79,26 +80,22 @@ public class EntityRefBoard extends Entity {
 
         super.tick();
         if (this.playerOrNull == null) {
+            logger.debug("player is null");
             return;
         }
-        Vector3d oldPos = this.playerOrNull.position();
-//        this.playerOrNull.push(10, 5, 10);
-//        this.playerOrNull.hurt(DamageSource.OUT_OF_WORLD, 0);
-//        this.playerOrNull.push(4, 4, 4);
-//        this.logger.debug("Delta: " + this.playerOrNull.getDeltaMovement());
 
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
-        double boardWeight = 1.0;
-        double boardSpeed = 0.25; // This is a boost and is not coupled to weight
-        double turnSpeed = 0.25; // This is a boost and is not coupled to weight
-        double liftFactor = 0.25; // This is a boost and is not coupled to weight
+        double boardWeight = this.stats.weight();
+        double boardSpeed = this.stats.speed();
+        double turnSpeed = this.stats.agility();
+        double liftFactor = this.stats.lift();
 
         // Calculated base physics
         double defaultFall = -0.05 * boardWeight;
         double defaultAccel = 0.01 * boardWeight;
         double defaultLand = -2 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
-        double defaultMaxSpeed = this.initialSpeed + (boardSpeed * runEquivalent);
+        double defaultMaxSpeed = boardSpeed * runEquivalent;
 
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.max(this.lastSpeed + defaultAccel, defaultMaxSpeed);
@@ -121,7 +118,7 @@ public class EntityRefBoard extends Entity {
             turnSpeed = 0.5 * turnSpeed;
         }
 
-        if (this.playerOrNull.isOnGround()) {
+        if (this.playerOrNull.isOnGround() || this.playerOrNull.isInWater()) {
             this.kill();
         }
 
@@ -175,7 +172,8 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
-    }
 
+        this.moveTo(this.playerOrNull.position());
+    }
 
 }
