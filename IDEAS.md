@@ -1,0 +1,111 @@
+## Advancements
+
+Find A Broken Ref Board
+- Build a Reflection Film Scraper
+-- Craft a Reflection Film Mold
+--- Craft a Reflection Film
+---- Build a Ref Board
+----- Lift on TRAPAR waves
+------ Lift above Y=N
+------ Cut back drop turn
+- Find or Craft Fresh Seeds
+-- Harvest SkyFish Skin (Can be smelted into reflection film)
+- Obtain sbub coral
+-- Build TRAPAR infuser
+--- Craft TRAPAR goggles
+--- Infuse ref-boarding shoes
+- Craft Goggles
+
+
+## Other Ideas
+- Loot from ref boarding shacks
+- Locked box
+-- Can only be opened with reflective key (wood around reflection film)
+--- Loots: Keys, Wheels, Film, Goggles 
+- Ray//Out: Magizines unlock things?
+-- Patterns? Upgrade kits
+- Special crafting table (multi-block structure of 2 blocks)
+-- 2x3 grid for materials
+-- Additional slot for blueprints/skins/etc
+-- Coal slot for melting reflective film
+-- Tool slot for sandpaper/etc (increase speed, etc)
+- Ref boards age and eventually become unusable
+-- Armor-stand style item for old boards (still cosmetically cool)
+- Ref board "wheels" increase agility/maneuverability
+-- Follow standard minecraft tiers: wood, stone, iron, gold, diamond, etc.
+--- Better material == better cornering
+--- Maybe other benefits for other materials (slime?)
+- Trapar storm 
+-- Copy minecraft rain. Turn it green, maybe have it flow upward?
+-- Positive lift without trapar blocks
+- Additional ref board "cores" can be discovered in shacks or magazines
+-- Eg: Jumper (lots of lift but low speed/manueverability)
+-- Eg: Speeder (lots of speed but low control)
+
+## Crafting Table Recipes
+
+### Trapar Chest Key
+WWW
+WFW
+WWW
+
+W = Wood
+F = Reflective Film (scraped from old ref boards)
+
+(Wears quickly, maybe 3 uses)
+
+### Scraper Recipes
+
+Insert Old board - Get Reflection Film
+Insert Wood (wood slab?) - Get Precision Board Wood
+
+- These recipes shoud probably take some kind of fuel or maybe abrasive
+- Craft a custom (eurekacraft specific) abrasive block that improves outcome
+- Random chance of failed result? Better machine iterations to improve chances?
+
+## Ref Table Recipes
+
+### Glide Board (No positive lift)
+WW
+WW
+WW
+
+(Basically a hang glider)
+
+### Heavy Ref Board Core (No positive lift - standard weight)
+WWI
+WWS - B
+WWI
+
+(Maybe wood slab instead of wood block?)
+
+S = stick
+I = iron
+B = blueprint (found in shacks and magazines)
+
+### Ref Board Core (No positive lift - standard weight)
+ZZI
+ZZS - B
+ZZI
+
+Z = Precision Board Wood
+
+### Ref Board (Some lift)
+FFF
+FFF - R - C (works like furnace with slow application process)
+FFF
+
+(Random outcome for lift score)
+
+### Elite Ref Board (more lift)
+
+
+### Any Board Dyed
+DDD
+DDD - R - C
+DDD
+
+D = dye 
+R = Board
+C = Coal (works like furnace with slow application process)
+
