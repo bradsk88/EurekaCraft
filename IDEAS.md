@@ -2,45 +2,46 @@
 
 Find A Broken Ref Board
 - Build a Reflection Film Scraper
--- Craft a Reflection Film Mold
---- Craft a Reflection Film
----- Build a Ref Board
------ Lift on TRAPAR waves
------- Lift above Y=N
------- Cut back drop turn
+  - Craft a Reflection Film Mold
+    - Craft a Reflection Film
+      - Build a Ref Board
+        - Lift on TRAPAR waves
+          - Lift above Y=N
+          - Lift further than N
+          - Cut back drop turn
 - Find or Craft Fresh Seeds
--- Harvest SkyFish Skin (Can be smelted into reflection film)
-- Obtain sbub coral
--- Build TRAPAR infuser
---- Craft TRAPAR goggles
---- Infuse ref-boarding shoes
+  - Harvest SkyFish Skin (Can be smelted into reflection film)
+- Obtain scub coral
+  - Build TRAPAR infuser
+    - Craft TRAPAR goggles
+    - Infuse ref-boarding shoes (feather falling when off board)
 - Craft Goggles
 
 
 ## Other Ideas
 - Loot from ref boarding shacks
 - Locked box
--- Can only be opened with reflective key (wood around reflection film)
---- Loots: Keys, Wheels, Film, Goggles 
+  - Can only be opened with reflective key (wood around reflection film)
+    - Loots: Keys, Wheels, Film, Goggles 
 - Ray//Out: Magizines unlock things?
--- Patterns? Upgrade kits
+  - Patterns? Upgrade kits
 - Special crafting table (multi-block structure of 2 blocks)
--- 2x3 grid for materials
--- Additional slot for blueprints/skins/etc
--- Coal slot for melting reflective film
--- Tool slot for sandpaper/etc (increase speed, etc)
+  - 2x3 grid for materials
+  - Additional slot for blueprints/skins/etc
+  - Coal slot for melting reflective film
+  - Tool slot for sandpaper/etc (increase speed, etc)
 - Ref boards age and eventually become unusable
--- Armor-stand style item for old boards (still cosmetically cool)
+  - Armor-stand style item for old boards (still cosmetically cool)
 - Ref board "wheels" increase agility/maneuverability
--- Follow standard minecraft tiers: wood, stone, iron, gold, diamond, etc.
---- Better material == better cornering
---- Maybe other benefits for other materials (slime?)
+  - Follow standard minecraft tiers: wood, stone, iron, gold, diamond, etc.
+    - Better material == better cornering
+    - Maybe other benefits for other materials (slime?)
 - Trapar storm 
--- Copy minecraft rain. Turn it green, maybe have it flow upward?
--- Positive lift without trapar blocks
+  - Copy minecraft rain. Turn it green, maybe have it flow upward?
+  - Positive lift without trapar blocks
 - Additional ref board "cores" can be discovered in shacks or magazines
--- Eg: Jumper (lots of lift but low speed/manueverability)
--- Eg: Speeder (lots of speed but low control)
+  - Eg: Jumper (lots of lift but low speed/manueverability)
+  - Eg: Speeder (lots of speed but low control)
 
 ## Crafting Table Recipes
 
@@ -56,6 +57,16 @@ F = Reflective Film (scraped from old ref boards)
 
 (Wears quickly, maybe 3 uses)
 
+### Quality Reflection Film
+```
+RRR
+RFD
+RRR
+```
+R = Redstone
+F = Reflective Film
+D = Diamond
+
 ### Scraper Recipes
 
 Insert Old board - Get Reflection Film
@@ -68,22 +79,23 @@ Insert Wood (wood slab?) - Get Precision Board Wood
 ## Ref Table Recipes
 
 ### Glide Board (No positive lift)
-```
-WW
-WW
-WW
-```
-
 (Basically a hang glider)
 
-### Heavy Ref Board Core (No positive lift - standard weight)
 ```
-WWI
-WWS - B
-WWI
+WW
+WW - C (works like furnace with slow application process)
+WW
 ```
 
-(Maybe wood slab instead of wood block?)
+W = Wood Block (Maybe wood slab)
+C = Coal (special slot)
+
+### Heavy Ref Board Core (No positive lift - heavy weight)
+```
+WWI
+WWS - B - C
+WWI
+```
 
 S = stick
 I = iron
@@ -92,7 +104,7 @@ B = blueprint (found in shacks and magazines)
 ### Ref Board Core (No positive lift - standard weight)
 ```
 ZZI
-ZZS - B
+ZZS - B - C
 ZZI
 ```
 
@@ -101,14 +113,22 @@ Z = Precision Board Wood
 ### Ref Board (Some lift)
 ```
 FFF
-FFF - R - C (works like furnace with slow application process)
+FFF - R - C 
 FFF
 ```
+
+R = Ref Board Core
 
 (Random outcome for lift score)
 
 ### Elite Ref Board (more lift)
+```
+QQQ
+QQQ - R - C 
+QQQ
+```
 
+Q = Quality Reflection Film
 
 ### Any Board Dyed
 ```
