@@ -45,9 +45,11 @@ Find A Broken Ref Board
 ## Crafting Table Recipes
 
 ### Trapar Chest Key
+```
 WWW
 WFW
 WWW
+```
 
 W = Wood
 F = Reflective Film (scraped from old ref boards)
@@ -66,16 +68,20 @@ Insert Wood (wood slab?) - Get Precision Board Wood
 ## Ref Table Recipes
 
 ### Glide Board (No positive lift)
+```
 WW
 WW
 WW
+```
 
 (Basically a hang glider)
 
 ### Heavy Ref Board Core (No positive lift - standard weight)
+```
 WWI
 WWS - B
 WWI
+```
 
 (Maybe wood slab instead of wood block?)
 
@@ -84,16 +90,20 @@ I = iron
 B = blueprint (found in shacks and magazines)
 
 ### Ref Board Core (No positive lift - standard weight)
+```
 ZZI
 ZZS - B
 ZZI
+```
 
 Z = Precision Board Wood
 
 ### Ref Board (Some lift)
+```
 FFF
 FFF - R - C (works like furnace with slow application process)
 FFF
+```
 
 (Random outcome for lift score)
 
@@ -101,9 +111,11 @@ FFF
 
 
 ### Any Board Dyed
+```
 DDD
 DDD - R - C
 DDD
+```
 
 D = dye 
 R = Board
