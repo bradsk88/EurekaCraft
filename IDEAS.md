@@ -45,6 +45,26 @@ Find A Broken Ref Board
 
 ## Crafting Table Recipes
 
+### Sticky Disc
+```
+CPC
+PCP
+CPC
+```
+
+C = Clay
+P = Paper
+
+### Flint Sticky Disc
+```
+FCF
+CFC
+FCF
+```
+
+(Cook in furnace to create Flint Sanding Disc)
+(Could also do quartz, diamond, etc. - better luck for Ref Table)
+
 ### Trapar Chest Key
 ```
 WWW
