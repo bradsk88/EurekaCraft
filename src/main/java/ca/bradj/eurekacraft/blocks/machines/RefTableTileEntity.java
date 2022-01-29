@@ -20,7 +20,7 @@ public class RefTableTileEntity extends LockableLootTileEntity {
     ).build(null);
 
 
-    private static int slots = 1;
+    private static int slots = 2;
     protected NonNullList<ItemStack> items = NonNullList.withSize(slots, ItemStack.EMPTY);
 
     public RefTableTileEntity(TileEntityType<?> typeIn) {

@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.TilesInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,10 +15,13 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 public class RefTableBlock extends Block {
 
@@ -32,6 +36,17 @@ public class RefTableBlock extends Block {
     }
 
     @Override
+    public boolean hasTileEntity(BlockState state) {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
+        return TilesInit.REF_TABLE.get().create();
+    }
+
+    @Override
     public ActionResultType use(
             BlockState blockState, World world, BlockPos blockpos, PlayerEntity player,
             Hand hand, BlockRayTraceResult rayTraceResult
@@ -42,8 +57,8 @@ public class RefTableBlock extends Block {
     }
 
     private void showUI(World world, BlockPos blockpos, PlayerEntity player) {
-        if (!world.isClientSide()) {
-            this.logger.debug("not client side");
+        if (world.isClientSide()) {
+            this.logger.debug("client side");
             return;
         }
         this.logger.debug("client side");

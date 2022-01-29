@@ -45,6 +45,7 @@ public class EurekaCraft {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+		TilesInit.TILES.register(bus);
 		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.ITEMS.register(bus);
 		EntitiesInit.ENTITIES.register(bus);
