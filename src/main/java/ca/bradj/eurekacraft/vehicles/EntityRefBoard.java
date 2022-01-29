@@ -80,7 +80,7 @@ public class EntityRefBoard extends Entity {
 
         super.tick();
         if (this.playerOrNull == null) {
-            logger.debug("player is null");
+            this.kill();
             return;
         }
 

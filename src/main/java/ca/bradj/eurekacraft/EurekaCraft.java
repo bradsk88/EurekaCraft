@@ -54,6 +54,7 @@ public class EurekaCraft {
 		FeaturesInit.PLACEMENTS.register(bus);
 		FeaturesInit.FEATURES.register(bus);
 		ContainerTypesInit.TYPES.register(bus);
+		RecipesInit.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {

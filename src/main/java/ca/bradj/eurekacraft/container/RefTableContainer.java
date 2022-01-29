@@ -26,8 +26,6 @@ public class RefTableContainer extends Container {
     private final int inventoryLeftX = 8;
     private final int titleBarHeight = 12;
     private final int margin = 4;
-    private final int boxMargin = 1;
-
 
     public RefTableContainer(int windowId, PlayerInventory playerInventory, RefTableTileEntity refTableTileEntity) {
         super(ContainerTypesInit.REF_TABLE.get(), windowId);
@@ -38,7 +36,13 @@ public class RefTableContainer extends Container {
         if (tileEntity != null) {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
                 int leftX = inventoryLeftX + boxWidth;
-                addRectangleOfBoxes(h, 0, leftX, titleBarHeight + margin, 2, 3);
+                int nextIndex = 0;
+                int cols = 2, rows = 3;
+                addRectangleOfBoxes(h, nextIndex, leftX, titleBarHeight + margin, 2, 3);
+                nextIndex = nextIndex + (cols * rows);
+                int nextLeftX = leftX + (boxWidth * cols) + (boxWidth * 4);
+                int nextTopY = titleBarHeight + margin + boxHeight;
+                addSlot(new SlotItemHandler(h, nextIndex, nextLeftX, nextTopY));
             });
         }
     }

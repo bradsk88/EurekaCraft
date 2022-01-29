@@ -1,0 +1,26 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_slab"
+    },
+    {
+      "item": "minecraft:oak_slab"
+    },
+    {
+      "item": "minecraft:oak_slab"
+    },
+    {
+      "item": "minecraft:oak_slab"
+    },
+    {
+      "item": "minecraft:oak_slab"
+    },
+    {
+      "item": "minecraft:oak_slab"
+    }
+  ],
+  "output": {
+    "item": "eurekacraft:ref_board"
+  }
+}
