@@ -1,4 +1,4 @@
-package ca.bradj.eurekacraft.machines;
+package ca.bradj.eurekacraft.blocks.machines;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
