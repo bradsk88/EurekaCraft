@@ -22,17 +22,23 @@ public class RefTableContainer extends Container {
     private final IItemHandler playerInventory;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+    private final int boxHeight = 18, boxWidth = 18;
+    private final int inventoryLeftX = 8;
+    private final int titleBarHeight = 12;
+    private final int margin = 4;
+    private final int boxMargin = 1;
+
 
     public RefTableContainer(int windowId, PlayerInventory playerInventory, RefTableTileEntity refTableTileEntity) {
         super(ContainerTypesInit.REF_TABLE.get(), windowId);
         this.tileEntity = refTableTileEntity;
         this.playerInventory = new InvWrapper(playerInventory);
-        layoutPlayerInventorySlots(8, 86);
+        layoutPlayerInventorySlots(86);
 
         if (tileEntity != null) {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, 0, 80, 31));
-                addSlot(new SlotItemHandler(h, 1, 82, 53));
+                int leftX = inventoryLeftX + boxWidth;
+                addRectangleOfBoxes(h, 0, leftX, titleBarHeight + margin, 2, 3);
             });
         }
     }
@@ -51,33 +57,38 @@ public class RefTableContainer extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity p_75145_1_) {
-        return true; // TODO: ???
+    public boolean stillValid(PlayerEntity player) {
+        return true; // TODO: Based on distance
     }
 
-    private int addSlotRange(IItemHandler handler, int index, int x, int y, int amount, int dx) {
-        for (int i = 0; i < amount; i++) {
-            addSlot(new SlotItemHandler(handler, index, x, y));
-            x += dx;
-            index++;
+    private void layoutPlayerInventorySlots(int pixelsFromTop) {
+        // Player's inventory
+        int rectangleRows = 3;
+        addRectangleOfBoxes(playerInventory, 9, inventoryLeftX, pixelsFromTop, 9, rectangleRows);
+
+        // Player's "hot bar" inventory
+        pixelsFromTop += (boxHeight * rectangleRows) + margin;
+        addLineOfBoxes(playerInventory, 0, inventoryLeftX, pixelsFromTop, 9);
+    }
+
+    private void addRectangleOfBoxes(IItemHandler handler, int inventoryIndex, int leftX, int topY, int xBoxes, int yBoxes) {
+        int y = topY;
+        int nextInvIndex = inventoryIndex;
+        for (int j = 0; j < yBoxes; j++) {
+            addLineOfBoxes(handler, nextInvIndex, leftX, y, xBoxes);
+            nextInvIndex += xBoxes;
+            y += boxHeight;
         }
-
-        return index;
     }
 
-    private int addSlotBo(IItemHandler handler, int index, int x, int y, int horAmt, int dx, int verAmt, int dy) {
-        for (int j = 0; j < verAmt; j++) {
-            index = addSlotRange(handler, index, x, y, horAmt, dx);
-            y += dy;
+    private void addLineOfBoxes(IItemHandler handler, int index, int leftX, int topY, int numBoxes) {
+        int x =  leftX;
+        int nextInvIndex = index;
+        for (int i = 0; i < numBoxes; i++) {
+            addSlot(new SlotItemHandler(handler, nextInvIndex, x, topY));
+            nextInvIndex++;
+            x += boxWidth;
         }
-        return index;
-    }
-
-    private void layoutPlayerInventorySlots(int pixelsFromLeftEdge, int pixelsFromTop) {
-        addSlotBo(playerInventory, 9, pixelsFromLeftEdge, pixelsFromTop, 9, 18, 3, 18);
-
-        pixelsFromTop += 58; // TODO: COnst
-        addSlotRange(playerInventory, 0, pixelsFromLeftEdge, pixelsFromTop, 9, 18);
     }
 
 }
