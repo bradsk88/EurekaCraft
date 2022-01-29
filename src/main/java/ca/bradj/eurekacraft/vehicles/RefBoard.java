@@ -27,6 +27,10 @@ public class RefBoard extends Item {
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack s = player.getItemInHand(hand);
 
+        if (player.isOnGround()) {
+            return ActionResult.pass(s);
+        }
+
         boolean serverSide = !world.isClientSide;
         if (serverSide) {
             EntityRefBoard glider = spawnedGlidersMap.get(player);
