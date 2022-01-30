@@ -18,9 +18,11 @@ public class EntitiesInit {
 
     private static final String REF_BOARD_ID = new ResourceLocation(EurekaCraft.MODID, EntityRefBoard.ENTITY_ID).toString();
 
-    public static final RegistryObject<EntityType<? extends Entity>> REF_BOARD = ENTITIES.register(
+    public static final RegistryObject<EntityType<EntityRefBoard>> REF_BOARD = ENTITIES.register(
             EntityRefBoard.ENTITY_ID,
-            () -> EntityType.Builder.of(EntityRefBoard::new, EntityClassification.MISC).build(REF_BOARD_ID)
+            () -> EntityType.Builder.<EntityRefBoard>
+                    of(EntityRefBoard::new, EntityClassification.MISC).
+                    build(REF_BOARD_ID)
     );
 
 }

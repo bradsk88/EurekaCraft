@@ -9,20 +9,27 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Stack;
+import java.util.Optional;
 
 // TODO: Destroy ref board on player disconnect
 
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
+    private static final DataParameter<Optional<BlockPos>> DATA_ID_POSITION = EntityDataManager.defineId(
+            EntityRefBoard.class, DataSerializers.OPTIONAL_BLOCK_POS
+    );
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
@@ -57,28 +64,51 @@ public class EntityRefBoard extends Entity {
 
     @Override
     protected void defineSynchedData() {
+        this.entityData.define(DATA_ID_POSITION, Optional.empty());
+    }
 
+    @Override
+    public void onSyncedDataUpdated(DataParameter<?> dataParam) {
+        logger.debug("onSyncedDataUpdated " + dataParam + " client side? " + this.level.isClientSide + " ?= " + DATA_ID_POSITION);
+        if (DATA_ID_POSITION.equals(dataParam) && this.level.isClientSide) {
+            Optional<BlockPos> syncedPos = (Optional<BlockPos>) entityData.get(dataParam);
+            logger.debug("Moving client side ref board to " + syncedPos);
+            if (syncedPos.isPresent()) {
+                BlockPos blockPos = syncedPos.get();
+                this.moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.yRot, this.xRot);
+            }
+        }
+        super.onSyncedDataUpdated(dataParam);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundNBT p_70037_1_) {
-
+        if (this.level.isClientSide) {
+            logger.debug("readAdditionalSaveData called for client");
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT p_213281_1_) {
-
+        if (this.level.isClientSide) {
+            logger.debug("addAdditionalSaveData called for client");
+        }
     }
 
     @Override
     public IPacket<?> getAddEntityPacket() {
-        return new SSpawnObjectPacket(this);
+        logger.debug("getAddEntityPacket called clientSide=" + this.level.isClientSide);
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
     public void tick() {
 
         super.tick();
+        if (this.level.isClientSide) {
+            logger.debug("Ticked client side");
+        }
+
         if (this.playerOrNull == null) {
             logger.debug("player is null");
             return;
@@ -89,6 +119,10 @@ public class EntityRefBoard extends Entity {
         double boardSpeed = this.stats.speed();
         double turnSpeed = this.stats.agility();
         double liftFactor = this.stats.lift();
+
+        // FIXME: REMOVE
+        boardSpeed = 0;
+        boardWeight = 0;
 
         // Calculated base physics
         double defaultFall = -0.05 * boardWeight;
@@ -174,6 +208,16 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.fallDistance = 0; // To not die!
 
         this.moveTo(this.playerOrNull.position());
+    }
+
+    @Override
+    public void moveTo(double x, double y, double z, float yRot, float xRot) {
+        super.moveTo(x, y, z, yRot, xRot);
+        if (!this.level.isClientSide && this.isAlive()) {
+            Optional<BlockPos> blockPos = Optional.of(new BlockPos(x, y, z));
+            logger.debug("Server Publishing position " + blockPos);
+            this.entityData.set(DATA_ID_POSITION, blockPos);
+        }
     }
 
 }

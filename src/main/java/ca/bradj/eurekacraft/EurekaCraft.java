@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.core.init.FeaturesInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
+import ca.bradj.eurekacraft.render.GlideBoardRenderer;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -13,6 +14,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -66,6 +68,9 @@ public class EurekaCraft {
 		// do something that can only be done on the client
 		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
 		BlocksInit.RegisterTextures();
+		RenderingRegistry.registerEntityRenderingHandler(
+				EntitiesInit.REF_BOARD.get(), GlideBoardRenderer::new
+		);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {

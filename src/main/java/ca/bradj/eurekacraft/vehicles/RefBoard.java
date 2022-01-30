@@ -43,8 +43,6 @@ public class RefBoard extends Item {
             } else spawnGlider(player, player.level, hand);
         }
 
-        Vector3d pos = player.position();
-        player.setPos(pos.x, pos.y + 0.1, pos.z);
         return ActionResult.success(s);
     }
 
