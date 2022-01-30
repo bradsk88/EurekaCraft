@@ -3,11 +3,13 @@ package ca.bradj.eurekacraft.container;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
+import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IntReferenceHolder;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
@@ -20,6 +22,7 @@ import java.util.Objects;
 public class RefTableContainer extends Container {
     private final RefTableTileEntity tileEntity;
     private final IItemHandler playerInventory;
+    private IntReferenceHolder cookProgressSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private final int boxHeight = 18, boxWidth = 18;
@@ -35,15 +38,27 @@ public class RefTableContainer extends Container {
 
         if (tileEntity != null) {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
+
+                // Inputs
                 int leftX = inventoryLeftX + boxWidth;
                 int nextIndex = 0;
                 int cols = 2, rows = 3;
-                addRectangleOfBoxes(h, nextIndex, leftX, titleBarHeight + margin, 2, 3);
+                addRectangleOfBoxes(h, nextIndex, leftX, titleBarHeight + margin, cols, rows);
+
+                // Fuel + Upgrades
                 nextIndex = nextIndex + (cols * rows);
-                int nextLeftX = leftX + (boxWidth * cols) + (boxWidth * 4);
+                leftX = leftX + (boxWidth * cols) + boxWidth;
+                cols = 2; rows = 1;
                 int nextTopY = titleBarHeight + margin + boxHeight;
+                addRectangleOfBoxes(h, nextIndex, leftX, nextTopY, cols, rows);
+
+                // Output
+                nextIndex = nextIndex + (cols * rows);
+                int nextLeftX = leftX + (boxWidth * cols) + boxWidth;
                 addSlot(new SlotItemHandler(h, nextIndex, nextLeftX, nextTopY));
             });
+
+            this.addDataSlot(this.cookProgressSlot = new FunctionalIntReferenceHolder(this.tileEntity::getCookingProgress, this.tileEntity::setCookingProgress));
         }
     }
     public RefTableContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
@@ -95,4 +110,7 @@ public class RefTableContainer extends Container {
         }
     }
 
+    public boolean isCooking() {
+        return this.cookProgressSlot.get() > 0;
+    }
 }

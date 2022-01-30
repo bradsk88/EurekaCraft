@@ -2,7 +2,6 @@ package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
-import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
@@ -13,13 +12,12 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -39,10 +37,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
 
+    private boolean cooking = false;
+    private int cookPercent = 0;
 
     private static int inputSlots = 6;
-    private static int outputSlot = 6;
-    private static int totalSlots = 7;
+    private static int fuelSlot = inputSlots;
+    private static int techSlot = fuelSlot + 1;
+    private static int outputSlot = techSlot + 1;
+    private static int totalSlots = outputSlot + 1;
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
 
@@ -70,12 +72,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     @Override
     public void load(BlockState blockState, CompoundNBT nbt) {
         itemHandler.deserializeNBT(nbt.getCompound("inv"));
+        this.cookPercent = nbt.getInt("cooked");
         super.load(blockState, nbt);
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         nbt.put("inv", itemHandler.serializeNBT());
+        nbt.putInt("cooked", this.cookPercent);
         return super.save(nbt);
     }
 
@@ -92,15 +96,52 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         return new ItemStackHandler(totalSlots);
     }
 
-    public void craft() {
-        Inventory inv = new Inventory(inputSlots);
-        for (int i = 0; i < inputSlots; i++) {
-            inv.setItem(i, itemHandler.getStackInSlot(i));
+    // Crafting
+    @Override
+    public void tick() {
+        if (level.isClientSide) {
+            return;
         }
 
-        Optional<GlideBoardRecipe> recipe = level.getRecipeManager().getRecipeFor(
-                RecipesInit.GLIDE_BOARD, inv, level
-        );
+//        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
+//        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
+//        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
+
+        updateCookingStatus();
+        if (this.cooking) {
+            logger.debug("Cook % " + this.cookPercent); // TODO: Show in UI
+            this.doCook();
+        }
+    }
+
+    private void updateCookingStatus() {
+        if (this.isRecipeActive() && this.hasCoal() && !this.cooking) {
+            this.cooking = true;
+            this.cookPercent = 0;
+            this.itemHandler.extractItem(fuelSlot, 1, false);
+            return;
+        }
+        if (!this.isRecipeActive()) {
+            this.cooking = false;
+            this.cookPercent = 0;
+        }
+    }
+
+    private boolean hasCoal() {
+        return this.itemHandler.getStackInSlot(fuelSlot).
+                sameItemStackIgnoreDurability(
+                        Items.COAL.getDefaultInstance()
+                );
+    }
+
+    private void doCook() {
+        if (cookPercent < 100) {
+            this.cookPercent++;
+            return;
+        }
+        this.cooking = false;
+        this.cookPercent = 0;
+        Optional<GlideBoardRecipe> recipe = getActiveRecipe();
 
         recipe.ifPresent(iRecipe -> {
             logger.debug("recipe match!");
@@ -115,15 +156,31 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
             setChanged();
         });
-
     }
 
-    // Crafting
-    @Override
-    public void tick() {
-        if (level.isClientSide) {
-            return;
+    private boolean isRecipeActive() {
+        Optional<GlideBoardRecipe> recipe = getActiveRecipe();
+        return recipe.isPresent();
+    }
+
+    private Optional<GlideBoardRecipe> getActiveRecipe() {
+        Inventory inv = new Inventory(inputSlots);
+        for (int i = 0; i < inputSlots; i++) {
+            inv.setItem(i, itemHandler.getStackInSlot(i));
         }
-        craft();
+
+        Optional<GlideBoardRecipe> recipe = level.getRecipeManager().getRecipeFor(
+                RecipesInit.GLIDE_BOARD, inv, level
+        );
+        return recipe;
+    }
+
+    public int getCookingProgress() {
+        return cookPercent;
+    }
+
+    public void setCookingProgress(int v) {
+        // TODO: Needed?
+        this.cookPercent = v;
     }
 }
