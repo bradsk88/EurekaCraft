@@ -7,7 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -38,7 +37,7 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private final RefBoardStats stats = RefBoardStats.StandardBoard;
+    private final RefBoardStats stats = RefBoardStats.GlideBoard;
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
@@ -127,7 +126,7 @@ public class EntityRefBoard extends Entity {
         double liftFactor = this.stats.lift();
 
         // Calculated base physics
-        double defaultFall = -0.05 * boardWeight;
+        double defaultFall = -0.01 * boardWeight;
         double defaultAccel = 0.01 * boardWeight;
         double defaultLand = -2 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
@@ -149,7 +148,7 @@ public class EntityRefBoard extends Entity {
         }
 
         if (this.playerOrNull.isShiftKeyDown()) {
-            liftOrFall = defaultLand;
+            liftOrFall = defaultLand * (1 - this.stats.landResist());
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }

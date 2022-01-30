@@ -36,7 +36,6 @@ public class BoardPlayerRenderHandler {
         matrixStack.pushPose();
 
         if (!EntityRefBoard.isDeployedFor(event.getPlayer().getId())) {
-            logger.debug("not deployed for " + event.getPlayer().getId());
             return;
         }
 
