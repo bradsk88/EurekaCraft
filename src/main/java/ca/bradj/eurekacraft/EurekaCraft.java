@@ -1,10 +1,7 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.EntitiesInit;
-import ca.bradj.eurekacraft.core.init.FeaturesInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
-import ca.bradj.eurekacraft.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.core.init.*;
+import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,6 +45,7 @@ public class EurekaCraft {
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+		TilesInit.TILES.register(bus);
 		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.ITEMS.register(bus);
 		EntitiesInit.ENTITIES.register(bus);
@@ -55,6 +53,8 @@ public class EurekaCraft {
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
 		FeaturesInit.PLACEMENTS.register(bus);
 		FeaturesInit.FEATURES.register(bus);
+		ContainerTypesInit.TYPES.register(bus);
+		RecipesInit.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {

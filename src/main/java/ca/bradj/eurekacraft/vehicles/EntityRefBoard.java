@@ -112,6 +112,7 @@ public class EntityRefBoard extends Entity {
         }
 
         if (this.playerOrNull == null) {
+            this.kill();
             return;
         }
 
