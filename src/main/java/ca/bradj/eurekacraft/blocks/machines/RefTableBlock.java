@@ -58,18 +58,14 @@ public class RefTableBlock extends Block {
 
     private void showUI(World world, BlockPos blockpos, PlayerEntity player) {
         if (world.isClientSide()) {
-            this.logger.debug("client side");
             return;
         }
-        this.logger.debug("client side");
 
         TileEntity te = world.getBlockEntity(blockpos);
         if (!(te instanceof RefTableTileEntity)) {
-            this.logger.debug("not RefTableTileEntity " + te);
             return;
         }
 
-        this.logger.debug("opening GUI");
         NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, blockpos);
     }
 }
