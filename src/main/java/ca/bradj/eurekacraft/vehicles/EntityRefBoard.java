@@ -126,10 +126,6 @@ public class EntityRefBoard extends Entity {
         double turnSpeed = this.stats.agility();
         double liftFactor = this.stats.lift();
 
-        // FIXME: REMOVE
-        boardSpeed = 0;
-        boardWeight = 0;
-
         // Calculated base physics
         double defaultFall = -0.05 * boardWeight;
         double defaultAccel = 0.01 * boardWeight;
