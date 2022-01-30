@@ -12,6 +12,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -40,8 +41,10 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     private int cookPercent = 0;
 
     private static int inputSlots = 6;
-    private static int outputSlot = 6;
-    private static int totalSlots = 7;
+    private static int fuelSlot = inputSlots;
+    private static int techSlot = fuelSlot + 1;
+    private static int outputSlot = techSlot + 1;
+    private static int totalSlots = outputSlot + 1;
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
 
@@ -99,27 +102,36 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         if (level.isClientSide) {
             return;
         }
-        cookCheckTick();
+
+//        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
+//        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
+//        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
+
+        updateCookingStatus();
         if (this.cooking) {
             logger.debug("Cook % " + this.cookPercent); // TODO: Show in UI
             this.doCook();
         }
     }
 
-    private void cookCheckTick() {
+    private void updateCookingStatus() {
         if (this.isRecipeActive() && this.hasCoal() && !this.cooking) {
             this.cooking = true;
             this.cookPercent = 0;
+            this.itemHandler.extractItem(fuelSlot, 1, false);
             return;
         }
-        if (!this.hasCoal() || !this.isRecipeActive()) {
+        if (!this.isRecipeActive()) {
             this.cooking = false;
             this.cookPercent = 0;
         }
     }
 
-    private boolean hasCoal() { // TODO
-        return true;
+    private boolean hasCoal() {
+        return this.itemHandler.getStackInSlot(fuelSlot).
+                sameItemStackIgnoreDurability(
+                        Items.COAL.getDefaultInstance()
+                );
     }
 
     private void doCook() {
@@ -161,5 +173,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 RecipesInit.GLIDE_BOARD, inv, level
         );
         return recipe;
+    }
+
+    public int getCookingProgress() {
+        return cookPercent;
+    }
+
+    public void setCookingProgress(int v) {
+        // TODO: Needed?
+        this.cookPercent = v;
     }
 }
