@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import com.google.common.collect.MapMaker;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -43,8 +44,8 @@ public class RefBoard extends Item {
             } else spawnGlider(player, player.level, hand);
         }
 
-        Vector3d pos = player.position();
-        player.setPos(pos.x, pos.y + 0.1, pos.z);
+
+
         return ActionResult.success(s);
     }
 

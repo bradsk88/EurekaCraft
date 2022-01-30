@@ -9,20 +9,27 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Stack;
+import java.util.HashMap;
+import java.util.Map;
 
 // TODO: Destroy ref board on player disconnect
 
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
+
+    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap<Integer, EntityRefBoard>();
+
+    public static boolean isDeployedFor(Integer playerId) {
+        return deployedBoards.containsKey(playerId);
+    }
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
@@ -30,13 +37,12 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private final RefBoardStats stats = RefBoardStats.StandardBoard;
+    private final RefBoardStats stats = RefBoardStats.GlideBoard;
 
     Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
     private double lastSpeed;
-    private Vector3d lastPlayerPosition = new Vector3d(0, 0, 0);
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -44,11 +50,26 @@ public class EntityRefBoard extends Entity {
 
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
+
+        if (deployedBoards.containsKey(player.getId())) {
+            deployedBoards.get(player.getId()).kill();
+        }
+
+        deployedBoards.put(player.getId(), this);
+
         this.handHeld = hand;
         this.playerOrNull = player;
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
         this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
+        if (!this.level.isClientSide) {
+            deployedBoards.remove(this.playerOrNull.getId());
+        }
     }
 
     public Hand getHandHeld() {
@@ -57,20 +78,27 @@ public class EntityRefBoard extends Entity {
 
     @Override
     protected void defineSynchedData() {
+    }
 
+    @Override
+    public void onSyncedDataUpdated(DataParameter<?> dataParam) {
+        super.onSyncedDataUpdated(dataParam);
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundNBT p_70037_1_) {
-
+        if (this.level.isClientSide) {
+            logger.debug("readAdditionalSaveData called for client");
+        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT p_213281_1_) {
-
+        if (this.level.isClientSide) {
+            logger.debug("addAdditionalSaveData called for client");
+        }
     }
 
-    @Override
     public IPacket<?> getAddEntityPacket() {
         return new SSpawnObjectPacket(this);
     }
@@ -79,8 +107,15 @@ public class EntityRefBoard extends Entity {
     public void tick() {
 
         super.tick();
+        if (this.level.isClientSide) {
+            return;
+        }
+
         if (this.playerOrNull == null) {
-            logger.debug("player is null");
+            return;
+        }
+
+        if (!this.isAlive()) {
             return;
         }
 
@@ -91,7 +126,7 @@ public class EntityRefBoard extends Entity {
         double liftFactor = this.stats.lift();
 
         // Calculated base physics
-        double defaultFall = -0.05 * boardWeight;
+        double defaultFall = -0.01 * boardWeight;
         double defaultAccel = 0.01 * boardWeight;
         double defaultLand = -2 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
@@ -113,7 +148,7 @@ public class EntityRefBoard extends Entity {
         }
 
         if (this.playerOrNull.isShiftKeyDown()) {
-            liftOrFall = defaultLand;
+            liftOrFall = defaultLand * (1 - this.stats.landResist());
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
@@ -162,8 +197,6 @@ public class EntityRefBoard extends Entity {
         if (Math.abs(flightSpeed) > 0) {
             this.lastSpeed = flightSpeed;
         }
-
-        this.lastPlayerPosition = this.playerOrNull.position();
 
         Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
 
