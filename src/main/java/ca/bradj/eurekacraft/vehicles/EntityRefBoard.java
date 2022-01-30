@@ -7,29 +7,30 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 // TODO: Destroy ref board on player disconnect
 
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
-    private static final DataParameter<Optional<BlockPos>> DATA_ID_POSITION = EntityDataManager.defineId(
-            EntityRefBoard.class, DataSerializers.OPTIONAL_BLOCK_POS
-    );
+
+    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap<Integer, EntityRefBoard>();
+
+    public static boolean isDeployedFor(Integer playerId) {
+        return deployedBoards.containsKey(playerId);
+    }
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
@@ -43,7 +44,6 @@ public class EntityRefBoard extends Entity {
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
     private double lastSpeed;
-    private Vector3d lastPlayerPosition = new Vector3d(0, 0, 0);
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -51,11 +51,26 @@ public class EntityRefBoard extends Entity {
 
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
+
+        if (deployedBoards.containsKey(player.getId())) {
+            deployedBoards.get(player.getId()).kill();
+        }
+
+        deployedBoards.put(player.getId(), this);
+
         this.handHeld = hand;
         this.playerOrNull = player;
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
         this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
+    }
+
+    @Override
+    public void kill() {
+        super.kill();
+        if (!this.level.isClientSide) {
+            deployedBoards.remove(this.playerOrNull.getId());
+        }
     }
 
     public Hand getHandHeld() {
@@ -64,20 +79,10 @@ public class EntityRefBoard extends Entity {
 
     @Override
     protected void defineSynchedData() {
-        this.entityData.define(DATA_ID_POSITION, Optional.empty());
     }
 
     @Override
     public void onSyncedDataUpdated(DataParameter<?> dataParam) {
-        logger.debug("onSyncedDataUpdated " + dataParam + " client side? " + this.level.isClientSide + " ?= " + DATA_ID_POSITION);
-        if (DATA_ID_POSITION.equals(dataParam) && this.level.isClientSide) {
-            Optional<BlockPos> syncedPos = (Optional<BlockPos>) entityData.get(dataParam);
-            logger.debug("Moving client side ref board to " + syncedPos);
-            if (syncedPos.isPresent()) {
-                BlockPos blockPos = syncedPos.get();
-                this.moveTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.yRot, this.xRot);
-            }
-        }
         super.onSyncedDataUpdated(dataParam);
     }
 
@@ -95,10 +100,8 @@ public class EntityRefBoard extends Entity {
         }
     }
 
-    @Override
     public IPacket<?> getAddEntityPacket() {
-        logger.debug("getAddEntityPacket called clientSide=" + this.level.isClientSide);
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new SSpawnObjectPacket(this);
     }
 
     @Override
@@ -106,11 +109,14 @@ public class EntityRefBoard extends Entity {
 
         super.tick();
         if (this.level.isClientSide) {
-            logger.debug("Ticked client side");
+            return;
         }
 
         if (this.playerOrNull == null) {
-            logger.debug("player is null");
+            return;
+        }
+
+        if (!this.isAlive()) {
             return;
         }
 
@@ -197,8 +203,6 @@ public class EntityRefBoard extends Entity {
             this.lastSpeed = flightSpeed;
         }
 
-        this.lastPlayerPosition = this.playerOrNull.position();
-
         Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
 
 //        this.logger.debug("add" + add + "go" + go);
@@ -208,16 +212,6 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.fallDistance = 0; // To not die!
 
         this.moveTo(this.playerOrNull.position());
-    }
-
-    @Override
-    public void moveTo(double x, double y, double z, float yRot, float xRot) {
-        super.moveTo(x, y, z, yRot, xRot);
-        if (!this.level.isClientSide && this.isAlive()) {
-            Optional<BlockPos> blockPos = Optional.of(new BlockPos(x, y, z));
-            logger.debug("Server Publishing position " + blockPos);
-            this.entityData.set(DATA_ID_POSITION, blockPos);
-        }
     }
 
 }

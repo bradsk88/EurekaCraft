@@ -14,7 +14,7 @@ public class GlideBoardModel extends EntityModel<Entity> {
         texHeight = 16;
 
         VoxelShapes = new ModelRenderer(this);
-        VoxelShapes.setPos(0.0F, 24.0F, 0.0F);
+        VoxelShapes.setPos(0.0F, 0.0F, 0.0F);
         VoxelShapes.texOffs(0, 0).addBox(-8.0F, -1.0F, -4.0F, 16.0F, 1.0F, 8.0F, 0.0F, false);
     }
 
@@ -26,6 +26,10 @@ public class GlideBoardModel extends EntityModel<Entity> {
     @Override
     public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
         VoxelShapes.render(matrixStack, buffer, packedLight, packedOverlay);
+    }
+
+    public ModelRenderer getModelRenderer() {
+        return VoxelShapes;
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

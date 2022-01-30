@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import com.google.common.collect.MapMaker;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -42,6 +43,8 @@ public class RefBoard extends Item {
                 // if deployed glider is in other hand, ignore
             } else spawnGlider(player, player.level, hand);
         }
+
+
 
         return ActionResult.success(s);
     }
