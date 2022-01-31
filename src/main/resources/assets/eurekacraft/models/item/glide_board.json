@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "block/block",
+	"texture_size": [32, 32],
 	"textures": {
-		"0": "eurekacraft:blocks/reflection_film_scraper_1"
+		"0": "eurekacraft:items/glide_board"
 	},
 	"elements": [
 		{
@@ -10,16 +10,52 @@
 			"to": [16, 12, 1],
 			"shade": false,
 			"faces": {
-				"north": {"uv": [17, 1, 1, 9], "texture": "#0"},
-				"east": {"uv": [18, 1, 17, 9], "texture": "#0"},
-				"south": {"uv": [34, 1, 18, 9], "texture": "#0"},
-				"west": {"uv": [1, 1, 0, 9], "texture": "#0"},
-				"up": {"uv": [1, 1, 17, 0], "texture": "#0"},
-				"down": {"uv": [17, 0, 33, 1], "texture": "#0"}
+				"north": {"uv": [8.5, 3.5, 0.5, 7.5], "texture": "#0"},
+				"east": {"uv": [9, 3.5, 8.5, 7.5], "texture": "#0"},
+				"south": {"uv": [17, 3.5, 9, 7.5], "texture": "#0"},
+				"west": {"uv": [0.5, 3.5, 0, 7.5], "texture": "#0"},
+				"up": {"uv": [0.5, 3.5, 8.5, 3], "texture": "#0"},
+				"down": {"uv": [8.5, 3, 16.5, 3.5], "texture": "#0"}
 			}
 		}
 	],
-	"display": {},
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [59, 89, 0],
+			"translation": [5.75, -3, 3.75]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [59, 89, 0],
+			"translation": [5.5, -3, 3.75]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, -102, -46],
+			"translation": [-7.75, -3, 3.75],
+			"scale": [0.94, 1.24, 0.83]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, -102, -46],
+			"translation": [-7.75, -3, 3.75],
+			"scale": [0.94, 1.24, 0.83]
+		},
+		"ground": {
+			"rotation": [90, 90, 15],
+			"translation": [7.5, 5, 0]
+		},
+		"gui": {
+			"rotation": [0, -38, 135],
+			"translation": [-4.5, 0, 0],
+			"scale": [0.82, 0.81, 1]
+		},
+		"head": {
+			"rotation": [90, 0, -90],
+			"scale": [1.77, 1.53, 1]
+		},
+		"fixed": {
+			"rotation": [0, 0, 57],
+			"translation": [0, 0, 7]
+		}
+	},
 	"groups": [
 		{
 			"name": "VoxelShapes",

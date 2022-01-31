@@ -27,7 +27,7 @@ public class BoardPlayerRenderHandler {
 
     // TODO: Custom texture
     protected static final ResourceLocation TEXTURE = new ResourceLocation(
-            EurekaCraft.MODID, "textures/blocks/reflection_film_scraper_1.png"
+            EurekaCraft.MODID, "textures/items/glide_board.png"
     );
 
     @SubscribeEvent
