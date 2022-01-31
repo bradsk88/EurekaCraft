@@ -3,7 +3,12 @@ package ca.bradj.eurekacraft;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
+import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
+import ca.bradj.eurekacraft.vehicles.GlideBoard;
+import ca.bradj.eurekacraft.vehicles.RefBoard;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -47,7 +52,7 @@ public class EurekaCraft {
 
 		TilesInit.TILES.register(bus);
 		BlocksInit.BLOCKS.register(bus);
-		ItemsInit.ITEMS.register(bus);
+		ItemsInit.register(bus);
 		EntitiesInit.ENTITIES.register(bus);
 		ReflectionFilmInit.ITEMS.register(bus);
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
@@ -66,6 +71,13 @@ public class EurekaCraft {
 		// do something that can only be done on the client
 		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
 		BlocksInit.RegisterTextures();
+		event.enqueueWork(() -> {
+			ItemModelsProperties.register(
+					ItemsInit.GLIDE_BOARD.get(),
+					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+					new EntityRefBoard.DeployedPropGetter()
+			);
+		});
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {

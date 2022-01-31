@@ -12,6 +12,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -64,6 +65,7 @@ public class ItemsInit {
 	);
 
 
-
-
+	public static void register(IEventBus bus) {
+		ITEMS.register(bus);
+	}
 }

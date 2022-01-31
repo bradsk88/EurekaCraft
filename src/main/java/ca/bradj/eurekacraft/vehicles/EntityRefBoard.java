@@ -4,9 +4,13 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import net.minecraft.block.Block;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.IItemPropertyGetter;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
@@ -17,6 +21,7 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +44,7 @@ public class EntityRefBoard extends Entity {
     private Hand handHeld;
     private final RefBoardStats stats = RefBoardStats.GlideBoard;
 
-    Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+    public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
     private double lastSpeed;
@@ -67,7 +72,7 @@ public class EntityRefBoard extends Entity {
     @Override
     public void kill() {
         super.kill();
-        if (!this.level.isClientSide) {
+        if (this.playerOrNull != null && !this.level.isClientSide) {
             deployedBoards.remove(this.playerOrNull.getId());
         }
     }
@@ -210,4 +215,19 @@ public class EntityRefBoard extends Entity {
         this.moveTo(this.playerOrNull.position());
     }
 
+    public static class DeployedPropGetter implements IItemPropertyGetter {
+        @Override
+        public float call(ItemStack item, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+            if (entity == null) {
+                return 0.0F;
+            }
+            if (!(item.getItem() instanceof RefBoard)) {
+                return 0.0F;
+            }
+            if (!EntityRefBoard.isDeployedFor(entity.getId())) {
+                return 0.0F;
+            }
+            return 1.0F;
+        }
+    }
 }

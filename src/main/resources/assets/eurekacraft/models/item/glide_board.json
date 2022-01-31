@@ -1,4 +1,12 @@
 {
+    "overrides": [
+        {
+            "predicate": {
+            "eurekacraft:deployed": 1.0000000
+        },
+            "model": "eurekacraft:item/glide_board_deployed"
+        }
+    ],
 	"credit": "Made with Blockbench",
 	"texture_size": [32, 32],
 	"textures": {
