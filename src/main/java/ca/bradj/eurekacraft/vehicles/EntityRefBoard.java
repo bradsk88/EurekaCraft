@@ -21,6 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.InputEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +46,8 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private final RefBoardStats stats = RefBoardStats.GlideBoard;
+    private final RefBoardStats stats = RefBoardStats.StandardBoard;
+    private boolean storming = true; // TODO: Generate
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
@@ -111,6 +113,10 @@ public class EntityRefBoard extends Entity {
         return new SSpawnObjectPacket(this);
     }
 
+    public void keyPressed( event) {
+        event.
+    }
+
     @Override
     public void tick() {
 
@@ -160,6 +166,18 @@ public class EntityRefBoard extends Entity {
             liftOrFall = defaultLand * (1 - this.stats.landResist());
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
+            if (storming) {
+                liftOrFall = Math.max(-0.125, liftOrFall + 0.25);
+            }
+            logger.debug("shift fall" + liftOrFall);
+        } else {
+            if (storming) { // TODO: Only lift if board has lift factor > 0
+                if (liftOrFall < 0) {
+                    liftOrFall = 0.25;
+                } else {
+                    liftOrFall = Math.min(0.25, 0.25 * liftFactor);
+                }
+            }
         }
 
         if (this.playerOrNull.isOnGround() || this.playerOrNull.isInWater()) {

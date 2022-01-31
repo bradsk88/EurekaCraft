@@ -4,4 +4,5 @@ public class GlideBoard extends RefBoard {
     public GlideBoard() {
         super(RefBoardStats.GlideBoard);
     }
+
 }
