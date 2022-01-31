@@ -1,7 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import com.google.common.collect.MapMaker;
-import net.minecraft.entity.Pose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -13,15 +12,16 @@ import net.minecraft.world.World;
 
 import java.util.Map;
 
-public class RefBoard extends Item {
+public abstract class RefBoard extends Item {
 
     private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
-    public static final String ITEM_ID = "ref_board";
     private static final Item.Properties PROPS = new Item.Properties().tab(ItemGroup.TAB_MISC);
+    private final RefBoardStats stats;
 
-    public RefBoard() {
+    protected RefBoard(RefBoardStats stats) {
         super(PROPS);
+        this.stats = stats;
     }
 
     @Override
@@ -61,5 +61,10 @@ public class RefBoard extends Item {
     private static void despawnGlider(PlayerEntity player, EntityRefBoard glider) {
         glider.kill();
         spawnedGlidersMap.remove(player);
+    }
+
+    public static class ItemIDs {
+        public static final String REF_BOARD = "ref_board";
+        public static String GLIDE_BOARD = "glide_board";
     }
 }

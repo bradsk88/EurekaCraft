@@ -6,13 +6,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Pose;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -27,7 +22,7 @@ public class BoardPlayerRenderHandler {
 
     // TODO: Custom texture
     protected static final ResourceLocation TEXTURE = new ResourceLocation(
-            EurekaCraft.MODID, "textures/blocks/reflection_film_scraper_1.png"
+            EurekaCraft.MODID, "textures/items/glide_board.png"
     );
 
     @SubscribeEvent
@@ -44,8 +39,6 @@ public class BoardPlayerRenderHandler {
         LivingEntity living = event.getEntityLiving();
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
-
-        // TODO: Hide item in hand
 
         float newYRot = (float) Math.toRadians(-living.yBodyRot);
 

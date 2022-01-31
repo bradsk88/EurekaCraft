@@ -3,13 +3,16 @@ package ca.bradj.eurekacraft.core.init;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
-import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.materials.BrokenRefBoard;
+import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoard;
+import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -53,9 +56,16 @@ public class ItemsInit {
 			)
 	);
 
-	public static final RegistryObject<Item> REF_BOARD = ITEMS.register(
-			RefBoard.ITEM_ID, RefBoard::new
+	public static final RegistryObject<Item> GLIDE_BOARD = ITEMS.register(
+			RefBoard.ItemIDs.GLIDE_BOARD, GlideBoard::new
+	);
+
+	public static final RegistryObject<Item> STANDARD_BOARD = ITEMS.register(
+			RefBoard.ItemIDs.REF_BOARD, StandardRefBoard::new
 	);
 
 
+	public static void register(IEventBus bus) {
+		ITEMS.register(bus);
+	}
 }
