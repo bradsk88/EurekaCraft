@@ -6,7 +6,7 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
-import ca.bradj.eurekacraft.materials.BrokenRefBoard;
+import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
@@ -35,10 +35,10 @@ public class ItemsInit {
 	);
 
 	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
-			BrokenRefBoard.ITEM_ID,
+			BrokenRefBoardBlock.ITEM_ID,
 			() -> new BlockItem(
 					BlocksInit.BROKEN_REF_BOARD.get(),
-					BrokenRefBoard.ITEM_PROPS
+					BrokenRefBoardBlock.ITEM_PROPS
 			)
 	);
 	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(

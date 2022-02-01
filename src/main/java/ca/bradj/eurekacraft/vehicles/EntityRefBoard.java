@@ -3,7 +3,9 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.render.AbstractBoardModel;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,7 +32,7 @@ import java.util.Map;
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
 
-    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap<Integer, EntityRefBoard>();
+    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
 
     public static boolean isDeployedFor(Integer playerId) {
         return deployedBoards.containsKey(playerId);
@@ -42,7 +44,7 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private final RefBoardStats stats = RefBoardStats.GlideBoard;
+    private RefBoard item;
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
@@ -56,6 +58,15 @@ public class EntityRefBoard extends Entity {
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
+        ItemStack itemInHand = player.getItemInHand(hand);
+        if (!(itemInHand.getItem() instanceof RefBoard)) {
+            logger.error("Item in hand was not ref board. Killing entity");
+            this.kill();
+            return;
+        }
+
+        this.item = (RefBoard) itemInHand.getItem();
+
         if (deployedBoards.containsKey(player.getId())) {
             deployedBoards.get(player.getId()).kill();
         }
@@ -67,6 +78,10 @@ public class EntityRefBoard extends Entity {
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
         this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
+    }
+
+    public static AbstractBoardModel getModelFor(int id) {
+        return deployedBoards.get(id).item.getModel();
     }
 
     @Override
@@ -126,10 +141,10 @@ public class EntityRefBoard extends Entity {
         }
 
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
-        double boardWeight = this.stats.weight();
-        double boardSpeed = this.stats.speed();
-        double turnSpeed = this.stats.agility();
-        double liftFactor = this.stats.lift();
+        double boardWeight = this.item.getStats().weight();
+        double boardSpeed = this.item.getStats().speed();
+        double turnSpeed = this.item.getStats().agility();
+        double liftFactor = this.item.getStats().lift();
 
         // Calculated base physics
         double defaultFall = -0.01 * boardWeight;
@@ -154,7 +169,7 @@ public class EntityRefBoard extends Entity {
         }
 
         if (this.playerOrNull.isShiftKeyDown()) {
-            liftOrFall = defaultLand * (1 - this.stats.landResist());
+            liftOrFall = defaultLand * (1 - this.item.getStats().landResist());
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
