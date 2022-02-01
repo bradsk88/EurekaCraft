@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoard;
+import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
@@ -60,10 +61,12 @@ public class EurekaCraft {
 		FeaturesInit.FEATURES.register(bus);
 		ContainerTypesInit.TYPES.register(bus);
 		RecipesInit.register(bus);
+		ModStructures.STRUCTURES.register(bus);
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		DeferredWorkQueue.runLater(() -> {
+		event.enqueueWork(() -> {
+			ModStructures.setupStructures();
 		});
 	}
 
