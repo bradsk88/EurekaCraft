@@ -3,7 +3,9 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.render.AbstractBoardModel;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -15,7 +17,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +34,7 @@ import java.util.Map;
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
 
-    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap<Integer, EntityRefBoard>();
+    private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
 
     public static boolean isDeployedFor(Integer playerId) {
         return deployedBoards.containsKey(playerId);
@@ -42,7 +46,7 @@ public class EntityRefBoard extends Entity {
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private final RefBoardStats stats = RefBoardStats.GlideBoard;
+    private RefBoardItem item;
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
@@ -56,6 +60,15 @@ public class EntityRefBoard extends Entity {
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
+        ItemStack itemInHand = player.getItemInHand(hand);
+        if (!(itemInHand.getItem() instanceof RefBoardItem)) {
+            logger.error("Item in hand was not ref board. Killing entity");
+            this.kill();
+            return;
+        }
+
+        this.item = (RefBoardItem) itemInHand.getItem();
+
         if (deployedBoards.containsKey(player.getId())) {
             deployedBoards.get(player.getId()).kill();
         }
@@ -67,6 +80,10 @@ public class EntityRefBoard extends Entity {
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
         this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
+    }
+
+    public static AbstractBoardModel getModelFor(int id) {
+        return deployedBoards.get(id).item.getModel();
     }
 
     @Override
@@ -126,15 +143,15 @@ public class EntityRefBoard extends Entity {
         }
 
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
-        double boardWeight = this.stats.weight();
-        double boardSpeed = this.stats.speed();
-        double turnSpeed = this.stats.agility();
-        double liftFactor = this.stats.lift();
+        double boardWeight = this.item.getStats().weight();
+        double boardSpeed = this.item.getStats().speed();
+        double turnSpeed = this.item.getStats().agility();
+        double liftFactor = this.item.getStats().lift();
 
         // Calculated base physics
         double defaultFall = -0.01 * boardWeight;
         double defaultAccel = 0.01 * boardWeight;
-        double defaultLand = -2 * Math.sqrt(boardWeight);
+        double defaultLand = -1 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
         double defaultMaxSpeed = boardSpeed * runEquivalent;
 
@@ -145,7 +162,6 @@ public class EntityRefBoard extends Entity {
 
         if (block.is(BlocksInit.TRAPAR_WAVE_BLOCK.get())) {
             // Apply lift
-            this.logger.debug("Block" + block);
             // TODO: Get "lift factor" from block
             double blockLift = 0.5;
             liftOrFall = blockLift * liftFactor;
@@ -153,8 +169,13 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        if (this.playerOrNull.isShiftKeyDown()) {
-            liftOrFall = defaultLand * (1 - this.stats.landResist());
+        boolean applyDamagedEffect = false;
+        if (this.item.isDamagedBoard() && random.nextBoolean() && random.nextBoolean()) {
+            applyDamagedEffect = true;
+        }
+
+        if (this.playerOrNull.isShiftKeyDown() || applyDamagedEffect) {
+            liftOrFall = defaultLand * (1 - this.item.getStats().landResist());
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
@@ -176,13 +197,24 @@ public class EntityRefBoard extends Entity {
         Vector3d look3D = this.playerOrNull.getViewVector(0);
         Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
 
+
         Vector3d add = look2D.multiply(turnSpeed, 1.0, turnSpeed);
+
         Vector3d nextRaw = this.lastDirection.add(add);
+
+        if (applyDamagedEffect && random.nextBoolean()) {
+            if (random.nextBoolean()) {
+                nextRaw = nextRaw.add(1.0, 0, 1.0);
+            } else {
+                nextRaw = nextRaw.add(-1.0, 0, 1.0);
+            }
+        }
+
         Vector3d nextDir = nextRaw.normalize();
 
 //        this.logger.debug("look2D" + look2D);
 //        this.logger.debug("add" + add);
-//        this.logger.debug("nextRaw" + nextRaw);
+        this.logger.debug("nextRaw" + nextRaw);
 
         if (nextDir.x == 0 && nextDir.z == 0) {
 //            this.logger.debug("look is " + nextDir);
@@ -197,6 +229,15 @@ public class EntityRefBoard extends Entity {
 //        logger.debug("Lift: " + liftOrFall);
         if (Math.abs(liftOrFall) > 0) {
             this.lastLift = liftOrFall;
+        }
+
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
+        logger.debug("block in front" + this.level.getBlockState(inFront));
+        if (
+                !(this.level.getBlockState(inFront).is(Blocks.AIR) || this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get()))
+        ) {
+            flightSpeed = 0.01;
         }
 
 //        logger.debug("Speed: " + flightSpeed);
@@ -221,7 +262,7 @@ public class EntityRefBoard extends Entity {
             if (entity == null) {
                 return 0.0F;
             }
-            if (!(item.getItem() instanceof RefBoard)) {
+            if (!(item.getItem() instanceof RefBoardItem)) {
                 return 0.0F;
             }
             if (!EntityRefBoard.isDeployedFor(entity.getId())) {

@@ -1,7 +1,9 @@
 package ca.bradj.eurekacraft.vehicles;
 
-public class StandardRefBoard extends RefBoard {
+import ca.bradj.eurekacraft.render.RefBoardModel;
+
+public class StandardRefBoard extends RefBoardItem {
     public StandardRefBoard() {
-        super(RefBoardStats.StandardBoard);
+        super(RefBoardStats.StandardBoard, new RefBoardModel()); // TODO: Should models be singletons?
     }
 }

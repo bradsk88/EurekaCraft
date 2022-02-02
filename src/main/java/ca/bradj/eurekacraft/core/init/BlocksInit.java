@@ -4,13 +4,11 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
-import ca.bradj.eurekacraft.materials.BrokenRefBoard;
-import net.minecraft.block.AbstractBlock;
+import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.fml.RegistryObject;
@@ -26,7 +24,7 @@ public class BlocksInit {
 			FreshSeedsCrop.BLOCK_ID, FreshSeedsCrop::new
 	);
 	public static final RegistryObject<Block> BROKEN_REF_BOARD = BLOCKS.register(
-			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
+			BrokenRefBoardBlock.ITEM_ID, BrokenRefBoardBlock::new
 	);
 	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
 			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
@@ -37,6 +35,7 @@ public class BlocksInit {
 
 	public static void RegisterTextures() {
 		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
+		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
 	}
 
 	public static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {

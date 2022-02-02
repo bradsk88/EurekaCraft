@@ -1,7 +1,9 @@
 package ca.bradj.eurekacraft.vehicles;
 
-public class GlideBoard extends RefBoard {
+import ca.bradj.eurekacraft.render.GlideBoardModel;
+
+public class GlideBoard extends RefBoardItem {
     public GlideBoard() {
-        super(RefBoardStats.GlideBoard);
+        super(RefBoardStats.GlideBoard, new GlideBoardModel());
     }
 }

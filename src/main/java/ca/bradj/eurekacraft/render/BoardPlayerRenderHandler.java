@@ -4,7 +4,9 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
@@ -18,12 +20,6 @@ import org.apache.logging.log4j.Logger;
 public class BoardPlayerRenderHandler {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    public static GlideBoardModel model = new GlideBoardModel();
-
-    // TODO: Custom texture
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(
-            EurekaCraft.MODID, "textures/items/glide_board.png"
-    );
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
@@ -34,6 +30,8 @@ public class BoardPlayerRenderHandler {
             return;
         }
 
+        AbstractBoardModel model = EntityRefBoard.getModelFor(event.getPlayer().getId());
+
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
         LivingEntity living = event.getEntityLiving();
@@ -42,14 +40,14 @@ public class BoardPlayerRenderHandler {
 
         float newYRot = (float) Math.toRadians(-living.yBodyRot);
 
-        IVertexBuilder ivertexbuilder = event.getBuffers().getBuffer(model.renderType(TEXTURE));
+        IVertexBuilder ivertexbuilder = event.getBuffers().getBuffer(model.getRenderType());
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
                 matrixStack, ivertexbuilder, event.getLight(),
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
 
-        // TODO: Force crouch pose?
+        // TODO: Force crouch pose? Maybe legs apart?
     }
 
     @SubscribeEvent
