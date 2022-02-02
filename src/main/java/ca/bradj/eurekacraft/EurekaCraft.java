@@ -2,10 +2,7 @@ package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
-import ca.bradj.eurekacraft.materials.ReflectionFilmInit;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
-import ca.bradj.eurekacraft.vehicles.GlideBoard;
-import ca.bradj.eurekacraft.vehicles.RefBoard;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemModelsProperties;
@@ -14,7 +11,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -55,7 +51,6 @@ public class EurekaCraft {
 		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.register(bus);
 		EntitiesInit.ENTITIES.register(bus);
-		ReflectionFilmInit.ITEMS.register(bus);
 		ReflectionFilmScraperInit.BLOCKS.register(bus);
 		FeaturesInit.PLACEMENTS.register(bus);
 		FeaturesInit.FEATURES.register(bus);
@@ -82,6 +77,11 @@ public class EurekaCraft {
 			);
 			ItemModelsProperties.register(
 					ItemsInit.STANDARD_BOARD.get(),
+					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+					new EntityRefBoard.DeployedPropGetter()
+			);
+			ItemModelsProperties.register(
+					ItemsInit.BROKEN_BOARD.get(),
 					new ResourceLocation(EurekaCraft.MODID, "deployed"),
 					new EntityRefBoard.DeployedPropGetter()
 			);

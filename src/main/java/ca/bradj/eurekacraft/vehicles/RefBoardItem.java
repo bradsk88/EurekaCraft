@@ -2,8 +2,6 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.render.AbstractBoardModel;
 import com.google.common.collect.MapMaker;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -15,7 +13,7 @@ import net.minecraft.world.World;
 
 import java.util.Map;
 
-public abstract class RefBoard extends Item {
+public abstract class RefBoardItem extends Item {
 
     private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
@@ -23,7 +21,7 @@ public abstract class RefBoard extends Item {
     private final RefBoardStats stats;
     private final AbstractBoardModel model;
 
-    protected RefBoard(RefBoardStats stats, AbstractBoardModel model) {
+    protected RefBoardItem(RefBoardStats stats, AbstractBoardModel model) {
         super(PROPS);
         this.stats = stats;
         this.model = model;
@@ -75,6 +73,10 @@ public abstract class RefBoard extends Item {
     public AbstractBoardModel getModel() {
         return this.model;
     };
+
+    public boolean isDamagedBoard() {
+        return this.stats.isDamaged();
+    }
 
     public static class ItemIDs {
         public static final String REF_BOARD = "ref_board";

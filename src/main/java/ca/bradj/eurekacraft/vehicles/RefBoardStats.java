@@ -13,6 +13,7 @@ public class RefBoardStats {
     private final double turnSpeed;
     private final double liftFactor;
     private double landResistance = 0;
+    private boolean damaged;
 
     private RefBoardStats(
             double boardWeight,
@@ -34,6 +35,14 @@ public class RefBoardStats {
         return refBoardStats;
     }
 
+    public RefBoardStats damaged() {
+        RefBoardStats refBoardStats = new RefBoardStats(
+                this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor
+        );
+        refBoardStats.damaged = true;
+        return refBoardStats;
+    }
+
     public double weight() {
         return this.boardWeight;
     }
@@ -52,4 +61,7 @@ public class RefBoardStats {
 
     public double landResist() { return this.landResistance; }
 
+    public boolean isDamaged() {
+        return this.damaged;
+    }
 }

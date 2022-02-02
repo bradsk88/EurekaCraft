@@ -35,6 +35,7 @@ public class BlocksInit {
 
 	public static void RegisterTextures() {
 		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
+		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
 	}
 
 	public static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {

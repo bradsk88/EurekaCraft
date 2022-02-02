@@ -20,7 +20,6 @@ import org.apache.logging.log4j.Logger;
 public class BoardPlayerRenderHandler {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    public static GlideBoardModel model = new GlideBoardModel();
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
@@ -48,7 +47,7 @@ public class BoardPlayerRenderHandler {
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
 
-        // TODO: Force crouch pose?
+        // TODO: Force crouch pose? Maybe legs apart?
     }
 
     @SubscribeEvent

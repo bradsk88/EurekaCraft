@@ -7,8 +7,11 @@ import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
+import ca.bradj.eurekacraft.materials.ReflectionFilm;
+import ca.bradj.eurekacraft.materials.ReflectionFilmDust;
+import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
-import ca.bradj.eurekacraft.vehicles.RefBoard;
+import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -57,11 +60,25 @@ public class ItemsInit {
 	);
 
 	public static final RegistryObject<Item> GLIDE_BOARD = ITEMS.register(
-			RefBoard.ItemIDs.GLIDE_BOARD, GlideBoard::new
+			RefBoardItem.ItemIDs.GLIDE_BOARD, GlideBoard::new
 	);
 
 	public static final RegistryObject<Item> STANDARD_BOARD = ITEMS.register(
-			RefBoard.ItemIDs.REF_BOARD, StandardRefBoard::new
+			RefBoardItem.ItemIDs.REF_BOARD, StandardRefBoard::new
+	);
+
+	public static final RegistryObject<Item> BROKEN_BOARD = ITEMS.register(
+			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
+	);
+
+
+	public static final RegistryObject<Item> REFLECTION_FILM = ITEMS.register(
+			ReflectionFilm.ITEM_ID, ReflectionFilm::new
+	);
+
+
+	public static final RegistryObject<Item> REFLECTION_FILM_DUST = ITEMS.register(
+			ReflectionFilmDust.ITEM_ID, ReflectionFilmDust::new
 	);
 
 
