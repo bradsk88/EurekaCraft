@@ -87,16 +87,33 @@ R = Redstone
 F = Reflective Film
 D = Diamond
 
-### Scraper Recipes
+### ~Scraper Recipes~
 
-Insert Old board - Get Reflection Film
-Insert Wood (wood slab?) - Get Precision Board Wood
+Scratch this.  Sandpaper on the ref table with a secondary output is better.
 
-- These recipes shoud probably take some kind of fuel or maybe abrasive
-- Craft a custom (eurekacraft specific) abrasive block that improves outcome
-- Random chance of failed result? Better machine iterations to improve chances?
+> Insert Old board - Get Reflection Film
+> Insert Wood (wood slab?) - Get Precision Board Wood
+> 
+> - These recipes shoud probably take some kind of fuel or maybe abrasive
+> - Craft a custom (eurekacraft specific) abrasive block that improves outcome
+> - Random chance of failed result? Better machine iterations to improve chances?
 
 ## Ref Table Recipes
+
+### Precision Board Wood + Reflection Film Dust
+```
+X--
+--- - S
+---
+```
+
+X = Ref Board Pieces
+S = Sandpaper
+
+Always get precision board wood, random chance for dust
+
+Maybe require fuel? Doesn't really make sense.
+Still take time to "cook".  Play "sand" sound?
 
 ### Glide Board (No positive lift)
 (Basically a hang glider)
