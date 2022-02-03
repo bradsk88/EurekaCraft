@@ -13,6 +13,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -30,8 +31,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+// FIXME: Shift click causes crash
 public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -115,10 +120,21 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private void updateCookingStatus() {
-        if (this.isRecipeActive() && this.hasCoal() && !this.cooking) {
+        // TODO: Check for extra ingredient
+        if (this.isRecipeActive()) {
+            if (this.getActiveRecipe().get().requiresCooking()) {
+                if (!this.hasCoal()) {
+                    return;
+                }
+            }
+            if (this.cooking) {
+                return;
+            }
             this.cooking = true;
             this.cookPercent = 0;
-            this.itemHandler.extractItem(fuelSlot, 1, false);
+            if (getActiveRecipe().get().requiresCooking()) {
+                this.itemHandler.extractItem(fuelSlot, 1, false);
+            }
             return;
         }
         if (!this.isRecipeActive()) {
@@ -147,6 +163,11 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             logger.debug("recipe match!");
             ItemStack output = iRecipe.getResultItem();
 
+            if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
+                // TODO: MAke this work
+                logger.debug("Would have produced an extra item if there was a slot for it: " + iRecipe.getSecondaryResultItem().output);
+            }
+
             for (int i = 0; i < inputSlots; i++) {
                 itemHandler.extractItem(i, 1, false);
             }
@@ -164,14 +185,38 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private Optional<GlideBoardRecipe> getActiveRecipe() {
+        // Shaped
         Inventory inv = new Inventory(inputSlots);
+        List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < inputSlots; i++) {
-            inv.setItem(i, itemHandler.getStackInSlot(i));
+            ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+            inv.setItem(i, stackInSlot);
+            if (!stackInSlot.isEmpty()) {
+                shapeless.add(stackInSlot);
+            }
         }
 
-        Optional<GlideBoardRecipe> recipe = level.getRecipeManager().getRecipeFor(
+        RecipeManager recipeManager = level.getRecipeManager();
+        Optional<GlideBoardRecipe> recipe = recipeManager.getRecipeFor(
                 RecipesInit.GLIDE_BOARD, inv, level
         );
+
+        if (recipe.isPresent()) {
+            return recipe;
+        }
+
+        // Shapeless
+        // TODO: Reduce duplication with above
+        inv = new Inventory(shapeless.size());
+        for (int i = 0; i < shapeless.size(); i++) {
+            ItemStack stackInSlot = shapeless.get(i);
+            inv.setItem(i, stackInSlot);
+        }
+
+        recipe = recipeManager.getRecipeFor(
+                RecipesInit.GLIDE_BOARD, inv, level
+        );
+
         return recipe;
     }
 

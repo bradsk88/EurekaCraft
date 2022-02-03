@@ -1,4 +1,5 @@
 {
+  "id": "eurekacraft:glide_board_from_slabs",
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
@@ -20,6 +21,7 @@
       "item": "minecraft:oak_slab"
     }
   ],
+  "cook": true,
   "output": {
     "item": "eurekacraft:ref_board"
   }
