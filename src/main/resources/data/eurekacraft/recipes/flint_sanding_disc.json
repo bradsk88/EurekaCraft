@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "eurekacraft:flint_sticky_disc"
+  },
+  "result": {
+    "item": "eurekacraft:flint_sanding_disc"
+  },
+  "experience": 1.0,
+  "cookingTime": 100
+}
