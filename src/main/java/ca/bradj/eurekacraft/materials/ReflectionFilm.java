@@ -1,12 +1,12 @@
 package ca.bradj.eurekacraft.materials;
 
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 
 public class ReflectionFilm extends Item {
 
     public static final String ITEM_ID = "reflection_film";
-    private static final Item.Properties PROPS = new Item.Properties().tab(ItemGroup.TAB_MATERIALS);
+    private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
     public ReflectionFilm() {
         super(PROPS);

@@ -1,0 +1,31 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:reflection_film"
+    },
+    {
+      "item": "eurekacraft:reflection_film"
+    },
+    {
+      "item": "eurekacraft:reflection_film"
+    },
+    {
+      "item": "eurekacraft:reflection_film"
+    },
+    {
+      "item": "eurekacraft:reflection_film"
+    },
+    {
+      "item": "eurekacraft:reflection_film"
+    }
+  ],
+  "cook": true,
+  "extra": {
+    "item": "eurekacraft:ref_board_core",
+    "consume": true
+  },
+  "output": {
+    "item": "eurekacraft:ref_board"
+  }
+}

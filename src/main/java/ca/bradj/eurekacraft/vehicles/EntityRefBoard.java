@@ -208,9 +208,9 @@ public class EntityRefBoard extends Entity {
 
         if (applyDamagedEffect && random.nextBoolean()) {
             if (random.nextBoolean()) {
-                nextRaw = nextRaw.add(1.0, 0, 1.0);
+                nextRaw = new Vector3d(0, this.lastDirection.y, this.lastDirection.z);
             } else {
-                nextRaw = nextRaw.add(-1.0, 0, 1.0);
+                nextRaw = new Vector3d(this.lastDirection.x, 0, this.lastDirection.z);
             }
         }
 

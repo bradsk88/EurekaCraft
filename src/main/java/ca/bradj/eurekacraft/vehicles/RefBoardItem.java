@@ -88,4 +88,9 @@ public abstract class RefBoardItem extends Item {
         public static final String REF_BOARD = "ref_board";
         public static String GLIDE_BOARD = "glide_board";
     }
+
+    @Override
+    public int getItemStackLimit(ItemStack stack) {
+        return 1;
+    }
 }

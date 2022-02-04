@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -24,11 +25,11 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     private static final int recipeSize = 6; // TOO: Confirm
     private final boolean cook;
     private final Secondary secondaryOutput;
-    private Ingredient extraIngredient;
+    private ExtraInput extraIngredient;
 
     public GlideBoardRecipe(
             ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems,
-            boolean cook, Ingredient extraIngredient,
+            boolean cook, ExtraInput extraIngredient,
             Secondary secondary) {
         this.id = id;
         this.output = output;
@@ -46,7 +47,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             }
         }
         if (extraIngredient != null && inv.getContainerSize() > recipeItems.size()) {
-            return extraIngredient.test(inv.getItem(recipeItems.size()));
+            return extraIngredient.ingredient.test(inv.getItem(recipeItems.size()));
         }
 
         return true;
@@ -57,7 +58,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         return this.recipeItems;
     }
 
-    public Ingredient getExtraIngredient() {
+    public ExtraInput getExtraIngredient() {
         return this.extraIngredient;
     }
 
@@ -111,9 +112,15 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
                 inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
 
-            Ingredient extra = Ingredient.EMPTY;
+            ExtraInput extra = ExtraInput.EMPTY;
             if (json.has("extra")) {
-                extra = Ingredient.fromJson(json.get("extra"));
+                JsonObject x = json.getAsJsonObject("extra");
+                Ingredient i = Ingredient.fromJson(x);
+                boolean consume = false;
+                if (x.has("consume")) {
+                    consume = x.get("consume").getAsBoolean();
+                }
+                extra = new ExtraInput(i, consume);
             }
             boolean cook = json.get("cook").getAsBoolean();
 
@@ -131,6 +138,8 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             }
 
             Ingredient extraIngredient = Ingredient.fromNetwork(buffer);
+            boolean consumeExtra = buffer.getBoolean(1);
+            ExtraInput extra = new ExtraInput(extraIngredient, consumeExtra);
             boolean cook = buffer.getBoolean(1);
 
             ItemStack output = buffer.readItem();
@@ -139,7 +148,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             double secondaryChance = buffer.readDouble();
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
 
-            return new GlideBoardRecipe(recipeId, output, inputs, cook, extraIngredient, secondary);
+            return new GlideBoardRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Override
@@ -148,7 +157,8 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buffer);
             }
-            recipe.getExtraIngredient().toNetwork(buffer);
+            recipe.getExtraIngredient().ingredient.toNetwork(buffer);
+            buffer.writeBoolean(recipe.getExtraIngredient().consumeOnUse);
             buffer.writeBoolean(recipe.requiresCooking());
             buffer.writeItemStack(recipe.getResultItem(), false);
             buffer.writeItemStack(recipe.getSecondaryResultItem().output, false);
@@ -180,6 +190,18 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         private Secondary(ItemStack secondaryOutput, double secondaryChance) {
             this.output = secondaryOutput;
             this.chance = secondaryChance;
+        }
+    }
+
+    public static class ExtraInput {
+
+        public static final ExtraInput EMPTY = new ExtraInput(Ingredient.EMPTY, false);
+        public final Ingredient ingredient;
+        public final boolean consumeOnUse;
+
+        public ExtraInput(Ingredient ingredient, boolean consumeOnUse) {
+            this.ingredient = ingredient;
+            this.consumeOnUse = consumeOnUse;
         }
     }
 }

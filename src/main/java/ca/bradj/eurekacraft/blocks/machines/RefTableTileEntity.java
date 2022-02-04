@@ -143,6 +143,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             this.cooking = true;
             this.craftPercent = 0;
             if (active.get().requiresCooking()) {
+                // FIXME: Add "heat reserve" to table otherwise player must put at least 2 coal in table.
                 this.itemHandler.extractItem(fuelSlot, 1, false);
             }
         } else {
@@ -179,8 +180,8 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 itemHandler.extractItem(i, 1, false);
             }
 
-            if (!iRecipe.getExtraIngredient().isEmpty()) {
-                useExtraIngredient();
+            if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
+                useExtraIngredient(iRecipe);
             }
 
             logger.debug("inserting " + output);
@@ -199,7 +200,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         }
 
         recipe.ifPresent((r) -> {
-            if (r.getExtraIngredient().isEmpty()) {
+            if (r.getExtraIngredient().ingredient.isEmpty()) {
                 return;
             }
 
@@ -221,10 +222,12 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     }
 
-    private void useExtraIngredient() {
+    private void useExtraIngredient(GlideBoardRecipe iRecipe) {
         ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
         stackInSlot.hurt(1, new Random(), null);
-        if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
+        if (iRecipe.getExtraIngredient().consumeOnUse) {
+            this.itemHandler.extractItem(techSlot, 1, false);
+        } else if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
             this.itemHandler.extractItem(techSlot, 1, false);
         }
@@ -233,10 +236,10 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     private Optional<GlideBoardRecipe> getActiveRecipe() {
         Optional<GlideBoardRecipe> recipe = getActivePrimaryRecipe();
         if (recipe.isPresent()) {
-            Ingredient extra = recipe.get().getExtraIngredient();
-            if (!extra.isEmpty()) {
+            GlideBoardRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
+            if (!extra.ingredient.isEmpty()) {
                 ItemStack techItem = this.itemHandler.getStackInSlot(techSlot);
-                if (!extra.test(techItem)) {
+                if (!extra.ingredient.test(techItem)) {
                     return Optional.empty();
                 }
             }

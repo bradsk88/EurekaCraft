@@ -69,9 +69,12 @@ public class ItemsInit {
 			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
 	);
 
-
 	public static final RegistryObject<Item> REFLECTION_FILM = ITEMS.register(
 			ReflectionFilm.ITEM_ID, ReflectionFilm::new
+	);
+
+	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
+			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
 	);
 
 
@@ -97,6 +100,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> REF_BOARD_CORE = ITEMS.register(
 			RefBoardCoreItem.ITEM_ID, RefBoardCoreItem::new
+	);
+
+	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
+			BlueprintItem.ITEM_ID, BlueprintItem::new
 	);
 
 
