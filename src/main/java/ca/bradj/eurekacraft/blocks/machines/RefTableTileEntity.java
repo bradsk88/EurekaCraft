@@ -5,20 +5,25 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
@@ -43,7 +48,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     public static final String ENTITY_ID = "ref_table_tile_entity";
 
     private boolean cooking = false;
-    private int cookPercent = 0;
+    private int craftPercent = 0;
 
     private static int inputSlots = 6;
     private static int fuelSlot = inputSlots;
@@ -52,6 +57,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     private static int totalSlots = outputSlot + 1;
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+    private int noiseCooldown = 0;
 
     public RefTableTileEntity(TileEntityType<?> typeIn) {
         super(typeIn);
@@ -77,14 +83,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     @Override
     public void load(BlockState blockState, CompoundNBT nbt) {
         itemHandler.deserializeNBT(nbt.getCompound("inv"));
-        this.cookPercent = nbt.getInt("cooked");
+        this.craftPercent = nbt.getInt("cooked");
         super.load(blockState, nbt);
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         nbt.put("inv", itemHandler.serializeNBT());
-        nbt.putInt("cooked", this.cookPercent);
+        nbt.putInt("cooked", this.craftPercent);
         return super.save(nbt);
     }
 
@@ -112,18 +118,22 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 //        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
 //        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
 
-        updateCookingStatus();
+
+        Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
+        updateCookingStatus(activeRecipe);
         if (this.cooking) {
-            logger.debug("Cook % " + this.cookPercent); // TODO: Show in UI
-            this.doCook();
+            logger.debug("Cook % " + this.craftPercent); // TODO: Show in UI
+            this.doCook(activeRecipe);
         }
     }
 
-    private void updateCookingStatus() {
-        // TODO: Check for extra ingredient
-        if (this.isRecipeActive()) {
-            if (this.getActiveRecipe().get().requiresCooking()) {
+    private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
+
+        if (active.isPresent()) {
+            if (active.get().requiresCooking()) {
                 if (!this.hasCoal()) {
+                    this.cooking = false;
+                    this.craftPercent = 0;
                     return;
                 }
             }
@@ -131,15 +141,13 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 return;
             }
             this.cooking = true;
-            this.cookPercent = 0;
-            if (getActiveRecipe().get().requiresCooking()) {
+            this.craftPercent = 0;
+            if (active.get().requiresCooking()) {
                 this.itemHandler.extractItem(fuelSlot, 1, false);
             }
-            return;
-        }
-        if (!this.isRecipeActive()) {
+        } else {
             this.cooking = false;
-            this.cookPercent = 0;
+            this.craftPercent = 0;
         }
     }
 
@@ -150,26 +158,29 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 );
     }
 
-    private void doCook() {
-        if (cookPercent < 100) {
-            this.cookPercent++;
+    private void doCook(Optional<GlideBoardRecipe> recipe) {
+        if (craftPercent < 100) {
+            this.craftPercent++;
+            this.makeCraftingNoise(recipe);
             return;
         }
         this.cooking = false;
-        this.cookPercent = 0;
-        Optional<GlideBoardRecipe> recipe = getActiveRecipe();
+        this.craftPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
             logger.debug("recipe match!");
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                // TODO: MAke this work
                 logger.debug("Would have produced an extra item if there was a slot for it: " + iRecipe.getSecondaryResultItem().output);
             }
 
             for (int i = 0; i < inputSlots; i++) {
                 itemHandler.extractItem(i, 1, false);
+            }
+
+            if (!iRecipe.getExtraIngredient().isEmpty()) {
+                useExtraIngredient();
             }
 
             logger.debug("inserting " + output);
@@ -179,12 +190,61 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         });
     }
 
-    private boolean isRecipeActive() {
-        Optional<GlideBoardRecipe> recipe = getActiveRecipe();
-        return recipe.isPresent();
+    private void makeCraftingNoise(Optional<GlideBoardRecipe> recipe) {
+        assert this.level != null;
+
+        if (this.noiseCooldown > 0) {
+            this.noiseCooldown--;
+            return;
+        }
+
+        recipe.ifPresent((r) -> {
+            if (r.getExtraIngredient().isEmpty()) {
+                return;
+            }
+
+            ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+            Item item = stackInSlot.getItem();
+            if (!(item instanceof NoisyCraftingItem)) {
+                return;
+            }
+
+            ((NoisyCraftingItem) item).getCraftingSound().ifPresent((s) -> {
+                float volume = 0.5f;
+                float pitch = 0.5f;
+                this.level.playSound(
+                        null, this.getBlockPos(), s, SoundCategory.BLOCKS, volume, pitch
+                );
+                this.noiseCooldown = 8; // TODO: maybe add to the NoisyCraftingItem so each item can decide cooldown?
+            });
+        });
+
+    }
+
+    private void useExtraIngredient() {
+        ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+        stackInSlot.hurt(1, new Random(), null);
+        if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
+            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            this.itemHandler.extractItem(techSlot, 1, false);
+        }
     }
 
     private Optional<GlideBoardRecipe> getActiveRecipe() {
+        Optional<GlideBoardRecipe> recipe = getActivePrimaryRecipe();
+        if (recipe.isPresent()) {
+            Ingredient extra = recipe.get().getExtraIngredient();
+            if (!extra.isEmpty()) {
+                ItemStack techItem = this.itemHandler.getStackInSlot(techSlot);
+                if (!extra.test(techItem)) {
+                    return Optional.empty();
+                }
+            }
+        }
+        return recipe;
+    }
+
+    private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
         // Shaped
         Inventory inv = new Inventory(inputSlots);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
@@ -221,11 +281,11 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     public int getCookingProgress() {
-        return cookPercent;
+        return craftPercent;
     }
 
     public void setCookingProgress(int v) {
         // TODO: Needed?
-        this.cookPercent = v;
+        this.craftPercent = v;
     }
 }
