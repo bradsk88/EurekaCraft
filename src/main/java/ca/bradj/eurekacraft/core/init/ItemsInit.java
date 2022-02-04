@@ -6,9 +6,7 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
-import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
-import ca.bradj.eurekacraft.materials.ReflectionFilm;
-import ca.bradj.eurekacraft.materials.ReflectionFilmDust;
+import ca.bradj.eurekacraft.materials.*;
 import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
@@ -71,14 +69,41 @@ public class ItemsInit {
 			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
 	);
 
-
 	public static final RegistryObject<Item> REFLECTION_FILM = ITEMS.register(
 			ReflectionFilm.ITEM_ID, ReflectionFilm::new
+	);
+
+	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
+			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
 	);
 
 
 	public static final RegistryObject<Item> REFLECTION_FILM_DUST = ITEMS.register(
 			ReflectionFilmDust.ITEM_ID, ReflectionFilmDust::new
+	);
+
+	public static final RegistryObject<Item> CLAY_STICKY_DISC = ITEMS.register(
+			ClayStickyDiscItem.ITEM_ID, ClayStickyDiscItem::new
+	);
+
+	public static final RegistryObject<Item> FLINT_STICKY_DISC = ITEMS.register(
+			FlintStickyDiscItem.ITEM_ID, FlintStickyDiscItem::new
+	);
+
+	public static final RegistryObject<Item> FLINT_SANDING_DISC = ITEMS.register(
+			FlintSandingDiscItem.ITEM_ID, FlintSandingDiscItem::new
+	);
+
+	public static final RegistryObject<Item> PRECISION_WOOD = ITEMS.register(
+			PrecisionWoodItem.ITEM_ID, PrecisionWoodItem::new
+	);
+
+	public static final RegistryObject<Item> REF_BOARD_CORE = ITEMS.register(
+			RefBoardCoreItem.ITEM_ID, RefBoardCoreItem::new
+	);
+
+	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
+			BlueprintItem.ITEM_ID, BlueprintItem::new
 	);
 
 

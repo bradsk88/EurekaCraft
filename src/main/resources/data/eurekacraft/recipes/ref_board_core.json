@@ -5,23 +5,26 @@
       "item": "eurekacraft:precision_wood"
     },
     {
-      "item": "eurekacraft:precision_wood"
+      "item": "minecraft:iron_ingot"
     },
     {
       "item": "eurekacraft:precision_wood"
     },
     {
-      "item": "eurekacraft:precision_wood"
+      "item": "minecraft:stick"
     },
     {
       "item": "eurekacraft:precision_wood"
     },
     {
-      "item": "eurekacraft:precision_wood"
+      "item": "minecraft:iron_ingot"
     }
   ],
   "cook": true,
+  "extra": {
+    "item": "eurekacraft:blueprint"
+  },
   "output": {
-    "item": "eurekacraft:glide_board"
+    "item": "eurekacraft:ref_board_core"
   }
 }

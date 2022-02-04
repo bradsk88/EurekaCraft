@@ -133,7 +133,7 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        if (this.playerOrNull == null) {
+        if (this.playerOrNull == null || this.playerOrNull.isOnGround() || this.playerOrNull.isInWater()) {
             this.kill();
             return;
         }
@@ -142,6 +142,14 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
+        if (this.item.canFly()) {
+            fly();
+        }
+
+        this.moveTo(this.playerOrNull.position());
+    }
+
+    private void fly() {
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
         double boardWeight = this.item.getStats().weight();
         double boardSpeed = this.item.getStats().speed();
@@ -180,10 +188,6 @@ public class EntityRefBoard extends Entity {
             turnSpeed = 0.5 * turnSpeed;
         }
 
-        if (this.playerOrNull.isOnGround() || this.playerOrNull.isInWater()) {
-            this.kill();
-        }
-
         // TODO: Reset board speed (to slow) after a collision (e.g. tree)
 //        Vector3d posDiff = this.lastPlayerPosition.subtract(this.playerOrNull.position());
 //        logger.debug("PosDiff " + posDiff);
@@ -204,9 +208,9 @@ public class EntityRefBoard extends Entity {
 
         if (applyDamagedEffect && random.nextBoolean()) {
             if (random.nextBoolean()) {
-                nextRaw = nextRaw.add(1.0, 0, 1.0);
+                nextRaw = new Vector3d(0, this.lastDirection.y, this.lastDirection.z);
             } else {
-                nextRaw = nextRaw.add(-1.0, 0, 1.0);
+                nextRaw = new Vector3d(this.lastDirection.x, 0, this.lastDirection.z);
             }
         }
 
@@ -252,8 +256,6 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
-
-        this.moveTo(this.playerOrNull.position());
     }
 
     public static class DeployedPropGetter implements IItemPropertyGetter {

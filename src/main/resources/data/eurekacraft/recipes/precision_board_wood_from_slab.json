@@ -1,0 +1,22 @@
+{
+  "id": "eurekacraft:precision_board_wood_from_slab",
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_slab"
+    }
+  ],
+  "cook": "false",
+  "extra": {
+    "item": "eurekacraft:flint_sanding_disc"
+  },
+  "output": {
+    "item": "eurekacraft:precision_wood"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:reflection_film_dust"
+    },
+    "chance": 0.25
+  }
+}

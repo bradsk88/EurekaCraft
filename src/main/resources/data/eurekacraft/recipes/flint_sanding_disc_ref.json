@@ -1,0 +1,12 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [{
+    "item": "eurekacraft:flint_sticky_disc"
+  }],
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:flint_sanding_disc"
+  },
+  "experience": 1.0,
+  "cookingTime": 100
+}

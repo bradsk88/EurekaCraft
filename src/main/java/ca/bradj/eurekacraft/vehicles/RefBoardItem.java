@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.render.AbstractBoardModel;
 import com.google.common.collect.MapMaker;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,9 +18,10 @@ public abstract class RefBoardItem extends Item {
 
     private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
-    private static final Item.Properties PROPS = new Item.Properties().tab(ItemGroup.TAB_MISC);
+    private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats stats;
     private final AbstractBoardModel model;
+    protected boolean canFly = true;
 
     protected RefBoardItem(RefBoardStats stats, AbstractBoardModel model) {
         super(PROPS);
@@ -78,8 +80,17 @@ public abstract class RefBoardItem extends Item {
         return this.stats.isDamaged();
     }
 
+    public boolean canFly() {
+        return this.canFly;
+    }
+
     public static class ItemIDs {
         public static final String REF_BOARD = "ref_board";
         public static String GLIDE_BOARD = "glide_board";
+    }
+
+    @Override
+    public int getItemStackLimit(ItemStack stack) {
+        return 1;
     }
 }

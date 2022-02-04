@@ -1,0 +1,14 @@
+{
+	"parent": "eurekacraft:item/ref_board",
+	"textures": {
+		"0": "minecraft:block/oak_planks"
+	},
+	"overrides": [
+		{
+			"predicate": {
+				"eurekacraft:deployed": 1.0000000
+			},
+			"model": "eurekacraft:item/glide_board_deployed"
+		}
+	]
+}

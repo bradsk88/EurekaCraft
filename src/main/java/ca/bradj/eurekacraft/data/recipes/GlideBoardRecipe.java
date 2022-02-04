@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -22,13 +23,20 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     private final ItemStack output;
     private final NonNullList<Ingredient> recipeItems;
     private static final int recipeSize = 6; // TOO: Confirm
+    private final boolean cook;
+    private final Secondary secondaryOutput;
+    private ExtraInput extraIngredient;
 
     public GlideBoardRecipe(
-            ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems
-    ) {
+            ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems,
+            boolean cook, ExtraInput extraIngredient,
+            Secondary secondary) {
         this.id = id;
         this.output = output;
         this.recipeItems = recipeItems;
+        this.cook = cook;
+        this.extraIngredient = extraIngredient;
+        this.secondaryOutput = secondary;
     }
 
     @Override
@@ -38,6 +46,10 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
                 return false;
             }
         }
+        if (extraIngredient != null && inv.getContainerSize() > recipeItems.size()) {
+            return extraIngredient.ingredient.test(inv.getItem(recipeItems.size()));
+        }
+
         return true;
     }
 
@@ -46,10 +58,21 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         return this.recipeItems;
     }
 
+    public ExtraInput getExtraIngredient() {
+        return this.extraIngredient;
+    }
+
+    public boolean requiresCooking() {
+        return this.cook;
+    }
 
     @Override
     public ItemStack getResultItem() {
         return this.output.copy();
+    }
+
+    public Secondary getSecondaryResultItem() {
+        return this.secondaryOutput;
     }
 
     @Override
@@ -59,7 +82,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
 
     @Override
     public ResourceLocation getId() {
-        return null;
+        return this.id;
     }
 
     @Override
@@ -72,13 +95,37 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         @Override
         public GlideBoardRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             ItemStack output = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "output"));
-            JsonArray ingredients = JSONUtils.getAsJsonArray(json, "ingredients");
-            NonNullList<Ingredient> inputs = NonNullList.withSize(recipeSize, Ingredient.EMPTY);
+            Secondary secondary;
+            if (json.has("secondary")) {
+                JsonObject j = json.getAsJsonObject("secondary");
+                ItemStack secondaryOutput = ShapedRecipe.itemFromJson(j.getAsJsonObject("output"));
+                double secondaryChance = j.get("chance").getAsDouble();
+                secondary = GlideBoardRecipe.Secondary.of(secondaryOutput, secondaryChance);
+            } else {
+                secondary = GlideBoardRecipe.Secondary.none();
+            }
 
-            for (int i = 0; i < inputs.size(); i++) {
+            JsonArray ingredients = JSONUtils.getAsJsonArray(json, "ingredients");
+            NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
+
+            for (int i = 0; i < ingredients.size(); i++) {
                 inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
-            return new GlideBoardRecipe(recipeId, output, inputs);
+
+            ExtraInput extra = ExtraInput.EMPTY;
+            if (json.has("extra")) {
+                JsonObject x = json.getAsJsonObject("extra");
+                Ingredient i = Ingredient.fromJson(x);
+                boolean consume = false;
+                if (x.has("consume")) {
+                    consume = x.get("consume").getAsBoolean();
+                }
+                extra = new ExtraInput(i, consume);
+            }
+            boolean cook = json.get("cook").getAsBoolean();
+
+
+            return new GlideBoardRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Nullable
@@ -90,8 +137,18 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
 
+            Ingredient extraIngredient = Ingredient.fromNetwork(buffer);
+            boolean consumeExtra = buffer.getBoolean(1);
+            ExtraInput extra = new ExtraInput(extraIngredient, consumeExtra);
+            boolean cook = buffer.getBoolean(1);
+
             ItemStack output = buffer.readItem();
-            return new GlideBoardRecipe(recipeId, output, inputs);
+
+            ItemStack secondaryItem = buffer.readItem();
+            double secondaryChance = buffer.readDouble();
+            Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
+
+            return new GlideBoardRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Override
@@ -100,7 +157,12 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buffer);
             }
+            recipe.getExtraIngredient().ingredient.toNetwork(buffer);
+            buffer.writeBoolean(recipe.getExtraIngredient().consumeOnUse);
+            buffer.writeBoolean(recipe.requiresCooking());
             buffer.writeItemStack(recipe.getResultItem(), false);
+            buffer.writeItemStack(recipe.getSecondaryResultItem().output, false);
+            buffer.writeDouble(recipe.getSecondaryResultItem().chance);
         }
     }
 
@@ -108,6 +170,38 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         @Override
         public String toString() {
             return GlideBoardRecipe.TYPE_ID.toString();
+        }
+    }
+
+    public static class Secondary {
+        public final ItemStack output;
+        public final double chance;
+
+        public static Secondary none() {
+            return new Secondary(ItemStack.EMPTY, 0);
+        }
+
+        public static Secondary of(
+                ItemStack secondaryOutput, double secondaryChance
+        ) {
+            return new Secondary(secondaryOutput, secondaryChance);
+        }
+
+        private Secondary(ItemStack secondaryOutput, double secondaryChance) {
+            this.output = secondaryOutput;
+            this.chance = secondaryChance;
+        }
+    }
+
+    public static class ExtraInput {
+
+        public static final ExtraInput EMPTY = new ExtraInput(Ingredient.EMPTY, false);
+        public final Ingredient ingredient;
+        public final boolean consumeOnUse;
+
+        public ExtraInput(Ingredient ingredient, boolean consumeOnUse) {
+            this.ingredient = ingredient;
+            this.consumeOnUse = consumeOnUse;
         }
     }
 }
