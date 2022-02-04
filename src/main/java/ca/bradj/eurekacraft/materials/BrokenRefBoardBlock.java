@@ -1,19 +1,17 @@
 package ca.bradj.eurekacraft.materials;
 
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import net.minecraft.block.*;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.state.StateContainer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
 public class BrokenRefBoardBlock extends HorizontalBlock {
     public static final String ITEM_ID = "broken_ref_board_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
-            tab(ItemGroup.TAB_MISC);
+            tab(ModItemGroup.EUREKACRAFT_GROUP);
     private static final Properties PROPS = Properties.
             copy(Blocks.IRON_BLOCK).
             sound(SoundType.WOOD).

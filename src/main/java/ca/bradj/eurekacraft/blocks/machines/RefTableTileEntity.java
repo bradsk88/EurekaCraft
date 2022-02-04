@@ -128,8 +128,15 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
-
         if (active.isPresent()) {
+
+            ItemStack outSlot = this.itemHandler.getStackInSlot(outputSlot);
+            if (!outSlot.isEmpty()) {
+                if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
+                    return;
+                }
+            }
+
             if (active.get().requiresCooking()) {
                 if (!this.hasCoal()) {
                     this.cooking = false;

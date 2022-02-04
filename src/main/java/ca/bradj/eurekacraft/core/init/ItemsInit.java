@@ -69,6 +69,10 @@ public class ItemsInit {
 			BrokenRefBoard.ITEM_ID, BrokenRefBoard::new
 	);
 
+	public static final RegistryObject<Item> REFLECTION_FILM_MOLD = ITEMS.register(
+			ReflectionFilmMoldItem.ITEM_ID, ReflectionFilmMoldItem::new
+	);
+
 	public static final RegistryObject<Item> REFLECTION_FILM = ITEMS.register(
 			ReflectionFilm.ITEM_ID, ReflectionFilm::new
 	);

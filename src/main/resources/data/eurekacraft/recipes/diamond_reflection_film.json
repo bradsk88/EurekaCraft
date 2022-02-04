@@ -1,22 +1,27 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "pattern": [
-    "RRR",
-    "RFD",
-    "RRR"
-  ],
-  "key": {
-    "R": {
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
       "item": "minecraft:redstone"
     },
-    "F": {
+    {
+      "item": "minecraft:redstone"
+    },
+    {
       "item": "eurekacraft:reflection_film"
     },
-    "D": {
-      "item": "minecraft:diamond"
+    {
+      "item": "minecraft:diamon"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:redstone"
     }
-  },
-  "result": {
+  ],
+  "cook": true,
+  "output": {
     "item": "eurekacraft:diamond_reflection_film"
   }
 }
