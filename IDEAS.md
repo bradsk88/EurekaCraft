@@ -119,9 +119,9 @@ Still take time to "cook".  Play "sand" sound?
 (Basically a hang glider)
 
 ```
-WW
-WW - C (works like furnace with slow application process)
-WW
+ZZ
+ZZ - C (works like furnace with slow application process)
+ZZ
 ```
 
 W = Wood Block (Maybe wood slab)
@@ -129,9 +129,9 @@ C = Coal (special slot)
 
 ### Heavy Ref Board Core (No positive lift - heavy weight)
 ```
-WWI
-WWS - B - C
-WWI
+WI
+WS - B - C
+WI
 ```
 
 S = stick
@@ -140,18 +140,18 @@ B = blueprint (found in shacks and magazines)
 
 ### Ref Board Core (No positive lift - standard weight)
 ```
-ZZI
-ZZS - B - C
-ZZI
+ZI
+ZS - B - C
+ZI
 ```
 
 Z = Precision Board Wood
 
 ### Ref Board (Some lift)
 ```
-FFF
-FFF - R - C 
-FFF
+FF
+FF - R - C 
+FF
 ```
 
 R = Ref Board Core
