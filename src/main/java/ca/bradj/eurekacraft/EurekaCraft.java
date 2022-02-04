@@ -85,6 +85,11 @@ public class EurekaCraft {
 					new ResourceLocation(EurekaCraft.MODID, "deployed"),
 					new EntityRefBoard.DeployedPropGetter()
 			);
+			ItemModelsProperties.register(
+					ItemsInit.REF_BOARD_CORE.get(),
+					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+					new EntityRefBoard.DeployedPropGetter()
+			);
 		});
 	}
 

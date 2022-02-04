@@ -12,7 +12,7 @@ import java.util.Optional;
 public class FlintSandingDiscItem extends Item implements NoisyCraftingItem {
     public static final String ITEM_ID = "flint_sanding_disc";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP).
-            durability(10).
+            durability(2).
             setNoRepair();
 
     public FlintSandingDiscItem() {

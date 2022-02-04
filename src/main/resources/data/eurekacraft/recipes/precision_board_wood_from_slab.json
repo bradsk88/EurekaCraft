@@ -11,7 +11,7 @@
     "item": "eurekacraft:flint_sanding_disc"
   },
   "output": {
-    "item": "minecraft:gold_ingot"
+    "item": "eurekacraft:precision_wood"
   },
   "secondary": {
     "output": {

@@ -91,6 +91,14 @@ public class ItemsInit {
 			FlintSandingDiscItem.ITEM_ID, FlintSandingDiscItem::new
 	);
 
+	public static final RegistryObject<Item> PRECISION_WOOD = ITEMS.register(
+			PrecisionWoodItem.ITEM_ID, PrecisionWoodItem::new
+	);
+
+	public static final RegistryObject<Item> REF_BOARD_CORE = ITEMS.register(
+			RefBoardCoreItem.ITEM_ID, RefBoardCoreItem::new
+	);
+
 
 	public static void register(IEventBus bus) {
 		ITEMS.register(bus);
