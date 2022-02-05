@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;

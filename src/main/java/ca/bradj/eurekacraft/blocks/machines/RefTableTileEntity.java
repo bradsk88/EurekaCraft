@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-// FIXME: Shift click causes crash
 public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 

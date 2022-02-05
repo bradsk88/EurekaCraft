@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class TraparWavesGeneration {
     public static void generateTraparWaves(BiomeLoadingEvent event) {
-        List<Supplier<ConfiguredFeature<?, ?>>> base = event.getGeneration().getFeatures(GenerationStage.Decoration.VEGETAL_DECORATION);
+        List<Supplier<ConfiguredFeature<?, ?>>> base = event.getGeneration().getFeatures(GenerationStage.Decoration.RAW_GENERATION);
         ConfiguredPlacement<FeatureSpreadConfig> cfg = FeaturesInit.TRAPAR_WAVES_PLACEMENT.get().configured(
                 new FeatureSpreadConfig(10)
         );

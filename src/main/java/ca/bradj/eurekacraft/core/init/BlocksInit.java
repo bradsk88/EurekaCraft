@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
+import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
@@ -28,6 +29,9 @@ public class BlocksInit {
 	);
 	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
 			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
+	);
+	public static final RegistryObject<Block> TRAPAR_WAVE_CHILD_BLOCK = BLOCKS.register(
+			TraparWaveChildBlock.ITEM_ID, TraparWaveChildBlock::new
 	);
 	public static final RegistryObject<Block> REF_TABLE_BLOCK = BLOCKS.register(
 			RefTableBlock.ITEM_ID, RefTableBlock::new
