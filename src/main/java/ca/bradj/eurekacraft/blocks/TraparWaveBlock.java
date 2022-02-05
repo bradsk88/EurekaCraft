@@ -67,7 +67,7 @@ public class TraparWaveBlock extends Block {
     public static class TileEntity extends net.minecraft.tileentity.TileEntity implements ITickableTileEntity {
         public static final String ID = "trapar_wave_tile_entity";
         Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-        public final Map<Vector3i, Integer> children = new HashMap<>();
+        public final HashMap<Vector3i, Integer> children = new HashMap<>();
 
         public TileEntity(TileEntityType<?> typeIn) {
             super(typeIn);
@@ -100,10 +100,26 @@ public class TraparWaveBlock extends Block {
             super.onLoad();
             Random r = new Random();
             BlockPos p = this.getBlockPos();
+            spread(p, new Vector3i(0, 0, 0));
+        }
+
+        private void spread(BlockPos p, Vector3i reference) {
+            logger.debug("Spreading " + reference);
+            if (Math.abs(reference.getY()) > 2) {
+                return;
+            }
+
             for (Direction dir : Direction.values()) {
-                // TODO: More complex generation
+                if (this.children.size() > 4) {
+                    return;
+                }
+                // TODO: Stop doing random gen, just build some predefined shapes and choose those randomly
+                Vector3i newReference = reference.relative(dir, 1);
                 if (this.level.getBlockState(p.relative(dir)).isAir()) {
-                    this.children.put(dir.getNormal(), 100);
+                    this.children.put(newReference, 100);
+                }
+                if (new Random().nextBoolean()) {
+                    spread(p.relative(dir), newReference);
                 }
             }
         }

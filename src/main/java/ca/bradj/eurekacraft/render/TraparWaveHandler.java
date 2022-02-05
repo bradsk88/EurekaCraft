@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -12,8 +11,6 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +29,9 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
                        IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         ClientPlayerEntity player = mc.player;
+
+        // TODO: Check player for goggles
+
         int lightLevel = Integer.MAX_VALUE;
 
         for (Vector3i p : te.children.keySet()) {
@@ -46,6 +46,8 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
         matrixStack.pushPose();
         matrixStack.translate(translation.getX(), translation.getY(), translation.getZ());
         matrixStack.scale(scale, scale, scale);
+
+        // FIXME: The rendered blocks are weird (sees through water, etc)
 
         BlockState bs = BlocksInit.TRAPAR_WAVE_BLOCK.get().defaultBlockState();
 //        mc.getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, true, matrixStack, buffer,
