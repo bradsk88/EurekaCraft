@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "eurekacraft:block/broken_ref_board"
+      "model": "eurekacraft:block/ref_table_block"
     }
   }
 }

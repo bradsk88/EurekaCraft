@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,10 +30,10 @@ public class RefTableBlock extends Block {
 
     public static final String ITEM_ID = "ref_table_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
-            tab(ItemGroup.TAB_MISC);;
+            tab(ModItemGroup.EUREKACRAFT_GROUP);;
 
     public RefTableBlock() {
-        super(Properties.copy(Blocks.COAL_ORE));
+        super(Properties.copy(Blocks.COAL_ORE).noOcclusion());
     }
 
     @Override

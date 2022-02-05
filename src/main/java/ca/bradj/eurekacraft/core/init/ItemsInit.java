@@ -110,6 +110,18 @@ public class ItemsInit {
 			BlueprintItem.ITEM_ID, BlueprintItem::new
 	);
 
+	public static final RegistryObject<Item> POLISHED_OAK_SLAB = ITEMS.register(
+			PolishedOakSlab.ITEM_ID, PolishedOakSlab::new
+	);
+
+	public static final RegistryObject<Item> RESINOUS_DUST = ITEMS.register(
+			ResinousDust.ITEM_ID, ResinousDust::new
+	);
+
+	public static final RegistryObject<Item> RESIN = ITEMS.register(
+			Resin.ITEM_ID, Resin::new
+	);
+
 
 	public static void register(IEventBus bus) {
 		ITEMS.register(bus);
