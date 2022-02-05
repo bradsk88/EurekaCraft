@@ -3,51 +3,54 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.model.ModelDataManager;
-import net.minecraftforge.client.model.data.IModelData;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
-public class TraparWaveHandler {
+public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEntity> {
 
-    private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-//
-    @SubscribeEvent
-    public static void render(RenderWorldLastEvent event) {
-        logger.debug("Render. Waves near players = " + TraparWaveBlock.wavesNearPlayers.values());
-        for (TraparWaveBlock.TileEntity b : TraparWaveBlock.wavesNearPlayers.values()) {
-            renderBlock(event.getMatrixStack(), b.getBlockPos().offset(0, 4, 0), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState());
+    private Minecraft mc = Minecraft.getInstance();
+    private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+
+    public TraparWaveHandler(TileEntityRendererDispatcher p_i226006_1_) {
+        super(p_i226006_1_);
+    }
+    @Override
+    public void render(TraparWaveBlock.TileEntity te, float partialTicks, MatrixStack matrixStackIn,
+                       IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+
+        ClientPlayerEntity player = mc.player;
+        int lightLevel = Integer.MAX_VALUE;
+
+        for (Vector3i p : te.children.keySet()) {
+            renderBlock(p,
+                    matrixStackIn, bufferIn, partialTicks,
+                    combinedOverlayIn, lightLevel, 1.0f);
         }
-//        Vec3d location; // some location in world
-//        BlockState state; // some BlockState (does not have to be part of world)
-//        renderBlock(event.getMatrixStack(), location, state);
     }
 
-    public static void renderBlock(MatrixStack matrixStack, BlockPos pos, BlockState state) {
-        BlockRendererDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
-        ClientWorld world = Minecraft.getInstance().level;
-        IModelData model = renderer.getBlockModel(state).getModelData(world, pos, state, ModelDataManager.getModelData(world, pos));
-        Minecraft.getInstance().getBlockRenderer().renderBlock(state, matrixStack, Minecraft.getInstance().renderBuffers().bufferSource(), 15728880, OverlayTexture.NO_OVERLAY, model);
+    private void renderBlock(Vector3i translation, MatrixStack matrixStack,
+                             IRenderTypeBuffer buffer, float partialTicks, int combinedOverlay, int lightLevel, float scale) {
+        matrixStack.pushPose();
+        matrixStack.translate(translation.getX(), translation.getY(), translation.getZ());
+        matrixStack.scale(scale, scale, scale);
 
+        BlockState bs = BlocksInit.TRAPAR_WAVE_BLOCK.get().defaultBlockState();
+//        mc.getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, true, matrixStack, buffer,
+//                lightLevel, combinedOverlay, model);
+        mc.getBlockRenderer().renderBlock(bs, matrixStack, buffer, Integer.MAX_VALUE, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+        matrixStack.popPose();
     }
-
 }
-

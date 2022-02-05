@@ -79,7 +79,6 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull = player;
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
-        this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
     }
 
     public static AbstractBoardModel getModelFor(int id) {
@@ -109,15 +108,15 @@ public class EntityRefBoard extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundNBT p_70037_1_) {
+        // TODO: Implement?
         if (this.level.isClientSide) {
-            logger.debug("readAdditionalSaveData called for client");
         }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT p_213281_1_) {
+        // TODO: Implement?
         if (this.level.isClientSide) {
-            logger.debug("addAdditionalSaveData called for client");
         }
     }
 
@@ -218,7 +217,6 @@ public class EntityRefBoard extends Entity {
 
 //        this.logger.debug("look2D" + look2D);
 //        this.logger.debug("add" + add);
-        this.logger.debug("nextRaw" + nextRaw);
 
         if (nextDir.x == 0 && nextDir.z == 0) {
 //            this.logger.debug("look is " + nextDir);
@@ -237,7 +235,6 @@ public class EntityRefBoard extends Entity {
 
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
-        logger.debug("block in front" + this.level.getBlockState(inFront));
         if (
                 !(this.level.getBlockState(inFront).is(Blocks.AIR) || this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get()))
         ) {

@@ -1,22 +1,22 @@
 package ca.bradj.eurekacraft.blocks;
 
-<<<<<<< Updated upstream
+
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.TilesInit;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-=======
-import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.core.init.TilesInit;
-import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -26,12 +26,10 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
->>>>>>> Stashed changes
 
 public class TraparWaveBlock extends Block {
-
-    public static Map<String, TileEntity> wavesNearPlayers = new HashMap();
 
     // TODO Stop casting shadows
     public static final Properties PROPS = AbstractBlock.Properties.
@@ -48,8 +46,6 @@ public class TraparWaveBlock extends Block {
     public TraparWaveBlock() {
         super(PROPS);
     }
-<<<<<<< Updated upstream
-=======
 
     // TODO: Make trapar wave a single block with "render properties"
     // So we can add a bunch of single blocks to the world (low cost) and each
@@ -70,13 +66,11 @@ public class TraparWaveBlock extends Block {
 
     public static class TileEntity extends net.minecraft.tileentity.TileEntity implements ITickableTileEntity {
         public static final String ID = "trapar_wave_tile_entity";
-        private final String id;
         Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+        public final Map<Vector3i, Integer> children = new HashMap<>();
 
         public TileEntity(TileEntityType<?> typeIn) {
             super(typeIn);
-            logger.debug("TileEntity");
-            this.id = UUID.randomUUID().toString();
         }
 
         public TileEntity() {
@@ -95,10 +89,7 @@ public class TraparWaveBlock extends Block {
                             this.getBlockPos().getZ()
                     ));
                     if (distanceTo < 10) {
-//                        logger.debug("Nearby player " + p.getId() + " @ " + playerPos + " " + this);
-                        wavesNearPlayers.put(this.id, this);
-                    } else {
-                        wavesNearPlayers.remove(this.id);
+                        // TODO: Check for "children" collisions and provide lift
                     }
                 }
             }
@@ -107,16 +98,14 @@ public class TraparWaveBlock extends Block {
         @Override
         public void onLoad() {
             super.onLoad();
-//            logger.debug("load");
-//            Random r = new Random();
-//            BlockPos p = this.getBlockPos();
-//            for (Direction dir : Direction.values()) {
-//                if (this.level.getBlockState(p.relative(dir)).isAir()) {
-//                    logger.debug("Filling air at " + p.relative(dir));
-////                    this.level.setBlock(p.relative(dir), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(), 1);
-//                }
-//            }
+            Random r = new Random();
+            BlockPos p = this.getBlockPos();
+            for (Direction dir : Direction.values()) {
+                // TODO: More complex generation
+                if (this.level.getBlockState(p.relative(dir)).isAir()) {
+                    this.children.put(dir.getNormal(), 100);
+                }
+            }
         }
     }
->>>>>>> Stashed changes
 }
