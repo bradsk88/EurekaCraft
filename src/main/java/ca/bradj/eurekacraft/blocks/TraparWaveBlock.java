@@ -75,7 +75,8 @@ public class TraparWaveBlock extends Block {
         public void onLoad() {
             super.onLoad();
             Direction dir = Direction.EAST; // TODO: Random direction
-            this.shape = TraparWaveShapes.SHAPE_1.WithCenterAndDirection(this.getBlockPos(), dir);
+            int shapeNum = this.level.random.nextInt(TraparWaveShapes.ALL_SHAPES.length);
+            this.shape = TraparWaveShapes.ALL_SHAPES[shapeNum];
         }
 
         public TraparWaveShapes getShape() {
