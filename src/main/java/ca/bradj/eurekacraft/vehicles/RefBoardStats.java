@@ -4,9 +4,10 @@ public class RefBoardStats {
 
     public static RefBoardStats BadBoard = new RefBoardStats(1.0, 0.25, 0.25, 0.25);
     public static RefBoardStats HeavyBoard = new RefBoardStats(1.0, 0.5, 0.5, 1.0);
-    public static RefBoardStats GlideBoard = new RefBoardStats(0.25, 1.0, 1.0, 0.0).withLandResistance(0.80);
-    public static RefBoardStats StandardBoard = new RefBoardStats(0.5, 1.0, 1.0, 1.0);
-    public static RefBoardStats EliteBoard = new RefBoardStats(0.25, 1.0, 1.0, 2.0);
+    public static RefBoardStats GlideBoard = new RefBoardStats(0.25, 0.75, 1.0, 0.0).withLandResistance(0.80);
+    public static RefBoardStats StandardBoard = new RefBoardStats(0.5, 0.75, 1.0, 1.0);
+    public static RefBoardStats SpeedBoard = new RefBoardStats(0.5, 1.0, 0.5, 1.0);
+    public static RefBoardStats EliteBoard = new RefBoardStats(0.25, 0.75, 1.0, 2.0);
 
     private final double boardWeight;
     private final double boardSpeed;

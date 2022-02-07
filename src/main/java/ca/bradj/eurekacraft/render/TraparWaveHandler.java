@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.logging.log4j.LogManager;
@@ -29,29 +32,27 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
                        IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         ClientPlayerEntity player = mc.player;
+        ItemStack helmet = player.getItemBySlot(EquipmentSlotType.HEAD);
+        if (helmet.isEmpty()) {
+            return;
+        }
 
         // TODO: Check player for goggles
 
-        int lightLevel = Integer.MAX_VALUE;
-
-        for (Vector3i p : te.children.keySet()) {
-            renderBlock(p,
-                    matrixStackIn, bufferIn, partialTicks,
-                    combinedOverlayIn, lightLevel, 1.0f);
+        for (BlockPos p : te.getShape().getAsRelativeBlockPositions()) {
+            renderBlock(p, matrixStackIn, bufferIn,  1.0f);
         }
     }
 
     private void renderBlock(Vector3i translation, MatrixStack matrixStack,
-                             IRenderTypeBuffer buffer, float partialTicks, int combinedOverlay, int lightLevel, float scale) {
+                             IRenderTypeBuffer buffer, float scale) {
         matrixStack.pushPose();
         matrixStack.translate(translation.getX(), translation.getY(), translation.getZ());
         matrixStack.scale(scale, scale, scale);
 
         // FIXME: The rendered blocks are weird (sees through water, etc)
 
-        BlockState bs = BlocksInit.TRAPAR_WAVE_BLOCK.get().defaultBlockState();
-//        mc.getItemRenderer().render(stack, ItemCameraTransforms.TransformType.GROUND, true, matrixStack, buffer,
-//                lightLevel, combinedOverlay, model);
+        BlockState bs = BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState();
         mc.getBlockRenderer().renderBlock(bs, matrixStack, buffer, Integer.MAX_VALUE, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
         matrixStack.popPose();
     }
