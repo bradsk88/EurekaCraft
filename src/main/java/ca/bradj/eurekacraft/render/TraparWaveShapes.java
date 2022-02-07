@@ -12,82 +12,39 @@ import java.util.List;
 public class TraparWaveShapes {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-
-    private static RangeFunction CUBOID_RANGE_FUNCTION = new RangeFunction();
-
     private static int[][][] SHAPE_1_ARRAY = {
-            {
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 0},
-                    {1, 1, 0},
-            },
-            {
+                    {
+                            {1, 1, 1},
+                            {1, 1, 1},
+                            {1, 1, 1},
+                            {1, 1, 0},
+                            {1, 1, 0},
+                    },{
                     {0, 1, 1},
                     {0, 1, 1},
                     {0, 1, 1},
                     {0, 0, 0},
                     {0, 0, 0},
             }
-    };
+        };
 
-    public static TraparWaveShapes SHAPE_1 = new TraparWaveShapes(SHAPE_1_ARRAY, CUBOID_RANGE_FUNCTION);
-
-    private static int[][][] SHAPE_2_ARRAY = {
-            {
-                    {0, 0, 0},
-                    {0, 0, 0},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-            },
-            {
-                    {0, 0, 0},
-                    {0, 0, 0},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-            },
-            {
-                    {0, 0, 0},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {0, 0, 0},
-            },
-            {
-                    {0, 0, 0},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {0, 0, 0},
-            },
-            {
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {0, 0, 0},
-                    {0, 0, 0},
-            },
-            {
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {1, 1, 1},
-                    {0, 0, 0},
-                    {0, 0, 0},
-            },
-    };
-
-    public static TraparWaveShapes SHAPE_2 = new TraparWaveShapes(SHAPE_2_ARRAY, CUBOID_RANGE_FUNCTION);
-
-    public static TraparWaveShapes[] ALL_SHAPES = {SHAPE_1, SHAPE_2};
-
+    public static TraparWaveShapes SHAPE_1 = new TraparWaveShapes(SHAPE_1_ARRAY, new RangeFunction() {
+        @Override
+        public boolean isInRange(BlockPos center, int[][][] shape, BlockPos other) {
+            int zRange = shape[0].length / 2;
+            int xRange = shape[0][0].length / 2; // TODO: Swap if "facing" deems it so
+            int yRange = shape.length / 2;
+            int xDist = Math.abs(center.getX() - other.getX());
+            int yDist = Math.abs(center.getY() - other.getY());
+            int zDist = Math.abs(center.getZ() - other.getZ());
+            return xDist <= xRange && yDist <= yRange && zDist <= zRange;
+        }
+    });
 
     protected final int[][][] shape;
     protected Direction facing = Direction.NORTH;
     protected BlockPos center = BlockPos.ZERO;
-    private final List<BlockPos> asRelativeBlockPositions = new ArrayList<>();
+    private List<BlockPos> asRelativeBlockPositions = new ArrayList<>();
     private final RangeFunction rangeFunction;
 
     private TraparWaveShapes(
@@ -133,13 +90,7 @@ public class TraparWaveShapes {
     public static class RangeFunction {
 
         public boolean isInRange(BlockPos center, int[][][] shape, BlockPos queryPos) {
-            int zRange = shape[0].length / 2;
-            int xRange = shape[0][0].length / 2; // TODO: Swap if "facing" deems it so
-            int yRange = shape.length / 2;
-            int xDist = Math.abs(center.getX() - queryPos.getX());
-            int yDist = Math.abs(center.getY() - queryPos.getY());
-            int zDist = Math.abs(center.getZ() - queryPos.getZ());
-            return xDist <= xRange && yDist <= yRange && zDist <= zRange;
+            return false;
         }
     }
 }
