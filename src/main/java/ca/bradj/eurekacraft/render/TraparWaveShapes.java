@@ -76,7 +76,6 @@ public class TraparWaveShapes {
         int halfY = shape.length / 2;
         int halfZ = shape[0].length / 2;
         int halfX = shape[0][0].length / 2;
-        // TODO: Center around center pos - rather than using centerpos as corner
         for (int i = 0; i < shape.length; i++) {
             for (int j = 0; j < shape[i].length; j++) {
                 for (int k = 0; k < shape[i][j].length; k++) {
