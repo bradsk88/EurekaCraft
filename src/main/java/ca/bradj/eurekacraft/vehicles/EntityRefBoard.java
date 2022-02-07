@@ -34,7 +34,10 @@ import java.util.Map;
 public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
 
+    private static final int BOOST_TICKS = 3;
+
     private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
+    private static Map<Integer, Integer> boostedPlayers = new HashMap();
 
     public static boolean isDeployedFor(Integer playerId) {
         return deployedBoards.containsKey(playerId);
@@ -42,6 +45,7 @@ public class EntityRefBoard extends Entity {
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
+    private static final float maxFlySpeed = 1f;
 
     private float initialSpeed;
     private PlayerEntity playerOrNull;
@@ -79,11 +83,14 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull = player;
         this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
         this.lastSpeed = initialSpeed;
-        this.logger.debug("Ref board created with " + player + " and " + hand + " at speed " + initialSpeed);
     }
 
     public static AbstractBoardModel getModelFor(int id) {
         return deployedBoards.get(id).item.getModel();
+    }
+
+    public static void boostPlayer(int id) {
+        boostedPlayers.put(id, BOOST_TICKS);
     }
 
     @Override
@@ -109,15 +116,15 @@ public class EntityRefBoard extends Entity {
 
     @Override
     protected void readAdditionalSaveData(CompoundNBT p_70037_1_) {
+        // TODO: Implement?
         if (this.level.isClientSide) {
-            logger.debug("readAdditionalSaveData called for client");
         }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundNBT p_213281_1_) {
+        // TODO: Implement?
         if (this.level.isClientSide) {
-            logger.debug("addAdditionalSaveData called for client");
         }
     }
 
@@ -150,6 +157,8 @@ public class EntityRefBoard extends Entity {
     }
 
     private void fly() {
+        boolean boosted = this.consumeBoost();
+
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
         double boardWeight = this.item.getStats().weight();
         double boardSpeed = this.item.getStats().speed();
@@ -157,18 +166,16 @@ public class EntityRefBoard extends Entity {
         double liftFactor = this.item.getStats().lift();
 
         // Calculated base physics
-        double defaultFall = -0.01 * boardWeight;
-        double defaultAccel = 0.01 * boardWeight;
+        double defaultFall = -0.02 * boardWeight;
+        double defaultAccel = 0.02 * boardWeight;
         double defaultLand = -1 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
-        double defaultMaxSpeed = boardSpeed * runEquivalent;
+        double defaultMaxSpeed = boardSpeed * maxFlySpeed;
 
         double liftOrFall = this.lastLift;
-        double flightSpeed = Math.max(this.lastSpeed + defaultAccel, defaultMaxSpeed);
+        double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
-        Block block = this.level.getBlockState(playerOrNull.blockPosition()).getBlock();
-
-        if (block.is(BlocksInit.TRAPAR_WAVE_BLOCK.get())) {
+        if (boosted) {
             // Apply lift
             // TODO: Get "lift factor" from block
             double blockLift = 0.5;
@@ -187,15 +194,6 @@ public class EntityRefBoard extends Entity {
             flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
-
-        // TODO: Reset board speed (to slow) after a collision (e.g. tree)
-//        Vector3d posDiff = this.lastPlayerPosition.subtract(this.playerOrNull.position());
-//        logger.debug("PosDiff " + posDiff);
-//
-//        if (Math.max(Math.abs(posDiff.x), Math.abs(posDiff.z)) < 0.005) {
-//            logger.debug("collision");
-//            flightSpeed = 0.1; // TODO: Constant?
-//        }
 
         // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
         Vector3d look3D = this.playerOrNull.getViewVector(0);
@@ -218,7 +216,6 @@ public class EntityRefBoard extends Entity {
 
 //        this.logger.debug("look2D" + look2D);
 //        this.logger.debug("add" + add);
-        this.logger.debug("nextRaw" + nextRaw);
 
         if (nextDir.x == 0 && nextDir.z == 0) {
 //            this.logger.debug("look is " + nextDir);
@@ -237,7 +234,6 @@ public class EntityRefBoard extends Entity {
 
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
-        logger.debug("block in front" + this.level.getBlockState(inFront));
         if (
                 !(this.level.getBlockState(inFront).is(Blocks.AIR) || this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get()))
         ) {
@@ -256,6 +252,17 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
+    }
+
+    private boolean consumeBoost() {
+        boolean boosted = false;
+        int playerId = this.playerOrNull.getId();
+        int boost = boostedPlayers.getOrDefault(playerId, 0);
+        if (boost > 0) {
+            boosted = true;
+            boostedPlayers.put(playerId, boost - 1);
+        }
+        return boosted;
     }
 
     public static class DeployedPropGetter implements IItemPropertyGetter {

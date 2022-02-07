@@ -1,7 +1,8 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.core.init.*;
+import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
@@ -12,6 +13,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -90,6 +92,7 @@ public class EurekaCraft {
 					new ResourceLocation(EurekaCraft.MODID, "deployed"),
 					new EntityRefBoard.DeployedPropGetter()
 			);
+			ClientRegistry.bindTileEntityRenderer(TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new);
 		});
 	}
 

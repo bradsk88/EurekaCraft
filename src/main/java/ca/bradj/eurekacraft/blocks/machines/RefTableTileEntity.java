@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-// FIXME: Shift click causes crash
 public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -176,10 +175,11 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         this.craftPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-            logger.debug("recipe match!");
+//            logger.debug("recipe match!");
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
+                // TODO Implement slot
                 logger.debug("Would have produced an extra item if there was a slot for it: " + iRecipe.getSecondaryResultItem().output);
             }
 
@@ -191,7 +191,6 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 useExtraIngredient(iRecipe);
             }
 
-            logger.debug("inserting " + output);
             itemHandler.insertItem(outputSlot, output, false);
 
             setChanged();

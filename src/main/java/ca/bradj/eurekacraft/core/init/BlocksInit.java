@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
+import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
@@ -29,6 +30,9 @@ public class BlocksInit {
 	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
 			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
 	);
+	public static final RegistryObject<Block> TRAPAR_WAVE_CHILD_BLOCK = BLOCKS.register(
+			TraparWaveChildBlock.ITEM_ID, TraparWaveChildBlock::new
+	);
 	public static final RegistryObject<Block> REF_TABLE_BLOCK = BLOCKS.register(
 			RefTableBlock.ITEM_ID, RefTableBlock::new
 	);
@@ -36,6 +40,7 @@ public class BlocksInit {
 	public static void RegisterTextures() {
 		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
 		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
+		RenderTypeLookup.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.translucent());
 	}
 
 	public static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {

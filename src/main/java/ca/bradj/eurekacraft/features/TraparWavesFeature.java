@@ -33,17 +33,6 @@ public class TraparWavesFeature extends Feature<NoFeatureConfig> {
 
         this.doPlace(seedReader, blockPos);
 
-        for(Direction direction : Direction.values()) {
-            BlockPos dPos = blockPos.relative(direction);
-            for(Direction dd : Direction.values()) {
-
-                BlockPos ddPos = dPos.relative(dd);
-                if (!seedReader.hasChunkAt(ddPos)) {
-                    continue;
-                }
-                this.doPlace(seedReader, ddPos);
-            }
-        }
         return true;
     }
 

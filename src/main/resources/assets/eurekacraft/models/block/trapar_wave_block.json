@@ -1,6 +1,6 @@
 {
   "parent": "block/cube_all",
   "textures": {
-    "all": "eurekacraft:blocks/fresh_seeds_crop_0"
+    "all": "eurekacraft:blocks/trapar_wave_block_25"
   }
 }

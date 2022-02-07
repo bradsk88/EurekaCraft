@@ -82,8 +82,6 @@ public class TallShack extends Structure<NoFeatureConfig> {
                 structurePiece.move(xOffset, 0, zOffset);
             }
             this.calculateBoundingBox();
-
-            LogManager.getLogger(EurekaCraft.MODID).debug("Spawned " + this + "  at " + blockPos);
         }
     }
 }
