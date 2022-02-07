@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 
 public class TraparWaveBlock extends Block {
 
-    // TODO Stop casting shadows
     public static final Properties PROPS = AbstractBlock.Properties.
             copy(Blocks.AIR);
 

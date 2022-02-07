@@ -6,7 +6,6 @@ import net.minecraft.block.Blocks;
 
 public class TraparWaveChildBlock extends Block {
 
-    // TODO Stop casting shadows
     public static final Properties PROPS = Properties.
             copy(Blocks.AIR).noOcclusion().lightLevel((BlockState bs) -> 10);
 
