@@ -31,11 +31,6 @@ public class TraparWaveBlock extends Block {
         super(PROPS);
     }
 
-    // TODO: Make trapar wave a single block with "render properties"
-    // So we can add a bunch of single blocks to the world (low cost) and each
-    // one can have a tile entity which determines visibility to the player
-    // We can even have the shapes change over time or move around
-
     @Override
     public BlockRenderType getRenderShape(BlockState p_149645_1_) {
         return BlockRenderType.INVISIBLE;
