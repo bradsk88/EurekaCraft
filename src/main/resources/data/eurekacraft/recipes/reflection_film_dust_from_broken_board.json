@@ -2,10 +2,10 @@
   "type": "eurekacraft:sanding_machine",
   "ingredients": [
     {
-      "item": "minecraft:oak_log"
+      "item": "eurekacraft:broken_ref_board"
     }
   ],
   "result": {
-    "item": "eurekacraft:resinous_dust"
+    "item": "eurekacraft:reflection_film_dust"
   }
 }

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "eurekacraft:resinous_dust"
+  },
+  "result": {
+    "item": "eurekacraft:resin"
+  },
+  "experience": 1.0,
+  "cookingTime": 100
+}

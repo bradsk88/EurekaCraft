@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "OOO",
+    "CCC",
     "OBO",
     "OOO"
   ],
@@ -9,11 +9,14 @@
     "O": {
       "item": "minecraft:oak_planks"
     },
-    "P": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "B": {
       "item": "eurekacraft:blueprint"
     }
   },
   "result": {
-    "item": "eurekacraft:sanding_machine"
+    "item": "eurekacraft:sanding_machine_block"
   }
 }

@@ -1,11 +1,12 @@
 {
-  "type": "minecraft:smelting",
-  "ingredient": {
-    "item": "eurekacraft:resinous_dust"
-  },
-  "result": {
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:resinous_dust"
+    }
+  ],
+  "cook": true,
+  "output": {
     "item": "eurekacraft:resin"
-  },
-  "experience": 1.0,
-  "cookingTime": 100
+  }
 }

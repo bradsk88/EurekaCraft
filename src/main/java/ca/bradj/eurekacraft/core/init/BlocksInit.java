@@ -1,9 +1,11 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
+import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import net.minecraft.block.Block;
@@ -24,6 +26,9 @@ public class BlocksInit {
 	public static final RegistryObject<Block> FRESH_SEEDS_CROP = BLOCKS.register(
 			FreshSeedsCrop.BLOCK_ID, FreshSeedsCrop::new
 	);
+	public static final RegistryObject<Block> RESIN = BLOCKS.register(
+			ResinBlock.ITEM_ID, ResinBlock::new
+	);
 	public static final RegistryObject<Block> BROKEN_REF_BOARD = BLOCKS.register(
 			BrokenRefBoardBlock.ITEM_ID, BrokenRefBoardBlock::new
 	);
@@ -35,6 +40,9 @@ public class BlocksInit {
 	);
 	public static final RegistryObject<Block> REF_TABLE_BLOCK = BLOCKS.register(
 			RefTableBlock.ITEM_ID, RefTableBlock::new
+	);
+	public static final RegistryObject<Block> SANDING_MACHINE = BLOCKS.register(
+			SandingMachineBlock.ITEM_ID, SandingMachineBlock::new
 	);
 
 	public static void RegisterTextures() {

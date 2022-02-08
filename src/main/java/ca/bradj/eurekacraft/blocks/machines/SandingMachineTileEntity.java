@@ -1,10 +1,11 @@
 package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.container.RefTableContainer;
+import ca.bradj.eurekacraft.container.SandingMachineContainer;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
-import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,8 +15,6 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -41,55 +40,54 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class SandingMachineTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
-    public static final String ENTITY_ID = "ref_table_tile_entity";
+    public static final String ENTITY_ID = "sanding_machine_tile_entity";
 
-    private boolean cooking = false;
-    private int craftPercent = 0;
+    private boolean sanding = false;
+    private int sandPercent = 0;
 
-    private static int inputSlots = 6;
-    private static int fuelSlot = inputSlots;
-    private static int techSlot = fuelSlot + 1;
-    private static int outputSlot = techSlot + 1;
+    private static int inputSlots = 1;
+    private static int abrasiveSlot = inputSlots;
+    private static int outputSlot = abrasiveSlot + 1;
     private static int totalSlots = outputSlot + 1;
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
-    public RefTableTileEntity(TileEntityType<?> typeIn) {
+    public SandingMachineTileEntity(TileEntityType<?> typeIn) {
         super(typeIn);
     }
 
-    public RefTableTileEntity() {
-        this(TilesInit.REF_TABLE.get());
+    public SandingMachineTileEntity() {
+        this(TilesInit.SANDING_MACHINE.get());
     }
 
 
     @Override
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container." + EurekaCraft.MODID + ".ref_table");
+        return new TranslationTextComponent("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
 
     @Nullable
     @Override
     public Container createMenu(int id, PlayerInventory player, PlayerEntity playerEntity) {
-        return new RefTableContainer(id, player, this);
+        return new SandingMachineContainer(id, player, this);
     }
 
     @Override
     public void load(BlockState blockState, CompoundNBT nbt) {
         itemHandler.deserializeNBT(nbt.getCompound("inv"));
-        this.craftPercent = nbt.getInt("cooked");
+        this.sandPercent = nbt.getInt("cooked");
         super.load(blockState, nbt);
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
         nbt.put("inv", itemHandler.serializeNBT());
-        nbt.putInt("cooked", this.craftPercent);
+        nbt.putInt("cooked", this.sandPercent);
         return super.save(nbt);
     }
 
@@ -113,22 +111,16 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             return;
         }
 
-//        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
-//        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
-//        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
-
-
-        Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
+        Optional<SandingMachineRecipe> activeRecipe = this.getActiveRecipe();
         updateCookingStatus(activeRecipe);
-        if (this.cooking) {
-            logger.debug("Cook % " + this.craftPercent); // TODO: Show in UI
+        if (this.sanding) {
+            logger.debug("Cook % " + this.sandPercent); // TODO: Show in UI
             this.doCook(activeRecipe);
         }
     }
 
-    private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
+    private void updateCookingStatus(Optional<SandingMachineRecipe> active) {
         if (active.isPresent()) {
-
             ItemStack outSlot = this.itemHandler.getStackInSlot(outputSlot);
             if (!outSlot.isEmpty()) {
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
@@ -136,60 +128,46 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 }
             }
 
-            if (active.get().requiresCooking()) {
-                if (!this.hasCoal()) {
-                    this.cooking = false;
-                    this.craftPercent = 0;
-                    return;
-                }
-            }
-            if (this.cooking) {
+            if (!this.hasSandpaper()) {
+                this.sanding = false;
+                this.sandPercent = 0;
                 return;
             }
-            this.cooking = true;
-            this.craftPercent = 0;
-            if (active.get().requiresCooking()) {
-                // FIXME: Add "heat reserve" to table otherwise player must put at least 2 coal in table.
-                this.itemHandler.extractItem(fuelSlot, 1, false);
+
+            if (this.sanding) {
+                return;
             }
+            this.sanding = true;
         } else {
-            this.cooking = false;
-            this.craftPercent = 0;
+            this.sanding = false;
         }
+        this.sandPercent = 0;
     }
 
-    private boolean hasCoal() {
-        return this.itemHandler.getStackInSlot(fuelSlot).
+    private boolean hasSandpaper() {
+        return this.itemHandler.getStackInSlot(abrasiveSlot).
                 sameItemStackIgnoreDurability(
-                        Items.COAL.getDefaultInstance()
+                        ItemsInit.FLINT_SANDING_DISC.get().getDefaultInstance()
                 );
     }
 
-    private void doCook(Optional<GlideBoardRecipe> recipe) {
-        if (craftPercent < 100) {
-            this.craftPercent++;
+    private void doCook(Optional<SandingMachineRecipe> recipe) {
+        if (sandPercent < 100) {
+            this.sandPercent++;
             this.makeCraftingNoise(recipe);
             return;
         }
-        this.cooking = false;
-        this.craftPercent = 0;
+        this.sanding = false;
+        this.sandPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-//            logger.debug("recipe match!");
             ItemStack output = iRecipe.getResultItem();
-
-            if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                // TODO Implement slot
-                logger.debug("Would have produced an extra item if there was a slot for it: " + iRecipe.getSecondaryResultItem().output);
-            }
 
             for (int i = 0; i < inputSlots; i++) {
                 itemHandler.extractItem(i, 1, false);
             }
 
-            if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
-                useExtraIngredient(iRecipe);
-            }
+            useExtraIngredient();
 
             itemHandler.insertItem(outputSlot, output, false);
 
@@ -197,7 +175,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         });
     }
 
-    private void makeCraftingNoise(Optional<GlideBoardRecipe> recipe) {
+    private void makeCraftingNoise(Optional<SandingMachineRecipe> recipe) {
         assert this.level != null;
 
         if (this.noiseCooldown > 0) {
@@ -206,11 +184,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         }
 
         recipe.ifPresent((r) -> {
-            if (r.getExtraIngredient().ingredient.isEmpty()) {
-                return;
-            }
-
-            ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+            ItemStack stackInSlot = itemHandler.getStackInSlot(abrasiveSlot);
             Item item = stackInSlot.getItem();
             if (!(item instanceof NoisyCraftingItem)) {
                 return;
@@ -228,32 +202,16 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     }
 
-    private void useExtraIngredient(GlideBoardRecipe iRecipe) {
-        ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+    private void useExtraIngredient() {
+        ItemStack stackInSlot = itemHandler.getStackInSlot(abrasiveSlot);
         stackInSlot.hurt(1, new Random(), null);
-        if (iRecipe.getExtraIngredient().consumeOnUse) {
-            this.itemHandler.extractItem(techSlot, 1, false);
-        } else if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
+        if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            this.itemHandler.extractItem(techSlot, 1, false);
+            this.itemHandler.extractItem(abrasiveSlot, 1, false);
         }
     }
 
-    private Optional<GlideBoardRecipe> getActiveRecipe() {
-        Optional<GlideBoardRecipe> recipe = getActivePrimaryRecipe();
-        if (recipe.isPresent()) {
-            GlideBoardRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
-            if (!extra.ingredient.isEmpty()) {
-                ItemStack techItem = this.itemHandler.getStackInSlot(techSlot);
-                if (!extra.ingredient.test(techItem)) {
-                    return Optional.empty();
-                }
-            }
-        }
-        return recipe;
-    }
-
-    private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
+    private Optional<SandingMachineRecipe> getActiveRecipe() {
         // Shaped
         Inventory inv = new Inventory(inputSlots);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
@@ -266,8 +224,8 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         }
 
         RecipeManager recipeManager = level.getRecipeManager();
-        Optional<GlideBoardRecipe> recipe = recipeManager.getRecipeFor(
-                RecipesInit.GLIDE_BOARD, inv, level
+        Optional<SandingMachineRecipe> recipe = recipeManager.getRecipeFor(
+                RecipesInit.SANDING_MACHINE, inv, level
         );
 
         if (recipe.isPresent()) {
@@ -283,22 +241,22 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         }
 
         recipe = recipeManager.getRecipeFor(
-                RecipesInit.GLIDE_BOARD, inv, level
+                RecipesInit.SANDING_MACHINE, inv, level
         );
 
         return recipe;
     }
 
     public int getCookingProgress() {
-        return craftPercent;
+        return sandPercent;
     }
 
     public void setCookingProgress(int v) {
         // TODO: Needed?
-        this.craftPercent = v;
+        this.sandPercent = v;
     }
 
-    public int getTotalSlotCount() {
+    public int getSlotCount() {
         return totalSlots;
     }
 }
