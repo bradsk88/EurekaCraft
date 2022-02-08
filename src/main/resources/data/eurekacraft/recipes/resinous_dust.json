@@ -1,0 +1,11 @@
+{
+  "type": "eurekacraft:sanding_machine",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_log"
+    }
+  ],
+  "result": {
+    "item": "eurekacraft:resinous_dust"
+  }
+}

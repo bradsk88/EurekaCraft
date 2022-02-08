@@ -1,0 +1,11 @@
+{
+  "type": "eurekacraft:sanding_machine",
+  "ingredients": [
+    {
+      "item": "eurekacraft:broken_ref_board"
+    }
+  ],
+  "result": {
+    "item": "eurekacraft:reflection_film_dust"
+  }
+}

@@ -24,16 +24,16 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class RefTableBlock extends Block {
+public class SandingMachineBlock extends Block {
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
-    public static final String ITEM_ID = "ref_table_block";
+    public static final String ITEM_ID = "sanding_machine_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
             tab(ModItemGroup.EUREKACRAFT_GROUP);;
 
-    public RefTableBlock() {
-        super(Properties.copy(Blocks.COAL_ORE).noOcclusion());
+    public SandingMachineBlock() {
+        super(Properties.copy(Blocks.COAL_ORE));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class RefTableBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return TilesInit.REF_TABLE.get().create();
+        return TilesInit.SANDING_MACHINE.get().create();
     }
 
     @Override
@@ -63,8 +63,8 @@ public class RefTableBlock extends Block {
         }
 
         TileEntity te = world.getBlockEntity(blockpos);
-        if (!(te instanceof RefTableTileEntity)) {
-            this.logger.debug("not RefTableTileEntity " + te);
+        if (!(te instanceof SandingMachineTileEntity)) {
+            this.logger.debug("not SandingMachineTileEntity " + te);
             return;
         }
 

@@ -1,10 +1,12 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
 import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
+import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.materials.*;
 import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
@@ -42,6 +44,13 @@ public class ItemsInit {
 					BrokenRefBoardBlock.ITEM_PROPS
 			)
 	);
+	public static final RegistryObject<Item> RESIN_BLOCK = ITEMS.register(
+			ResinBlock.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.RESIN.get(),
+					ResinBlock.ITEM_PROPS
+			)
+	);
 	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
 			TraparWaveBlock.ITEM_ID,
 			() -> new BlockItem(
@@ -54,6 +63,13 @@ public class ItemsInit {
 			() -> new BlockItem(
 					BlocksInit.REF_TABLE_BLOCK.get(),
 					RefTableBlock.ITEM_PROPS
+			)
+	);
+	public static final RegistryObject<Item> SANDING_MACHINE_BLOCK = ITEMS.register(
+			SandingMachineBlock.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.SANDING_MACHINE.get(),
+					SandingMachineBlock.ITEM_PROPS
 			)
 	);
 
@@ -108,6 +124,18 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
 			BlueprintItem.ITEM_ID, BlueprintItem::new
+	);
+
+	public static final RegistryObject<Item> POLISHED_OAK_SLAB = ITEMS.register(
+			PolishedOakSlab.ITEM_ID, PolishedOakSlab::new
+	);
+
+	public static final RegistryObject<Item> RESINOUS_DUST = ITEMS.register(
+			ResinousDust.ITEM_ID, ResinousDust::new
+	);
+
+	public static final RegistryObject<Item> RESIN = ITEMS.register(
+			Resin.ITEM_ID, Resin::new
 	);
 
 

@@ -22,7 +22,7 @@
   ],
   "cook": true,
   "extra": {
-    "item": "eurekacraft:blueprint"
+    "item": "eurekacraft:resin_block"
   },
   "output": {
     "item": "eurekacraft:ref_board_core"

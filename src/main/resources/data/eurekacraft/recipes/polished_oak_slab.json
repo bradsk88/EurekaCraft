@@ -1,0 +1,11 @@
+{
+  "type": "eurekacraft:sanding_machine",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_slab"
+    }
+  ],
+  "result": {
+    "item": "eurekacraft:polished_oak_slab"
+  }
+}

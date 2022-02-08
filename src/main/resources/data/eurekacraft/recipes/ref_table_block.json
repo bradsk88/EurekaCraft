@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "RRR",
+    " I "
+  ],
+  "key": {
+    "P": {
+      "item": "eurekacraft:polished_oak_slab"
+    },
+    "R": {
+      "item": "eurekacraft:resin"
+    },
+    "I": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "item": "eurekacraft:ref_table_block"
+  }
+}
