@@ -21,10 +21,10 @@ public class SandingMachineContainer extends MachineContainer {
     private IntReferenceHolder cookProgressSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private final int boxHeight = 18, boxWidth = 18;
-    private final int inventoryLeftX = 8;
-    private final int titleBarHeight = 12;
-    private final int margin = 4;
+    public static final int boxHeight = 18, boxWidth = 18;
+    public static final int inventoryLeftX = 8;
+    public static final int titleBarHeight = 12;
+    public static final int margin = 4;
 
     public SandingMachineContainer(int windowId, PlayerInventory playerInventory, SandingMachineTileEntity te) {
         super(ContainerTypesInit.SANDING_MACHINE.get(), windowId, playerInventory);

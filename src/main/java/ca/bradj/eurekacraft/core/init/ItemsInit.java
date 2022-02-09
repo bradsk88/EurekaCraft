@@ -51,13 +51,13 @@ public class ItemsInit {
 					ResinBlock.ITEM_PROPS
 			)
 	);
-	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
-			TraparWaveBlock.ITEM_ID,
-			() -> new BlockItem(
-					BlocksInit.TRAPAR_WAVE_BLOCK.get(),
-					TraparWaveBlock.ITEM_PROPS
-			)
-	);
+//	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
+//			TraparWaveBlock.ITEM_ID,
+//			() -> new BlockItem(
+//					BlocksInit.TRAPAR_WAVE_BLOCK.get(),
+//					TraparWaveBlock.ITEM_PROPS
+//			)
+//	);
 	public static final RegistryObject<Item> REF_TABLE_BLOCK = ITEMS.register(
 			RefTableBlock.ITEM_ID,
 			() -> new BlockItem(
@@ -93,9 +93,10 @@ public class ItemsInit {
 			ReflectionFilm.ITEM_ID, ReflectionFilm::new
 	);
 
-	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
-			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
-	);
+	// TODO: Bring back
+//	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
+//			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
+//	);
 
 
 	public static final RegistryObject<Item> REFLECTION_FILM_DUST = ITEMS.register(
