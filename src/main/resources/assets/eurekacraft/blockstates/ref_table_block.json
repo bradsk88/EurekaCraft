@@ -1,7 +1,20 @@
 {
   "variants": {
-    "": {
-      "model": "eurekacraft:block/ref_table_block"
+    "facing=east": {
+      "model": "eurekacraft:block/ref_table_block",
+      "y": 0
+    },
+    "facing=south": {
+      "model": "eurekacraft:block/ref_table_block",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "eurekacraft:block/ref_table_block",
+      "y": 180
+    },
+    "facing=north": {
+      "model": "eurekacraft:block/ref_table_block",
+      "y": 270
     }
   }
 }

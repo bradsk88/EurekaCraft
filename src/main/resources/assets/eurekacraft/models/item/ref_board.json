@@ -4,7 +4,7 @@
 			"predicate": {
 				"eurekacraft:deployed": 1.0000000
 			},
-			"model": "eurekacraft:item/glide_board_deployed"
+			"model": "eurekacraft:item/ref_board_deployed"
 		}
 	],
 	"credit": "Made with Blockbench",
