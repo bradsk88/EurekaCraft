@@ -1,0 +1,38 @@
+{
+  "display": {
+    "title": {
+      "text": "A peculiar shimmer",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft a piece of Reflection Film"
+    },
+    "icon": {
+      "item": "eurekacraft:reflection_film"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Board": {
+      "trigger": "eurekacraft:ref_table_trigger",
+      "conditions": {
+        "machine_output": {
+          "item": "eurekacraft:reflection_film"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Board"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  },
+  "parent": "eurekacraft:board_core"
+}

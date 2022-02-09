@@ -1,0 +1,38 @@
+{
+  "display": {
+    "title": {
+      "text": "Leap of faith",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft a Ref Board Core"
+    },
+    "icon": {
+      "item": "eurekacraft:ref_board_core"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Board": {
+      "trigger": "eurekacraft:ref_table_trigger",
+      "conditions": {
+        "machine_output": {
+          "item": "eurekacraft:ref_board_core"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Board"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  },
+  "parent": "eurekacraft:resin_block"
+}

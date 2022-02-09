@@ -1,28 +1,28 @@
 {
-  "__comment": "Made with TheDestruc7i0n's advancements generator: https://advancements.thedestruc7i0n.ca",
   "display": {
     "title": {
-      "text": "TODO",
-      "color": "dark_aqua"
+      "text": "Not much use",
+      "color": "white"
     },
     "description": {
-      "text": "Craft a Reflection Film Scraper"
+      "text": "Find a Broken Ref Board"
     },
     "icon": {
-      "item": "eurekacraft:reflection_film_scraper"
+      "item": "eurekacraft:broken_ref_board"
     },
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
-    "hidden": false
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
   },
   "criteria": {
-    "Craft reflection film": {
+    "Item": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:reflection_film",
+            "item": "eurekacraft:broken_ref_board",
             "count": {
               "min": 1
             }
@@ -30,6 +30,14 @@
         ]
       }
     }
+  },
+  "requirements": [
+    [
+      "Item"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
   },
   "parent": "eurekacraft:root"
 }

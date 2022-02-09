@@ -1,14 +1,14 @@
 {
   "display": {
     "title": {
-      "text": "Get Fresh Seeds",
-      "color": "green"
+      "text": "A bit dusty",
+      "color": "white"
     },
     "description": {
-      "text": "Someday these will do something"
+      "text": "Craft a Sanding Machine"
     },
     "icon": {
-      "item": "eurekacraft:fresh_seeds"
+      "item": "eurekacraft:sanding_machine_block"
     },
     "frame": "goal",
     "show_toast": true,
@@ -17,12 +17,12 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
   },
   "criteria": {
-    "Seeds": {
+    "Item": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:fresh_seeds",
+            "item": "eurekacraft:sanding_machine_block",
             "count": {
               "min": 1
             }
@@ -33,7 +33,7 @@
   },
   "requirements": [
     [
-      "Seeds"
+      "Item"
     ]
   ],
   "rewards": {

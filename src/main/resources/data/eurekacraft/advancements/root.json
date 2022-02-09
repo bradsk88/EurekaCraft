@@ -2,13 +2,13 @@
     "display": {
         "title": {
             "text": "EurekaCraft",
-            "color": "green"
+            "color": "cyan"
         },
         "description": {
             "text": "つづく"
         },
         "icon": {
-            "item": "minecraft:emerald"
+            "item": "eurekacraft:ref_board"
         },
         "frame": "goal",
         "show_toast": true,
@@ -22,7 +22,7 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "eurekacraft:broken_ref_board",
+                        "item": "eurekacraft:blueprint",
                         "count": {
                             "min": 1
                         }

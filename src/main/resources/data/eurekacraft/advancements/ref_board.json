@@ -1,0 +1,38 @@
+{
+  "display": {
+    "title": {
+      "text": "As long as I can lift...",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft a Ref Board"
+    },
+    "icon": {
+      "item": "eurekacraft:ref_board"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Item": {
+      "trigger": "eurekacraft:ref_table_trigger",
+      "conditions": {
+        "result": {
+          "item": "eurekacraft:ref_board"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Item"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "parent": "eurekacraft:reflection_film"
+}

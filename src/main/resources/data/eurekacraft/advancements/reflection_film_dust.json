@@ -1,14 +1,14 @@
 {
   "display": {
     "title": {
-      "text": "Get Fresh Seeds",
-      "color": "green"
+      "text": "Remnants of old",
+      "color": "white"
     },
     "description": {
-      "text": "Someday these will do something"
+      "text": "Acquire reflection film dust"
     },
     "icon": {
-      "item": "eurekacraft:fresh_seeds"
+      "item": "eurekacraft:reflection_film_dust"
     },
     "frame": "goal",
     "show_toast": true,
@@ -17,12 +17,12 @@
     "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
   },
   "criteria": {
-    "Seeds": {
+    "Item": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:fresh_seeds",
+            "item": "eurekacraft:reflection_film_dust",
             "count": {
               "min": 1
             }
@@ -33,11 +33,11 @@
   },
   "requirements": [
     [
-      "Seeds"
+      "Item"
     ]
   ],
   "rewards": {
     "experience": 50
   },
-  "parent": "eurekacraft:root"
+  "parent": "eurekacraft:sanding_machine"
 }

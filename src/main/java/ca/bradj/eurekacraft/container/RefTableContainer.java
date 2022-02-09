@@ -2,20 +2,18 @@ package ca.bradj.eurekacraft.container;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
+import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IntReferenceHolder;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +53,17 @@ public class RefTableContainer extends MachineContainer {
                 // Output
                 nextIndex = nextIndex + (cols * rows);
                 int nextLeftX = leftX + (boxWidth * cols) + boxWidth;
-                addSlot(new SlotItemHandler(h, nextIndex, nextLeftX, nextTopY));
+                addSlot(new SlotItemHandler(h, nextIndex, nextLeftX, nextTopY) {
+                    @Override
+                    public ItemStack onTake(PlayerEntity player, ItemStack stack) {
+                        ItemStack itemStack = super.onTake(player, stack);
+
+                        if (player instanceof ServerPlayerEntity) {
+                            AdvancementsInit.REF_TABLE_TRIGGER.trigger((ServerPlayerEntity) player, stack);
+                        }
+                        return itemStack;
+                    }
+                });
             });
 
             this.addDataSlot(this.cookProgressSlot = new FunctionalIntReferenceHolder(this.tileEntity::getCookingProgress, this.tileEntity::setCookingProgress));

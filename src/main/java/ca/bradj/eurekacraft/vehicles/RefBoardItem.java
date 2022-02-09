@@ -5,7 +5,6 @@ import ca.bradj.eurekacraft.render.AbstractBoardModel;
 import com.google.common.collect.MapMaker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -48,8 +47,6 @@ public abstract class RefBoardItem extends Item {
                 // if deployed glider is in other hand, ignore
             } else spawnGlider(player, player.level, hand);
         }
-
-
 
         return ActionResult.success(s);
     }
