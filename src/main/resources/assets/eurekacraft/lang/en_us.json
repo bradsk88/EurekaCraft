@@ -22,5 +22,7 @@
 	"block.eurekacraft.reflection_film_scraper": "Reflection Film Scraper",
 	"block.eurekacraft.resin_block": "Block of Resin",
 	"block.eurekacraft.ref_table_block": "Ref Table",
-	"block.eurekacraft.sanding_machine_block": "Sanding Machine"
+	"block.eurekacraft.sanding_machine_block": "Sanding Machine",
+	"container.eurekacraft.ref_table": "Ref Table",
+	"container.eurekacraft.sanding_machine": "Sanding Machine"
 }

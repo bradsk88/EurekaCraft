@@ -74,9 +74,8 @@ public class SandingMachineContainer extends MachineContainer {
         return true; // TODO: Based on distance
     }
 
-
-    public boolean isCooking() {
-        return this.cookProgressSlot.get() > 0;
+    public int getCraftedPercent() {
+        return this.cookProgressSlot.get();
     }
 
     @Override

@@ -20,7 +20,7 @@ public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMach
 
     public final static ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "sanding_machine_recipe_category");
 
-    public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
+    public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png");
 
     private final IDrawable background;
     private final IDrawable icon;

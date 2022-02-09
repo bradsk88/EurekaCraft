@@ -2,7 +2,7 @@
   "type": "eurekacraft:sanding_machine",
   "ingredients": [
     {
-      "item": "minecraft:oak_slab"
+      "tag": "minecraft:wooden_slabs"
     }
   ],
   "result": {

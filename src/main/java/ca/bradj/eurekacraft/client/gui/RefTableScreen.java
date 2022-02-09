@@ -23,9 +23,9 @@ public class RefTableScreen extends ContainerScreen<RefTableContainer> {
         this.minecraft.getTextureManager().bind(GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 0, 22, 15);
-        if (this.getMenu().isCooking()) {
-            this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 15, 22, 15);
-        }
+        float wPercent = (float) this.getMenu().getCraftedPercent() / 100f;
+        int width = (int) (22 * wPercent);
+        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 15, width, 15);
     }
 
 }

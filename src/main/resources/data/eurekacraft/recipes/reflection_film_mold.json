@@ -2,22 +2,22 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     },
     {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     },
     {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     },
     {
       "item": "eurekacraft:resinous_dust"
     },
     {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     },
     {
-      "item": "minecraft:oak_planks"
+      "tag": "minecraft:planks"
     }
   ],
   "cook": false,

@@ -12,7 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 
 public class SandingMachineScreen extends ContainerScreen<SandingMachineContainer> {
 
-    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png"); // TODO: Specific UI
+    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png"); // TODO: Specific UI
 
     public SandingMachineScreen(SandingMachineContainer container, PlayerInventory playerInv, ITextComponent title) {
         super(container, playerInv, title);
@@ -24,9 +24,9 @@ public class SandingMachineScreen extends ContainerScreen<SandingMachineContaine
         this.minecraft.getTextureManager().bind(GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 0, 22, 15);
-        if (this.getMenu().isCooking()) {
-            this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 15, 22, 15);
-        }
+        float wPercent = (float) this.getMenu().getCraftedPercent() / 100f;
+        int width = (int) (22 * wPercent);
+        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 15, width, 15);
     }
 
 }

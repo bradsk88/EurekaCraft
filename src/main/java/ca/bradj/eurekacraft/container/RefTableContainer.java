@@ -92,6 +92,10 @@ public class RefTableContainer extends MachineContainer {
         return this.cookProgressSlot.get() > 0;
     }
 
+    public int getCraftedPercent() {
+        return this.cookProgressSlot.get();
+    }
+
     @Override
     protected int getInventorySlotCount() {
         return tileEntity.getTotalSlotCount();
