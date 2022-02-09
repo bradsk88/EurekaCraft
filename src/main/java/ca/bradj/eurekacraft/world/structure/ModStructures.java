@@ -15,6 +15,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class ModStructures {
 
@@ -24,8 +25,9 @@ public class ModStructures {
     public static final RegistryObject<TallShack> TALL_SHACK = STRUCTURES.register("tall_shack", TallShack::new);
 
     public static void setupStructures() {
-        setupMapSpacingAndLand(EMPTY_SHACK.get(), new StructureSeparationSettings(100, 50, 1234567890), true);
-        setupMapSpacingAndLand(TALL_SHACK.get(), new StructureSeparationSettings(100, 50, 1234567890), true);
+        Random r = new Random(308374);
+        setupMapSpacingAndLand(EMPTY_SHACK.get(), new StructureSeparationSettings(100, 50, r.nextInt(Integer.MAX_VALUE)), true);
+        setupMapSpacingAndLand(TALL_SHACK.get(), new StructureSeparationSettings(100, 50, r.nextInt(Integer.MAX_VALUE)), true);
     }
 
     private static <F extends Structure<?>> void setupMapSpacingAndLand(
