@@ -44,7 +44,8 @@ public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMach
 
     @Override
     public String getTitle() {
-        return BlocksInit.SANDING_MACHINE.get().getName().toString();
+
+        return BlocksInit.SANDING_MACHINE.get().getName().getString();
     }
 
     @Override

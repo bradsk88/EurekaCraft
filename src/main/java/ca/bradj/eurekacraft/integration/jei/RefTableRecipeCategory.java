@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.integration.jei;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
+import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
@@ -11,7 +12,6 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -30,7 +30,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
     public RefTableRecipeCategory(
             IGuiHelper helper
     ) {
-        this.background = helper.createDrawable(TEXTURE, 0, 0, 176, 166);
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 176, SandingMachineContainer.titleBarHeight + (4 * SandingMachineContainer.boxHeight));
         this.icon = helper.createDrawableIngredient(new ItemStack(ItemsInit.REF_TABLE_BLOCK.get()));
     }
 
@@ -46,7 +46,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
 
     @Override
     public String getTitle() {
-        return BlocksInit.REF_TABLE_BLOCK.get().getName().toString();
+        return BlocksInit.REF_TABLE_BLOCK.get().getName().getString();
     }
 
     @Override

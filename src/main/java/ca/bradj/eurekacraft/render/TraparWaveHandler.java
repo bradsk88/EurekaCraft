@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -32,8 +33,13 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
                        IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         ClientPlayerEntity player = mc.player;
-        ItemStack helmet = player.getItemBySlot(EquipmentSlotType.HEAD);
-        if (helmet.isEmpty()) {
+        boolean wearingGoggles = false;
+        for (ItemStack helmet : player.getArmorSlots()) {
+            if (helmet.sameItemStackIgnoreDurability(ItemsInit.SCUB_GOGGLES.get().getDefaultInstance())) {
+                wearingGoggles = true;
+            }
+        }
+        if (!wearingGoggles) {
             return;
         }
 

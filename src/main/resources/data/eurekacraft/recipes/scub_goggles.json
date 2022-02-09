@@ -1,0 +1,31 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:scub_glass_lens"
+    },
+    {
+      "item": "eurekacraft:scub_glass_lens"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "cook": false,
+  "extra": {
+    "item": "eurekacraft:blueprint",
+    "consume": false
+  },
+  "output": {
+    "item": "eurekacraft:scub_goggles"
+  }
+}

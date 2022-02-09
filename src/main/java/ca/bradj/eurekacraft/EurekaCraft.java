@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
@@ -53,7 +52,6 @@ public class EurekaCraft {
 		BlocksInit.BLOCKS.register(bus);
 		ItemsInit.register(bus);
 		EntitiesInit.ENTITIES.register(bus);
-		ReflectionFilmScraperInit.BLOCKS.register(bus);
 		FeaturesInit.PLACEMENTS.register(bus);
 		FeaturesInit.FEATURES.register(bus);
 		ContainerTypesInit.TYPES.register(bus);

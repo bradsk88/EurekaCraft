@@ -2,10 +2,7 @@ package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
-import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
-import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraper;
-import ca.bradj.eurekacraft.blocks.machines.ReflectionFilmScraperInit;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.materials.*;
@@ -13,6 +10,7 @@ import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
+import ca.bradj.eurekacraft.wearables.ScubGoggles;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,21 +27,14 @@ public class ItemsInit {
 			FreshSeeds.ITEM_ID, FreshSeeds::new
 	);
 
-	public static final RegistryObject<Item> REFLECTION_SCRAPER_BLOCK = ITEMS.register(
-			ReflectionFilmScraper.ITEM_ID,
-			() -> new BlockItem(
-					ReflectionFilmScraperInit.REFLECTION_FILM_BLOCK.get(),
-					ReflectionFilmScraper.ITEM_PROPS
-			)
-	);
+//	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
+//			BrokenRefBoardBlock.ITEM_ID,
+//			() -> new BlockItem(
+//					BlocksInit.BROKEN_REF_BOARD.get(),
+//					BrokenRefBoardBlock.ITEM_PROPS
+//			)
+//	);
 
-	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
-			BrokenRefBoardBlock.ITEM_ID,
-			() -> new BlockItem(
-					BlocksInit.BROKEN_REF_BOARD.get(),
-					BrokenRefBoardBlock.ITEM_PROPS
-			)
-	);
 	public static final RegistryObject<Item> RESIN_BLOCK = ITEMS.register(
 			ResinBlock.ITEM_ID,
 			() -> new BlockItem(
@@ -139,6 +130,13 @@ public class ItemsInit {
 			Resin.ITEM_ID, Resin::new
 	);
 
+	public static final RegistryObject<Item> SCUB_GLASS_LENS = ITEMS.register(
+			ScubGlassLens.ITEM_ID, ScubGlassLens::new
+	);
+
+	public static final RegistryObject<Item> SCUB_GOGGLES = ITEMS.register(
+			ScubGoggles.ITEM_ID, ScubGoggles::new
+	);
 
 	public static void register(IEventBus bus) {
 		ITEMS.register(bus);
