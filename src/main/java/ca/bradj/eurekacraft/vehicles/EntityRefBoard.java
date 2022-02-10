@@ -228,7 +228,7 @@ public class EntityRefBoard extends Entity {
         }
 
         Direction faceDir = this.playerOrNull.getDirection();
-        BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         if (
                 !(
                         this.level.getBlockState(inFront).is(Blocks.AIR) ||
