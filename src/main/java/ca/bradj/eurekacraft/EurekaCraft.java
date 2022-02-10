@@ -2,11 +2,8 @@ package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
-import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -71,26 +68,27 @@ public class EurekaCraft {
 		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
 		BlocksInit.RegisterTextures();
 		event.enqueueWork(() -> {
-			ItemModelsProperties.register(
-					ItemsInit.GLIDE_BOARD.get(),
-					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-					new EntityRefBoard.DeployedPropGetter()
-			);
-			ItemModelsProperties.register(
-					ItemsInit.STANDARD_BOARD.get(),
-					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-					new EntityRefBoard.DeployedPropGetter()
-			);
-			ItemModelsProperties.register(
-					ItemsInit.BROKEN_BOARD.get(),
-					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-					new EntityRefBoard.DeployedPropGetter()
-			);
-			ItemModelsProperties.register(
-					ItemsInit.REF_BOARD_CORE.get(),
-					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-					new EntityRefBoard.DeployedPropGetter()
-			);
+			ModelsInit.registerModels();
+//			ItemModelsProperties.register(
+//					ItemsInit.GLIDE_BOARD.get(),
+//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+//					new DeployedPropGetter()
+//			);
+//			ItemModelsProperties.register(
+//					ItemsInit.STANDARD_BOARD.get(),
+//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+//					new DeployedPropGetter()
+//			);
+//			ItemModelsProperties.register(
+//					ItemsInit.BROKEN_BOARD.get(),
+//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+//					new DeployedPropGetter()
+//			);
+//			ItemModelsProperties.register(
+//					ItemsInit.REF_BOARD_CORE.get(),
+//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
+//					new DeployedPropGetter()
+//			);
 			ClientRegistry.bindTileEntityRenderer(TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new);
 		});
 	}

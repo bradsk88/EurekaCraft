@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.data.recipes;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -15,6 +16,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -67,10 +70,12 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return RecipesInit.GLIDE_BOARD_SERIALIZER.get();
+        return RecipesInit.SANDING_MACHINE_SERIALIZER.get();
     }
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<SandingMachineRecipe> {
+
+        Logger logger = LogManager.getLogger(EurekaCraft.MODID + "/SandingMachine");
 
         @Override
         public SandingMachineRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -89,9 +94,9 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
         @Nullable
         @Override
         public SandingMachineRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(recipeSize, Ingredient.EMPTY);
-
-            for (int i = 0; i < inputs.size(); i++) {
+            int rSize = buffer.readInt();
+            NonNullList<Ingredient> inputs = NonNullList.withSize(rSize, Ingredient.EMPTY);
+            for (int i = 0; i < rSize; i++) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
 
@@ -103,10 +108,12 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
         @Override
         public void toNetwork(PacketBuffer buffer, SandingMachineRecipe recipe) {
             buffer.writeInt(recipe.getIngredients().size());
+            int i = 0;
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buffer);
+                i++;
             }
-            buffer.writeItemStack(recipe.getResultItem(), false);
+            buffer.writeItem(recipe.getResultItem());
         }
     }
 

@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -10,13 +11,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
+@Mod.EventBusSubscriber(modid = EurekaCraft.MODID, value= Dist.CLIENT)
 public class BoardPlayerRenderHandler {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -30,7 +32,7 @@ public class BoardPlayerRenderHandler {
             return;
         }
 
-        AbstractBoardModel model = EntityRefBoard.getModelFor(event.getPlayer().getId());
+        AbstractBoardModel model = ModelsInit.getModel(EntityRefBoard.getBoardIDFor(event.getPlayer().getId()));
 
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 

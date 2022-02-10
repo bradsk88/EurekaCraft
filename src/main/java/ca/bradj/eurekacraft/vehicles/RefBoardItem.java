@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -19,13 +20,13 @@ public abstract class RefBoardItem extends Item {
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats stats;
-    private final AbstractBoardModel model;
+    private final ResourceLocation id;
     protected boolean canFly = true;
 
-    protected RefBoardItem(RefBoardStats stats, AbstractBoardModel model) {
+    protected RefBoardItem(RefBoardStats stats, ResourceLocation boardId) {
         super(PROPS);
         this.stats = stats;
-        this.model = model;
+        this.id = boardId;
     }
 
     @Override
@@ -69,16 +70,16 @@ public abstract class RefBoardItem extends Item {
         return this.stats;
     }
 
-    public AbstractBoardModel getModel() {
-        return this.model;
-    };
-
     public boolean isDamagedBoard() {
         return this.stats.isDamaged();
     }
 
     public boolean canFly() {
         return this.canFly;
+    }
+
+    public ResourceLocation getID() {
+        return this.id;
     }
 
     public static class ItemIDs {

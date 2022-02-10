@@ -3,15 +3,10 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
-import ca.bradj.eurekacraft.render.AbstractBoardModel;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -19,13 +14,13 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,12 +80,12 @@ public class EntityRefBoard extends Entity {
         this.lastSpeed = initialSpeed;
     }
 
-    public static AbstractBoardModel getModelFor(int id) {
-        return deployedBoards.get(id).item.getModel();
-    }
-
     public static void boostPlayer(int id) {
         boostedPlayers.put(id, BOOST_TICKS);
+    }
+
+    public static ResourceLocation getBoardIDFor(int id) {
+        return deployedBoards.get(id).item.getID();
     }
 
     @Override
@@ -235,8 +230,14 @@ public class EntityRefBoard extends Entity {
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
         if (
-                !(this.level.getBlockState(inFront).is(Blocks.AIR) || this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get()))
+                !(
+                        this.level.getBlockState(inFront).is(Blocks.AIR) ||
+                                // TODO: Generate waves in cave air
+                                this.level.getBlockState(inFront).is(Blocks.CAVE_AIR) ||
+                                this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get())
+                )
         ) {
+            logger.debug("Crashed into " + this.level.getBlockState(inFront));
             flightSpeed = 0.01;
         }
 
@@ -265,19 +266,4 @@ public class EntityRefBoard extends Entity {
         return boosted;
     }
 
-    public static class DeployedPropGetter implements IItemPropertyGetter {
-        @Override
-        public float call(ItemStack item, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
-            if (entity == null) {
-                return 0.0F;
-            }
-            if (!(item.getItem() instanceof RefBoardItem)) {
-                return 0.0F;
-            }
-            if (!EntityRefBoard.isDeployedFor(entity.getId())) {
-                return 0.0F;
-            }
-            return 1.0F;
-        }
-    }
 }

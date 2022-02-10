@@ -1,18 +1,23 @@
 package ca.bradj.eurekacraft.data.recipes;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.*;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.item.crafting.ShapedRecipe;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -131,16 +136,15 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         @Nullable
         @Override
         public GlideBoardRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
-            NonNullList<Ingredient> inputs = NonNullList.withSize(recipeSize, Ingredient.EMPTY);
-
+            int rSize = buffer.readInt();
+            NonNullList<Ingredient> inputs = NonNullList.withSize(rSize, Ingredient.EMPTY);
             for (int i = 0; i < inputs.size(); i++) {
                 inputs.set(i, Ingredient.fromNetwork(buffer));
             }
-
             Ingredient extraIngredient = Ingredient.fromNetwork(buffer);
-            boolean consumeExtra = buffer.getBoolean(1);
+            boolean consumeExtra = buffer.readBoolean();
             ExtraInput extra = new ExtraInput(extraIngredient, consumeExtra);
-            boolean cook = buffer.getBoolean(1);
+            boolean cook = buffer.readBoolean();
 
             ItemStack output = buffer.readItem();
 
@@ -160,8 +164,8 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             recipe.getExtraIngredient().ingredient.toNetwork(buffer);
             buffer.writeBoolean(recipe.getExtraIngredient().consumeOnUse);
             buffer.writeBoolean(recipe.requiresCooking());
-            buffer.writeItemStack(recipe.getResultItem(), false);
-            buffer.writeItemStack(recipe.getSecondaryResultItem().output, false);
+            buffer.writeItem(recipe.getResultItem());
+            buffer.writeItem(recipe.getSecondaryResultItem().output);
             buffer.writeDouble(recipe.getSecondaryResultItem().chance);
         }
     }
