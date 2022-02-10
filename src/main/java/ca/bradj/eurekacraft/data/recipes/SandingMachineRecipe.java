@@ -67,7 +67,7 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return RecipesInit.GLIDE_BOARD_SERIALIZER.get();
+        return RecipesInit.SANDING_MACHINE_SERIALIZER.get();
     }
 
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<SandingMachineRecipe> {
