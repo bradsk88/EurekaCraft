@@ -3,7 +3,8 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
-import net.minecraft.block.Blocks;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +15,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -33,10 +33,14 @@ public class EntityRefBoard extends Entity {
 
     private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
-
-    public static boolean isDeployedFor(Integer playerId) {
-        return deployedBoards.containsKey(playerId);
-    }
+    private static Block[] PASSABLE_BLOCKS = {
+            Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS,
+            BlocksInit.TRAPAR_WAVE_BLOCK.get(), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
+    };
+    // Prefer PASSABLE_BLOCKS when possible
+    private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{
+            FlowerBlock.class, TallGrassBlock.class,
+    };
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
@@ -59,6 +63,10 @@ public class EntityRefBoard extends Entity {
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
+        if (world.isClientSide()) {
+            return;
+        }
+
         ItemStack itemInHand = player.getItemInHand(hand);
         if (!(itemInHand.getItem() instanceof RefBoardItem)) {
             logger.error("Item in hand was not ref board. Killing entity");
@@ -80,19 +88,21 @@ public class EntityRefBoard extends Entity {
         this.lastSpeed = initialSpeed;
     }
 
-    public static void boostPlayer(int id) {
+    public static void boostPlayer(World world, int id) {
+        if (world.isClientSide()) {
+            return;
+        }
         boostedPlayers.put(id, BOOST_TICKS);
-    }
-
-    public static ResourceLocation getBoardIDFor(int id) {
-        return deployedBoards.get(id).item.getID();
     }
 
     @Override
     public void kill() {
         super.kill();
-        if (this.playerOrNull != null && !this.level.isClientSide) {
-            deployedBoards.remove(this.playerOrNull.getId());
+        if (this.playerOrNull != null) {
+            PlayerDeployedBoard.remove(this.playerOrNull);
+            if (!this.level.isClientSide()) {
+                deployedBoards.remove(this.playerOrNull.getId());
+            }
         }
     }
 
@@ -227,19 +237,7 @@ public class EntityRefBoard extends Entity {
             this.lastLift = liftOrFall;
         }
 
-        Direction faceDir = this.playerOrNull.getDirection();
-        BlockPos inFront = new BlockPos(this.playerOrNull.getPosition(0)).relative(faceDir);
-        if (
-                !(
-                        this.level.getBlockState(inFront).is(Blocks.AIR) ||
-                                // TODO: Generate waves in cave air
-                                this.level.getBlockState(inFront).is(Blocks.CAVE_AIR) ||
-                                this.level.getBlockState(inFront).is(BlocksInit.TRAPAR_WAVE_BLOCK.get())
-                )
-        ) {
-            logger.debug("Crashed into " + this.level.getBlockState(inFront));
-            flightSpeed = 0.01;
-        }
+        flightSpeed = reduceSpeedIfCrashed(flightSpeed);
 
 //        logger.debug("Speed: " + flightSpeed);
         if (Math.abs(flightSpeed) > 0) {
@@ -253,6 +251,25 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
+    }
+
+    private double reduceSpeedIfCrashed(double flightSpeed) {
+        // TODO: Smash bushes/crops/leaves and slow down more gradually?
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
+        for (Block b : PASSABLE_BLOCKS) {
+            if (blockInFront.is(b)) {
+                return flightSpeed;
+            }
+        }
+        for (Class<?> c : PASSABLE_BLOCK_CLASSES) {
+            if (blockInFront.getBlock().getClass() == c) {
+                return flightSpeed;
+            }
+        }
+        logger.debug("Crashed into " + blockInFront);
+        return 0.01;
     }
 
     private boolean consumeBoost() {

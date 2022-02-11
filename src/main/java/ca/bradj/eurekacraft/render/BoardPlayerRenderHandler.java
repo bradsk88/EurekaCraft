@@ -2,14 +2,12 @@ package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
-import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
+import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -25,14 +23,20 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
+        PlayerDeployedBoard.get(event.getPlayer()).ifPresent(
+                (BoardType bt) -> renderPlayerWithBoard(event, bt)
+        );
+    }
+
+    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, BoardType bt) {
         MatrixStack matrixStack = event.getMatrixStack();
         matrixStack.pushPose();
 
-        if (!EntityRefBoard.isDeployedFor(event.getPlayer().getId())) {
+        if (BoardType.NONE.equals(bt)) {
             return;
         }
 
-        AbstractBoardModel model = ModelsInit.getModel(EntityRefBoard.getBoardIDFor(event.getPlayer().getId()));
+        AbstractBoardModel model = ModelsInit.getModel(bt);
 
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
@@ -54,7 +58,7 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRenderPost(RenderPlayerEvent.Post event) {
-        event.getMatrixStack().popPose();
+        event.getMatrixStack().popPose(); // TODO: Move to Pre?
     }
 
 }

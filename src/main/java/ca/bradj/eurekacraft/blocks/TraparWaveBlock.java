@@ -62,11 +62,12 @@ public class TraparWaveBlock extends Block {
 
         @Override
         public void tick() {
-            if (!this.level.isClientSide()) {
-                for (PlayerEntity p : this.level.players()) {
-                    if (this.shape.isInAffectedRange(p.blockPosition())) {
-                        EntityRefBoard.boostPlayer(p.getId());
-                    }
+            if (this.level.isClientSide()) {
+                return;
+            }
+            for (PlayerEntity p : this.level.players()) {
+                if (this.shape.isInAffectedRange(p.blockPosition())) {
+                    EntityRefBoard.boostPlayer(this.level, p.getId());
                 }
             }
         }

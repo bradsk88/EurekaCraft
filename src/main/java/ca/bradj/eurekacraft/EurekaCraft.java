@@ -1,7 +1,10 @@
 package ca.bradj.eurekacraft;
 
+import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.core.init.*;
+import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
+import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,39 +61,20 @@ public class EurekaCraft {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		event.enqueueWork(() -> {
-			ModStructures.setupStructures();
-		});
+		event.enqueueWork(ModStructures::setupStructures);
+		event.enqueueWork(DeploymentCapability::register);
+		event.enqueueWork(EurekaCraftNetwork::init);
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
 		// do something that can only be done on the client
 		LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().options);
 		BlocksInit.RegisterTextures();
+		event.enqueueWork(ModelsInit::registerModels);
 		event.enqueueWork(() -> {
-			ModelsInit.registerModels();
-//			ItemModelsProperties.register(
-//					ItemsInit.GLIDE_BOARD.get(),
-//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-//					new DeployedPropGetter()
-//			);
-//			ItemModelsProperties.register(
-//					ItemsInit.STANDARD_BOARD.get(),
-//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-//					new DeployedPropGetter()
-//			);
-//			ItemModelsProperties.register(
-//					ItemsInit.BROKEN_BOARD.get(),
-//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-//					new DeployedPropGetter()
-//			);
-//			ItemModelsProperties.register(
-//					ItemsInit.REF_BOARD_CORE.get(),
-//					new ResourceLocation(EurekaCraft.MODID, "deployed"),
-//					new DeployedPropGetter()
-//			);
 			ClientRegistry.bindTileEntityRenderer(TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new);
 		});
+		event.enqueueWork(BoardItemRendering::initItemProperties);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {
