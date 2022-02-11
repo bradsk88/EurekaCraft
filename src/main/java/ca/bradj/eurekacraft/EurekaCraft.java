@@ -1,7 +1,9 @@
 package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.core.init.*;
+import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
+import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.block.Block;
 import net.minecraftforge.common.MinecraftForge;
@@ -58,9 +60,9 @@ public class EurekaCraft {
 	}
 
 	private void setup(final FMLCommonSetupEvent event) {
-		event.enqueueWork(() -> {
-			ModStructures.setupStructures();
-		});
+		event.enqueueWork(ModStructures::setupStructures);
+		event.enqueueWork(DeploymentCapability::register);
+		event.enqueueWork(EurekaCraftNetwork::init);
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {

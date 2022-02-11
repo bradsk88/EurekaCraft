@@ -1,7 +1,8 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import ca.bradj.eurekacraft.render.AbstractBoardModel;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -11,19 +12,22 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public abstract class RefBoardItem extends Item {
 
+    private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats stats;
-    private final ResourceLocation id;
+    private final BoardType id;
     protected boolean canFly = true;
 
-    protected RefBoardItem(RefBoardStats stats, ResourceLocation boardId) {
+    protected RefBoardItem(RefBoardStats stats, BoardType boardId) {
         super(PROPS);
         this.stats = stats;
         this.id = boardId;
@@ -41,29 +45,32 @@ public abstract class RefBoardItem extends Item {
         if (serverSide) {
             EntityRefBoard glider = spawnedGlidersMap.get(player);
             if (glider != null && !glider.isAlive()) {
-                despawnGlider(player, glider);
+                despawnGlider(player, world, glider);
             }
             if (glider != null && glider.isAlive()) {
-                if (glider.getHandHeld() == hand) despawnGlider(player, glider);
+                if (glider.getHandHeld() == hand) despawnGlider(player, world, glider);
                 // if deployed glider is in other hand, ignore
-            } else spawnGlider(player, player.level, hand);
+            } else spawnGlider(player, player.level, hand, this.id);
         }
 
         return ActionResult.success(s);
     }
 
-
-    private static void spawnGlider(PlayerEntity player, World world, Hand hand) {
+    // Server Side Only
+    private static void spawnGlider(PlayerEntity player, World world, Hand hand, BoardType id) {
         EntityRefBoard glider = new EntityRefBoard(player, world, hand);
         Vector3d position = player.position();
         glider.setPos(position.x, position.y, position.z);
         world.addFreshEntity(glider);
         spawnedGlidersMap.put(player, glider);
+        PlayerDeployedBoard.set(player, id);
     }
 
-    private static void despawnGlider(PlayerEntity player, EntityRefBoard glider) {
+    // Server Side only
+    private static void despawnGlider(PlayerEntity player, World world, EntityRefBoard glider) {
         glider.kill();
         spawnedGlidersMap.remove(player);
+        PlayerDeployedBoard.remove(player);
     }
 
     public RefBoardStats getStats() {

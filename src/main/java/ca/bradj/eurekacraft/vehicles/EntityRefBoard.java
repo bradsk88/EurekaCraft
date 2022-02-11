@@ -3,6 +3,8 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,7 +16,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -33,10 +34,6 @@ public class EntityRefBoard extends Entity {
 
     private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
-
-    public static boolean isDeployedFor(Integer playerId) {
-        return deployedBoards.containsKey(playerId);
-    }
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
@@ -59,6 +56,10 @@ public class EntityRefBoard extends Entity {
     public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
+        if (world.isClientSide()) {
+            return;
+        }
+
         ItemStack itemInHand = player.getItemInHand(hand);
         if (!(itemInHand.getItem() instanceof RefBoardItem)) {
             logger.error("Item in hand was not ref board. Killing entity");
@@ -80,19 +81,21 @@ public class EntityRefBoard extends Entity {
         this.lastSpeed = initialSpeed;
     }
 
-    public static void boostPlayer(int id) {
+    public static void boostPlayer(World world, int id) {
+        if (world.isClientSide()) {
+            return;
+        }
         boostedPlayers.put(id, BOOST_TICKS);
-    }
-
-    public static ResourceLocation getBoardIDFor(int id) {
-        return deployedBoards.get(id).item.getID();
     }
 
     @Override
     public void kill() {
         super.kill();
-        if (this.playerOrNull != null && !this.level.isClientSide) {
-            deployedBoards.remove(this.playerOrNull.getId());
+        if (this.playerOrNull != null) {
+            PlayerDeployedBoard.remove(this.playerOrNull);
+            if (!this.level.isClientSide()) {
+                deployedBoards.remove(this.playerOrNull.getId());
+            }
         }
     }
 
