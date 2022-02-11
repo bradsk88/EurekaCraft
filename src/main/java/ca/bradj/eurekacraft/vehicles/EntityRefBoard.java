@@ -4,10 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,8 +38,8 @@ public class EntityRefBoard extends Entity {
             BlocksInit.TRAPAR_WAVE_BLOCK.get(), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
     };
     // Prefer PASSABLE_BLOCKS when possible
-    private static Class<? extends Block>[] PASSABLE_BLOCK_CLASSES = new Class[]{
-            FlowerBlock.class
+    private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{
+            FlowerBlock.class, TallGrassBlock.class,
     };
 
     private static final float runSpeed = 0.13f;
@@ -266,7 +263,7 @@ public class EntityRefBoard extends Entity {
                 return flightSpeed;
             }
         }
-        for (Class<? extends Block> c : PASSABLE_BLOCK_CLASSES) {
+        for (Class<?> c : PASSABLE_BLOCK_CLASSES) {
             if (blockInFront.getBlock().getClass() == c) {
                 return flightSpeed;
             }
