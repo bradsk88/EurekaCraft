@@ -101,7 +101,6 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                 if (j2 != k2) {
                     Random random = new Random((long) (k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761));
                     blockpos$mutable.set(k1, j2, j1);
-                    float f2 = biome.getTemperature(blockpos$mutable);
                     if (i1 != 0) {
                         if (i1 >= 0) {
                             tessellator.end();
@@ -113,7 +112,7 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                     }
 
                     int i3 = ticks + k1 * k1 * 3121 + k1 * 45238971 + j1 * j1 * 418711 + j1 * 13761 & 31;
-                    float f3 = -((float) i3 + partialTicks) / 32.0F * (3.0F + random.nextFloat());
+                    float f3 = ((float) i3 + partialTicks) / 32.0F * (3.0F + random.nextFloat());
                     double d2 = (double) ((float) k1 + 0.5F) - xIn;
                     double d4 = (double) ((float) j1 + 0.5F) - zIn;
                     float f4 = MathHelper.sqrt(d2 * d2 + d4 * d4) / (float) l;
