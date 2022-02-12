@@ -1,12 +1,15 @@
 package ca.bradj.eurekacraft.client;
 
-import ca.bradj.eurekacraft.render.TraparGogglesHandler;
+import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
+import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
+import ca.bradj.eurekacraft.render.TraparStormRenderStarter;
 import ca.bradj.eurekacraft.render.TraparStormRenderHandler;
 import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.network.NetworkDirection;
 
 import java.util.OptionalLong;
 
@@ -17,9 +20,12 @@ public class TraparStormRendering {
         IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
         IWeatherRenderHandler traparRenderer = new TraparStormRenderHandler();
 
-        MinecraftForge.EVENT_BUS.register(
-                new TraparGogglesHandler(dimensionRenderInfo, traparRenderer, defaultRenderer)
-        );
+        TraparStormRenderStarter starter = new TraparStormRenderStarter(dimensionRenderInfo, traparRenderer, defaultRenderer);
+        MinecraftForge.EVENT_BUS.register(starter);
+        EurekaCraftNetwork.registerMessage(TraparStormMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(TraparStormMessage::encode).
+                decoder(TraparStormMessage::decode).
+                consumer(starter::handleMessage);
     }
 
     private static class DTypeAccessor extends DimensionType {

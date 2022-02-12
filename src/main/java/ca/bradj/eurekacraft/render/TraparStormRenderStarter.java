@@ -2,15 +2,22 @@ package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.network.NetworkEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TraparGogglesHandler {
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
+
+public class TraparStormRenderStarter {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -18,7 +25,10 @@ public class TraparGogglesHandler {
     private final IWeatherRenderHandler defaultRenderer;
     private final DimensionRenderInfo dimension;
 
-    public TraparGogglesHandler(DimensionRenderInfo dimensionRenderInfo, IWeatherRenderHandler traparRenderer, IWeatherRenderHandler defaultRenderer) {
+    private boolean gogglesOn = false;
+    private boolean storming = false;
+
+    public TraparStormRenderStarter(DimensionRenderInfo dimensionRenderInfo, IWeatherRenderHandler traparRenderer, IWeatherRenderHandler defaultRenderer) {
         this.dimension = dimensionRenderInfo;
         this.traparRenderer = traparRenderer;
         this.defaultRenderer = defaultRenderer;
@@ -30,7 +40,31 @@ public class TraparGogglesHandler {
             // TODO: Support tinker (and other mods) goggle slot
             return;
         }
-        if(evt.getTo().sameItemStackIgnoreDurability(ItemsInit.SCUB_GOGGLES.get().getDefaultInstance())) {
+        this.gogglesOn = evt.getTo().sameItemStackIgnoreDurability(
+                ItemsInit.SCUB_GOGGLES.get().getDefaultInstance()
+        );
+        updateFromState();
+    }
+
+    public boolean handleMessage(
+            TraparStormMessage traparStormMessage,
+            Supplier<NetworkEvent.Context> ctx
+    ) {
+        final AtomicBoolean success = new AtomicBoolean(false);
+        ctx.get().enqueueWork(() -> {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                    () -> () -> {
+                        storming = traparStormMessage.isStorming();
+                        updateFromState();
+                    }
+            );
+        });
+        ctx.get().setPacketHandled(true);
+        return success.get();
+    }
+
+    private void updateFromState() {
+        if (gogglesOn && storming) {
             logger.debug("Setting renderer to trapar");
             this.dimension.setWeatherRenderHandler(this.traparRenderer);
         } else {

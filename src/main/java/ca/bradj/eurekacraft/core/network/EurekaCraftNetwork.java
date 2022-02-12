@@ -11,6 +11,8 @@ public class EurekaCraftNetwork {
 
     public static final String NETWORK_VERSION = "0.0.1";
 
+    private static int messageIndex = 0;
+
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(EurekaCraft.MODID, "network"),
             () -> NETWORK_VERSION,
@@ -18,12 +20,15 @@ public class EurekaCraftNetwork {
             version -> version.equals(NETWORK_VERSION)
     );
 
-    public static void init() {
-        int index = 0;
-        CHANNEL.messageBuilder(DeployedBoardMessage.class, index++, NetworkDirection.PLAY_TO_CLIENT).
+    public static void initClientMessages() {
+        registerMessage(DeployedBoardMessage.class, NetworkDirection.PLAY_TO_CLIENT).
                 encoder(DeployedBoardMessage::encode).
                 decoder(DeployedBoardMessage::decode).
                 consumer(DeployedBoardMessage::handle).
                 add();
+    }
+
+    public static <T> SimpleChannel.MessageBuilder<T> registerMessage(Class<T> msgClass, NetworkDirection dir) {
+        return CHANNEL.messageBuilder(msgClass, messageIndex++, dir);
     }
 }

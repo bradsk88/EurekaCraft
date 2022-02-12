@@ -64,7 +64,6 @@ public class EurekaCraft {
 	private void setup(final FMLCommonSetupEvent event) {
 		event.enqueueWork(ModStructures::setupStructures);
 		event.enqueueWork(DeploymentCapability::register);
-		event.enqueueWork(EurekaCraftNetwork::init);
 	}
 
 	private void doClientStuff(final FMLClientSetupEvent event) {
@@ -77,6 +76,7 @@ public class EurekaCraft {
 		});
 		event.enqueueWork(BoardItemRendering::initItemProperties);
 		event.enqueueWork(TraparStormRendering::init);
+		event.enqueueWork(EurekaCraftNetwork::initClientMessages);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {
