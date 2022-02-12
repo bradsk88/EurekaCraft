@@ -45,6 +45,10 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
 
     @Override
     public void render(int ticks, float partialTicks, ClientWorld world, Minecraft mc, LightTexture lightMapIn, double xIn, double yIn, double zIn) {
+        // TODO: Only render to people wearing goggles
+        // TODO: Only render when trapar storm is happening
+        // TODO: Do we need to be kind to other mods (or even vanilla)? Add call-through to original renderer?
+
 //        net.minecraftforge.client.IWeatherRenderHandler renderHandler = world.effects().getWeatherRenderHandler();
 //        if (renderHandler != null) {
 //            renderHandler.render(ticks, p_228438_2_, level, minecraft, p_228438_1_, xIn, yIn, zIn);
@@ -81,7 +85,6 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                 double d0 = (double) this.rainSizeX[l1] * 0.5D;
                 double d1 = (double) this.rainSizeZ[l1] * 0.5D;
                 blockpos$mutable.set(k1, 0, j1);
-                Biome biome = world.getBiome(blockpos$mutable);
                 int i2 = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, blockpos$mutable).getY();
                 int j2 = j - l;
                 int k2 = j + l;
@@ -112,7 +115,7 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                     }
 
                     int i3 = ticks + k1 * k1 * 3121 + k1 * 45238971 + j1 * j1 * 418711 + j1 * 13761 & 31;
-                    float f3 = ((float) i3 + partialTicks) / 32.0F * (3.0F + random.nextFloat());
+                    float f3 = (0.2f) * ((float) i3 + partialTicks) / 32.0F * (3.0F + random.nextFloat());
                     double d2 = (double) ((float) k1 + 0.5F) - xIn;
                     double d4 = (double) ((float) j1 + 0.5F) - zIn;
                     float f4 = MathHelper.sqrt(d2 * d2 + d4 * d4) / (float) l;
