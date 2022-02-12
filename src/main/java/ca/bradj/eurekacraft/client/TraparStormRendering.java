@@ -1,9 +1,12 @@
 package ca.bradj.eurekacraft.client;
 
+import ca.bradj.eurekacraft.render.TraparGogglesHandler;
 import ca.bradj.eurekacraft.render.TraparStormRenderHandler;
 import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
+import net.minecraftforge.client.IWeatherRenderHandler;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.OptionalLong;
 
@@ -11,8 +14,11 @@ public class TraparStormRendering {
 
     public static void init() {
         DimensionRenderInfo dimensionRenderInfo = DimensionRenderInfo.forType(DTypeAccessor.getOverworldType());
-        dimensionRenderInfo.setWeatherRenderHandler(
-                new TraparStormRenderHandler()
+        IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
+        IWeatherRenderHandler traparRenderer = new TraparStormRenderHandler();
+
+        MinecraftForge.EVENT_BUS.register(
+                new TraparGogglesHandler(dimensionRenderInfo, traparRenderer, defaultRenderer)
         );
     }
 

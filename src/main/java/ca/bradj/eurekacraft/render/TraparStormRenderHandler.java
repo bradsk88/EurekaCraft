@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -11,7 +12,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +45,12 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
 
     @Override
     public void render(int ticks, float partialTicks, ClientWorld world, Minecraft mc, LightTexture lightMapIn, double xIn, double yIn, double zIn) {
-        // TODO: Only render to people wearing goggles
+
+        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.getCameraEntity())) {
+            logger.error("Trapar Storm Renderer is still installed but player is not wearing goggles");
+            return;
+        }
+
         // TODO: Only render when trapar storm is happening
         // TODO: Do we need to be kind to other mods (or even vanilla)? Add call-through to original renderer?
 
@@ -102,7 +107,7 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                 }
 
                 if (j2 != k2) {
-                    Random random = new Random((long) (k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761));
+                    Random random = new Random(k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761);
                     blockpos$mutable.set(k1, j2, j1);
                     if (i1 != 0) {
                         if (i1 >= 0) {
