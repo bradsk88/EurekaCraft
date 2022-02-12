@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.client.BoardItemRendering;
+import ca.bradj.eurekacraft.client.TraparStormRendering;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
@@ -75,6 +76,7 @@ public class EurekaCraft {
 			ClientRegistry.bindTileEntityRenderer(TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new);
 		});
 		event.enqueueWork(BoardItemRendering::initItemProperties);
+		event.enqueueWork(TraparStormRendering::init);
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {
