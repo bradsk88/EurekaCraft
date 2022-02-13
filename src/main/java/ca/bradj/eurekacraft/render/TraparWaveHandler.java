@@ -3,17 +3,14 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -32,18 +29,9 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
     public void render(TraparWaveBlock.TileEntity te, float partialTicks, MatrixStack matrixStackIn,
                        IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
-        ClientPlayerEntity player = mc.player;
-        boolean wearingGoggles = false;
-        for (ItemStack helmet : player.getArmorSlots()) {
-            if (helmet.sameItemStackIgnoreDurability(ItemsInit.SCUB_GOGGLES.get().getDefaultInstance())) {
-                wearingGoggles = true;
-            }
-        }
-        if (!wearingGoggles) {
+        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
             return;
         }
-
-        // TODO: Check player for goggles
 
         for (BlockPos p : te.getShape().getAsRelativeBlockPositions()) {
             renderBlock(p, matrixStackIn, bufferIn,  1.0f);

@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.core.network;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
+import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -11,6 +12,8 @@ public class EurekaCraftNetwork {
 
     public static final String NETWORK_VERSION = "0.0.1";
 
+    private static int messageIndex = 0;
+
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(EurekaCraft.MODID, "network"),
             () -> NETWORK_VERSION,
@@ -19,11 +22,19 @@ public class EurekaCraftNetwork {
     );
 
     public static void init() {
-        int index = 0;
-        CHANNEL.messageBuilder(DeployedBoardMessage.class, index++, NetworkDirection.PLAY_TO_CLIENT).
+        registerMessage(DeployedBoardMessage.class, NetworkDirection.PLAY_TO_CLIENT).
                 encoder(DeployedBoardMessage::encode).
                 decoder(DeployedBoardMessage::decode).
                 consumer(DeployedBoardMessage::handle).
                 add();
+        registerMessage(TraparStormMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(TraparStormMessage::encode).
+                decoder(TraparStormMessage::decode).
+                consumer(TraparStormMessage::handle).
+                add();
+    }
+
+    public static <T> SimpleChannel.MessageBuilder<T> registerMessage(Class<T> msgClass, NetworkDirection dir) {
+        return CHANNEL.messageBuilder(msgClass, messageIndex++, dir);
     }
 }
