@@ -39,7 +39,7 @@ public class StormSavedData extends WorldSavedData {
     private StormSavedData(String id, ChunkPos pos, float gainPerTick) {
         super(id);
         this.gainPerTick = gainPerTick;
-        this.lossPerTick = 10 * gainPerTick;
+        this.lossPerTick = 100 * gainPerTick;
         this.pos = pos;
         this.traparLevel = new Random().nextFloat();
     }

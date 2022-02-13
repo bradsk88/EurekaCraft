@@ -55,12 +55,6 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
             return;
         }
 
-        if (!StormSavedData.forBlockPosition(mc.getCameraEntity().blockPosition()).storming) {
-            // TODO: Can we fall back to the minecraft/other renderers in this case?
-            //  Maybe update the weather renderer on player move instead of checking during each render.
-            return;
-        }
-
         float f = 1.0f; // rain level
 
         lightMapIn.turnOnLightLayer();
@@ -92,6 +86,11 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
                 double d0 = (double) this.rainSizeX[l1] * 0.5D;
                 double d1 = (double) this.rainSizeZ[l1] * 0.5D;
                 blockpos$mutable.set(k1, 0, j1);
+
+                if (!StormSavedData.forBlockPosition(blockpos$mutable).storming) {
+                    continue;
+                }
+
                 int i2 = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, blockpos$mutable).getY();
                 int j2 = j - l;
                 int k2 = j + l;
