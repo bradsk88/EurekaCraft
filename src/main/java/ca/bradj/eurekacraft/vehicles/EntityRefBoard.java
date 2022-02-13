@@ -169,7 +169,6 @@ public class EntityRefBoard extends Entity {
             boosted = true;
         }
 
-        // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
         double boardWeight = this.item.getStats().weight();
         double boardSpeed = this.item.getStats().speed();
         double turnSpeed = this.item.getStats().agility();

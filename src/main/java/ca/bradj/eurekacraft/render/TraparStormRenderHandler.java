@@ -61,14 +61,6 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
             return;
         }
 
-        // TODO: Only render when trapar storm is happening
-        // TODO: Do we need to be kind to other mods (or even vanilla)? Add call-through to original renderer?
-
-//        net.minecraftforge.client.IWeatherRenderHandler renderHandler = world.effects().getWeatherRenderHandler();
-//        if (renderHandler != null) {
-//            renderHandler.render(ticks, p_228438_2_, level, minecraft, p_228438_1_, xIn, yIn, zIn);
-//            return;
-//        }
         float f = 1.0f; // rain level
 
         lightMapIn.turnOnLightLayer();
