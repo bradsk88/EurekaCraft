@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -163,6 +164,10 @@ public class EntityRefBoard extends Entity {
 
     private void fly() {
         boolean boosted = this.consumeBoost();
+
+        if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
+            boosted = true;
+        }
 
         // TODO: Embed on board itself (Probably Min 0.25, Max 1.0)
         double boardWeight = this.item.getStats().weight();

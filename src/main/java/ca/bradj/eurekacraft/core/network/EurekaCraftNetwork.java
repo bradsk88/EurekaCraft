@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.core.network;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
+import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -20,11 +21,16 @@ public class EurekaCraftNetwork {
             version -> version.equals(NETWORK_VERSION)
     );
 
-    public static void initClientMessages() {
+    public static void init() {
         registerMessage(DeployedBoardMessage.class, NetworkDirection.PLAY_TO_CLIENT).
                 encoder(DeployedBoardMessage::encode).
                 decoder(DeployedBoardMessage::decode).
                 consumer(DeployedBoardMessage::handle).
+                add();
+        registerMessage(TraparStormMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(TraparStormMessage::encode).
+                decoder(TraparStormMessage::decode).
+                consumer(TraparStormMessage::handle).
                 add();
     }
 

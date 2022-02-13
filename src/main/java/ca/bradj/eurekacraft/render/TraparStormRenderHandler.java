@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
+import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -45,9 +46,18 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
 
     @Override
     public void render(int ticks, float partialTicks, ClientWorld world, Minecraft mc, LightTexture lightMapIn, double xIn, double yIn, double zIn) {
+        if (mc.getCameraEntity() == null) {
+            return;
+        }
 
         if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.getCameraEntity())) {
             logger.error("Trapar Storm Renderer is still installed but player is not wearing goggles");
+            return;
+        }
+
+        if (!StormSavedData.forBlockPosition(mc.getCameraEntity().blockPosition()).storming) {
+            // TODO: Can we fall back to the minecraft/other renderers in this case?
+            //  Maybe update the weather renderer on player move instead of checking during each render.
             return;
         }
 
