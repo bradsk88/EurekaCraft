@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.client;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import ca.bradj.eurekacraft.render.TraparStormRenderHandler;
 import ca.bradj.eurekacraft.render.TraparStormRenderStarter;
@@ -9,10 +10,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.OptionalLong;
 
 public class TraparStormRendering {
+    private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private static TraparStormRenderStarter starter;
 
     public static void init() {

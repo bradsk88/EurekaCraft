@@ -3,9 +3,11 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import net.minecraft.client.world.DimensionRenderInfo;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IWeatherRenderHandler;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,14 +29,20 @@ public class TraparStormRenderStarter {
     }
 
     @SubscribeEvent
-    public void onArmorChange(LivingEquipmentChangeEvent evt) {
-        if (!EquipmentSlotType.HEAD.equals(evt.getSlot())) {
-            // TODO: Support tinker (and other mods) goggle slot
+    public void onArmorChange(TickEvent.PlayerTickEvent evt) {
+        if (evt.player instanceof ServerPlayerEntity) {
             return;
         }
-        this.gogglesOn = evt.getTo().sameItemStackIgnoreDurability(
-                ItemsInit.SCUB_GOGGLES.get().getDefaultInstance()
-        );
+
+        boolean oldWearing = this.gogglesOn;
+
+        ItemStack headwear = evt.player.getItemBySlot(EquipmentSlotType.HEAD);
+        this.gogglesOn = headwear.sameItemStackIgnoreDurability(ItemsInit.SCUB_GOGGLES.get().getDefaultInstance());
+
+        if (oldWearing == this.gogglesOn) {
+            return;
+        }
+
         updateFromState();
     }
 
