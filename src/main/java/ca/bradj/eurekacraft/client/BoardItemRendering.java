@@ -51,20 +51,16 @@ public class BoardItemRendering {
         @Override
         public float call(ItemStack item, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
             if (entity == null) {
-                logger.debug("Not deployed because entity is null");
                 return 0.0F;
             }
             if (!(item.getItem() instanceof RefBoardItem)) {
-                logger.debug("Not deployed because item is " + item.getItem());
                 return 0.0F;
             }
             if (!(entity instanceof PlayerEntity)) {
-                logger.debug("Not deployed because entity is " + entity);
                 return 0.0F;
             }
             Optional<BoardType> boardType = PlayerDeployedBoard.get((PlayerEntity) entity);
             if (!boardType.isPresent()) {
-                logger.debug("Not deployed because board is not present");
                 return 0.0F;
             }
             if (BoardType.NONE.equals(boardType.get())) {

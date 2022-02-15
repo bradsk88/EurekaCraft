@@ -23,10 +23,10 @@ public class SandingMachineScreen extends ContainerScreen<SandingMachineContaine
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         this.minecraft.getTextureManager().bind(GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 0, 22, 15);
+        this.blit(stack, this.leftPos + 115, this.topPos + 35, this.imageWidth + 4, 0, 22, 15);
         float wPercent = (float) this.getMenu().getCraftedPercent() / 100f;
         int width = (int) (22 * wPercent);
-        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 8, 15, width, 15);
+        this.blit(stack, this.leftPos + 115, this.topPos + 35, this.imageWidth + 4, 15, width, 15);
     }
 
 }
