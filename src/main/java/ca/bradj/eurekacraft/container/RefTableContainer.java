@@ -22,7 +22,9 @@ import java.util.Objects;
 
 public class RefTableContainer extends MachineContainer {
     private final RefTableTileEntity tileEntity;
+    private IntReferenceHolder fireTotalSlot;
     private IntReferenceHolder cookProgressSlot;
+    private IntReferenceHolder fireRemainderSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     public static final int boxHeight = 18, boxWidth = 18;
@@ -75,6 +77,8 @@ public class RefTableContainer extends MachineContainer {
             });
 
             this.addDataSlot(this.cookProgressSlot = new FunctionalIntReferenceHolder(this.tileEntity::getCookingProgress, this.tileEntity::setCookingProgress));
+            this.addDataSlot(this.fireRemainderSlot = new FunctionalIntReferenceHolder(this.tileEntity::getFireRemaining, this.tileEntity::setFireRemaining));
+            this.addDataSlot(this.fireTotalSlot = new FunctionalIntReferenceHolder(this.tileEntity::getFireTotal, this.tileEntity::setFireTotal));
         }
     }
     public RefTableContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
@@ -96,16 +100,17 @@ public class RefTableContainer extends MachineContainer {
         return true; // TODO: Based on distance
     }
 
-    public boolean isCooking() {
-        return this.cookProgressSlot.get() > 0;
-    }
-
     public int getCraftedPercent() {
         return this.cookProgressSlot.get();
+    }
+
+    public int getFirePercent() {
+        return (int) (100 * this.fireRemainderSlot.get() / (float) this.fireTotalSlot.get());
     }
 
     @Override
     protected int getInventorySlotCount() {
         return tileEntity.getTotalSlotCount();
     }
+
 }

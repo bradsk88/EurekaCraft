@@ -96,9 +96,9 @@ public class StormSavedData extends WorldSavedData {
             BlockPos bp = p.blockPosition();
             StormSavedData d = chunkData.get(new ChunkPos(bp));
             if (d == null) {
-                logger.debug("Near " + p.getName().getContents() + ": null");
+//                logger.debug("Near " + p.getName().getContents() + ": null");
             } else {
-                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPerTick +"], p["+ d.pos+"]");
+//                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPerTick +"], p["+ d.pos+"]");
             }
         }
     }

@@ -1,7 +1,6 @@
 package ca.bradj.eurekacraft.client.gui;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,14 +18,23 @@ public class SandingMachineScreen extends ContainerScreen<SandingMachineContaine
     }
 
     @Override
-    protected void renderBg(MatrixStack stack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+        super.renderBackground(stack);
+        super.render(stack, mouseX, mouseY, partialTicks);
+        super.renderTooltip(stack, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderBg(MatrixStack stack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         this.minecraft.getTextureManager().bind(GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
-        this.blit(stack, this.leftPos + 115, this.topPos + 35, this.imageWidth + 4, 0, 22, 15);
+
+        // Arrow
+        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 5, 0, 17, 15);
         float wPercent = (float) this.getMenu().getCraftedPercent() / 100f;
-        int width = (int) (22 * wPercent);
-        this.blit(stack, this.leftPos + 115, this.topPos + 35, this.imageWidth + 4, 15, width, 15);
+        int width = (int) (17 * wPercent);
+        this.blit(stack, this.leftPos + 116, this.topPos + 35, this.imageWidth + 5, 15, width, 15);
     }
 
 }

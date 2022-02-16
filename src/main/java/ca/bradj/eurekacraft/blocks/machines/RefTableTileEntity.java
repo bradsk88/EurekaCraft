@@ -15,6 +15,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -47,6 +48,8 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private boolean cooking = false;
     private int craftPercent = 0;
+    private int fireRemaining = 0;
+    private int lastFireAmount = 1;
 
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
@@ -116,11 +119,13 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 //        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
 //        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
 
+        if (fireRemaining > 0) {
+            this.fireRemaining--;
+        }
 
         Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
         updateCookingStatus(activeRecipe);
         if (this.cooking) {
-            logger.debug("Cook % " + this.craftPercent); // TODO: Show in UI
             this.doCook(activeRecipe);
         }
     }
@@ -136,9 +141,19 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
 
             if (active.get().requiresCooking()) {
-                if (!this.hasCoal()) {
-                    this.cooking = false;
-                    this.craftPercent = 0;
+                if (!this.hasFuel()) {
+                    if (!this.hasCoal()) {
+                        this.cooking = false;
+                        this.craftPercent = 0;
+                        return;
+                    }
+                    this.itemHandler.extractItem(RefTableConsts.fuelSlot, 1, false);
+                    this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), IRecipeType.SMELTING);
+                    if (this.fireRemaining < 0) {
+                        this.fireRemaining = 500;
+                    }
+                    this.lastFireAmount = this.fireRemaining;
+                    this.cooking = true;
                     return;
                 }
             }
@@ -147,14 +162,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
             this.cooking = true;
             this.craftPercent = 0;
-            if (active.get().requiresCooking()) {
-                // FIXME: Add "heat reserve" to table otherwise player must put at least 2 coal in table.
-                this.itemHandler.extractItem(RefTableConsts.fuelSlot, 1, false);
-            }
         } else {
             this.cooking = false;
             this.craftPercent = 0;
         }
+    }
+
+    private boolean hasFuel() {
+        return this.fireRemaining > 0;
     }
 
     private boolean hasCoal() {
@@ -299,5 +314,21 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     public int getTotalSlotCount() {
         return RefTableConsts.totalSlots;
+    }
+
+    public int getFireRemaining() {
+        return this.fireRemaining;
+    }
+
+    public void setFireRemaining(int i) {
+        this.fireRemaining = i;
+    }
+
+    public int getFireTotal() {
+        return this.lastFireAmount;
+    }
+
+    public void setFireTotal(int i) {
+        this.lastFireAmount = i;
     }
 }
