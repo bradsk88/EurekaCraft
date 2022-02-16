@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import com.google.common.collect.ImmutableList;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -81,24 +82,38 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
         }
         i.set(7, recipe.getExtraIngredient().ingredient);
         ingredients.setInputIngredients(i);
-        ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem()); // TODO: Show secondary
+        ImmutableList<ItemStack> outputs = ImmutableList.of(
+                recipe.getResultItem()
+        );
+        if (!recipe.getSecondaryResultItem().output.isEmpty()) {
+            outputs = ImmutableList.of(
+                    recipe.getResultItem(),
+                    recipe.getSecondaryResultItem().output
+            );
+        }
+        ingredients.setOutputs(VanillaTypes.ITEM, outputs);
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, GlideBoardRecipe recipe, IIngredients ingredients) {
-        int leftEdge = RefTableContainer.inventoryLeftX + RefTableContainer.boxWidth - 1;
-        int topEdge = RefTableContainer.titleBarHeight + RefTableContainer.margin - 1;
+        int leftEdge = RefTableContainer.inventoryLeftX;
+        int topEdge = RefTableContainer.topOfInputs;
         int boxSize = RefTableContainer.boxWidth;
-        recipeLayout.getItemStacks().init(0, true, leftEdge, topEdge);
-        recipeLayout.getItemStacks().init(1, true, leftEdge + boxSize, topEdge);
-        recipeLayout.getItemStacks().init(2, true, leftEdge, topEdge + boxSize);
-        recipeLayout.getItemStacks().init(3, true, leftEdge + boxSize, topEdge + boxSize);
-        recipeLayout.getItemStacks().init(4, true, leftEdge, topEdge + (2 * boxSize));
-        recipeLayout.getItemStacks().init(5, true, leftEdge + boxSize, topEdge + (2 * boxSize));
-        recipeLayout.getItemStacks().init(6, true, leftEdge + (3 * boxSize), topEdge + boxSize);
-        recipeLayout.getItemStacks().init(7, true, leftEdge + (4 * boxSize), topEdge + boxSize);
-        recipeLayout.getItemStacks().init(8, false, leftEdge + (6 * boxSize), topEdge + boxSize);
+        this.init(recipeLayout, 0, true, leftEdge, topEdge);
+        this.init(recipeLayout, 1, true, leftEdge + boxSize, topEdge);
+        this.init(recipeLayout, 2, true, leftEdge, topEdge + boxSize);
+        this.init(recipeLayout, 3, true, leftEdge + boxSize, topEdge + boxSize);
+        this.init(recipeLayout, 4, true, leftEdge, topEdge + (2 * boxSize));
+        this.init(recipeLayout, 5, true, leftEdge + boxSize, topEdge + (2 * boxSize));
+        this.init(recipeLayout, 6, true, RefTableContainer.leftOfFuel, RefTableContainer.topOfFuel);
+        this.init(recipeLayout, 7, true, RefTableContainer.leftOfTech, RefTableContainer.topOfTech);
+        this.init(recipeLayout, 8, false, RefTableContainer.leftOfOutput, RefTableContainer.topOfOutput);
+        // TODO: Render secondary chance
+        this.init(recipeLayout, 9, false, RefTableContainer.leftOfSecondary, RefTableContainer.topOfSecondary);
         recipeLayout.getItemStacks().set(ingredients);
-        ;
+    }
+
+    private void init(IRecipeLayout recipeLayout, int idx, boolean isInput, int leftEdge, int topEdge) {
+        recipeLayout.getItemStacks().init(idx, isInput, leftEdge - 1, topEdge - 1);
     }
 }

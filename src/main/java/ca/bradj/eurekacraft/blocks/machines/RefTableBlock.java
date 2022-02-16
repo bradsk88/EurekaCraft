@@ -53,7 +53,7 @@ public class RefTableBlock extends HorizontalBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getNearestLookingDirection());
+        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 
     @Override

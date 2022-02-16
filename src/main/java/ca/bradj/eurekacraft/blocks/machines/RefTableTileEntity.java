@@ -15,6 +15,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -47,12 +48,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private boolean cooking = false;
     private int craftPercent = 0;
+    private int fireRemaining = 0;
+    private int lastFireAmount = 1;
 
-    private static int inputSlots = 6;
-    private static int fuelSlot = inputSlots;
-    private static int techSlot = fuelSlot + 1;
-    private static int outputSlot = techSlot + 1;
-    private static int totalSlots = outputSlot + 1;
     private final ItemStackHandler itemHandler = createHandler();
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
@@ -102,7 +100,12 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private ItemStackHandler createHandler() {
-        return new ItemStackHandler(totalSlots);
+        return new ItemStackHandler(RefTableConsts.totalSlots) {
+            @Override
+            protected void validateSlotIndex(int slot) {
+                super.validateSlotIndex(slot); // TODO: Be more forgiving in case number of slots changes?
+            }
+        };
     }
 
     // Crafting
@@ -116,11 +119,13 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 //        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
 //        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
 
+        if (fireRemaining > 0) {
+            this.fireRemaining--;
+        }
 
         Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
         updateCookingStatus(activeRecipe);
         if (this.cooking) {
-            logger.debug("Cook % " + this.craftPercent); // TODO: Show in UI
             this.doCook(activeRecipe);
         }
     }
@@ -128,7 +133,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
         if (active.isPresent()) {
 
-            ItemStack outSlot = this.itemHandler.getStackInSlot(outputSlot);
+            ItemStack outSlot = this.itemHandler.getStackInSlot(RefTableConsts.outputSlot);
             if (!outSlot.isEmpty()) {
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
                     return;
@@ -136,9 +141,19 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
 
             if (active.get().requiresCooking()) {
-                if (!this.hasCoal()) {
-                    this.cooking = false;
-                    this.craftPercent = 0;
+                if (!this.hasFuel()) {
+                    if (!this.hasCoal()) {
+                        this.cooking = false;
+                        this.craftPercent = 0;
+                        return;
+                    }
+                    this.itemHandler.extractItem(RefTableConsts.fuelSlot, 1, false);
+                    this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), IRecipeType.SMELTING);
+                    if (this.fireRemaining < 0) {
+                        this.fireRemaining = 500;
+                    }
+                    this.lastFireAmount = this.fireRemaining;
+                    this.cooking = true;
                     return;
                 }
             }
@@ -147,18 +162,18 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
             this.cooking = true;
             this.craftPercent = 0;
-            if (active.get().requiresCooking()) {
-                // FIXME: Add "heat reserve" to table otherwise player must put at least 2 coal in table.
-                this.itemHandler.extractItem(fuelSlot, 1, false);
-            }
         } else {
             this.cooking = false;
             this.craftPercent = 0;
         }
     }
 
+    private boolean hasFuel() {
+        return this.fireRemaining > 0;
+    }
+
     private boolean hasCoal() {
-        return this.itemHandler.getStackInSlot(fuelSlot).
+        return this.itemHandler.getStackInSlot(RefTableConsts.fuelSlot).
                 sameItemStackIgnoreDurability(
                         Items.COAL.getDefaultInstance()
                 );
@@ -178,11 +193,11 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                // TODO Implement slot
-                logger.debug("Would have produced an extra item if there was a slot for it: " + iRecipe.getSecondaryResultItem().output);
+                ItemStack sOutput = iRecipe.getSecondaryResultItem().output;
+                itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
             }
 
-            for (int i = 0; i < inputSlots; i++) {
+            for (int i = 0; i < RefTableConsts.inputSlots; i++) {
                 itemHandler.extractItem(i, 1, false);
             }
 
@@ -190,7 +205,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 useExtraIngredient(iRecipe);
             }
 
-            itemHandler.insertItem(outputSlot, output, false);
+            itemHandler.insertItem(RefTableConsts.outputSlot, output, false);
 
             setChanged();
         });
@@ -209,7 +224,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 return;
             }
 
-            ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+            ItemStack stackInSlot = itemHandler.getStackInSlot(RefTableConsts.techSlot);
             Item item = stackInSlot.getItem();
             if (!(item instanceof NoisyCraftingItem)) {
                 return;
@@ -228,13 +243,13 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private void useExtraIngredient(GlideBoardRecipe iRecipe) {
-        ItemStack stackInSlot = itemHandler.getStackInSlot(techSlot);
+        ItemStack stackInSlot = itemHandler.getStackInSlot(RefTableConsts.techSlot);
         stackInSlot.hurt(1, new Random(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
-            this.itemHandler.extractItem(techSlot, 1, false);
+            this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
         } else if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            this.itemHandler.extractItem(techSlot, 1, false);
+            this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
         }
     }
 
@@ -243,7 +258,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         if (recipe.isPresent()) {
             GlideBoardRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
             if (!extra.ingredient.isEmpty()) {
-                ItemStack techItem = this.itemHandler.getStackInSlot(techSlot);
+                ItemStack techItem = this.itemHandler.getStackInSlot(RefTableConsts.techSlot);
                 if (!extra.ingredient.test(techItem)) {
                     return Optional.empty();
                 }
@@ -254,9 +269,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
         // Shaped
-        Inventory inv = new Inventory(inputSlots);
+        Inventory inv = new Inventory(RefTableConsts.inputSlots);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
-        for (int i = 0; i < inputSlots; i++) {
+        for (int i = 0; i < RefTableConsts.inputSlots; i++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(i);
             inv.setItem(i, stackInSlot);
             if (!stackInSlot.isEmpty()) {
@@ -298,6 +313,22 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     public int getTotalSlotCount() {
-        return totalSlots;
+        return RefTableConsts.totalSlots;
+    }
+
+    public int getFireRemaining() {
+        return this.fireRemaining;
+    }
+
+    public void setFireRemaining(int i) {
+        this.fireRemaining = i;
+    }
+
+    public int getFireTotal() {
+        return this.lastFireAmount;
+    }
+
+    public void setFireTotal(int i) {
+        this.lastFireAmount = i;
     }
 }

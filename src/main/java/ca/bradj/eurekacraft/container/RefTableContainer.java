@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.container;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
@@ -21,13 +22,25 @@ import java.util.Objects;
 
 public class RefTableContainer extends MachineContainer {
     private final RefTableTileEntity tileEntity;
+    private IntReferenceHolder fireTotalSlot;
     private IntReferenceHolder cookProgressSlot;
+    private IntReferenceHolder fireRemainderSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     public static final int boxHeight = 18, boxWidth = 18;
     public static final int inventoryLeftX = 8;
     public static final int titleBarHeight = 12;
     public static final int margin = 4;
+    public static final int topOfInputs = titleBarHeight + margin;
+    public static final int leftOfInputs = inventoryLeftX;
+    public static final int topOfFuel = titleBarHeight + margin + boxHeight;
+    public static final int leftOfFuel = inventoryLeftX + (boxWidth * 2) + boxWidth;
+    public static final int topOfTech = titleBarHeight + margin + boxHeight;
+    public static final int leftOfTech = leftOfFuel + (boxWidth * 2);
+    public static final int topOfOutput = topOfTech - (boxHeight / 2);
+    public static final int leftOfOutput = leftOfTech + (int) (boxWidth * 2.5);
+    public static final int topOfSecondary = topOfTech + boxHeight + margin - 1;
+    public static final int leftOfSecondary = leftOfTech + (boxWidth * 3);
 
     public RefTableContainer(int windowId, PlayerInventory playerInventory, RefTableTileEntity refTableTileEntity) {
         super(ContainerTypesInit.REF_TABLE.get(), windowId, playerInventory);
@@ -38,22 +51,17 @@ public class RefTableContainer extends MachineContainer {
             tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
 
                 // Inputs
-                int leftX = inventoryLeftX + boxWidth;
-                int nextIndex = 0;
                 int cols = 2, rows = 3;
-                addRectangleOfBoxes(h, nextIndex, leftX, titleBarHeight + margin, cols, rows);
+                addRectangleOfBoxes(h, 0, leftOfInputs, topOfInputs, cols, rows);
 
-                // Fuel + Upgrades
-                nextIndex = nextIndex + (cols * rows);
-                leftX = leftX + (boxWidth * cols) + boxWidth;
-                cols = 2; rows = 1;
-                int nextTopY = titleBarHeight + margin + boxHeight;
-                addRectangleOfBoxes(h, nextIndex, leftX, nextTopY, cols, rows);
+                // Fuel
+                addSlot(new SlotItemHandler(h, RefTableConsts.fuelSlot, leftOfFuel, topOfFuel));
+
+                // Tech
+                addSlot(new SlotItemHandler(h, RefTableConsts.techSlot, leftOfTech, topOfTech));
 
                 // Output
-                nextIndex = nextIndex + (cols * rows);
-                int nextLeftX = leftX + (boxWidth * cols) + boxWidth;
-                addSlot(new SlotItemHandler(h, nextIndex, nextLeftX, nextTopY) {
+                addSlot(new SlotItemHandler(h, RefTableConsts.outputSlot, leftOfOutput, topOfOutput) {
                     @Override
                     public ItemStack onTake(PlayerEntity player, ItemStack stack) {
                         ItemStack itemStack = super.onTake(player, stack);
@@ -64,9 +72,13 @@ public class RefTableContainer extends MachineContainer {
                         return itemStack;
                     }
                 });
+
+                addSlot(new SlotItemHandler(h, RefTableConsts.secondaryOutputSlot, leftOfSecondary, topOfSecondary));
             });
 
             this.addDataSlot(this.cookProgressSlot = new FunctionalIntReferenceHolder(this.tileEntity::getCookingProgress, this.tileEntity::setCookingProgress));
+            this.addDataSlot(this.fireRemainderSlot = new FunctionalIntReferenceHolder(this.tileEntity::getFireRemaining, this.tileEntity::setFireRemaining));
+            this.addDataSlot(this.fireTotalSlot = new FunctionalIntReferenceHolder(this.tileEntity::getFireTotal, this.tileEntity::setFireTotal));
         }
     }
     public RefTableContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
@@ -88,16 +100,17 @@ public class RefTableContainer extends MachineContainer {
         return true; // TODO: Based on distance
     }
 
-    public boolean isCooking() {
-        return this.cookProgressSlot.get() > 0;
-    }
-
     public int getCraftedPercent() {
         return this.cookProgressSlot.get();
+    }
+
+    public int getFirePercent() {
+        return (int) (100 * this.fireRemainderSlot.get() / (float) this.fireTotalSlot.get());
     }
 
     @Override
     protected int getInventorySlotCount() {
         return tileEntity.getTotalSlotCount();
     }
+
 }
