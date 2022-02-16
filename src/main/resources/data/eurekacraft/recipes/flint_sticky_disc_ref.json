@@ -1,0 +1,31 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    },
+    {
+      "item": "minecraft:flint"
+    }
+  ],
+  "cook": false,
+  "extra": {
+    "item": "eurekacraft:clay_sticky_disc",
+    "consume": true
+  },
+  "output": {
+    "item": "eurekacraft:flint_sticky_disc"
+  }
+}

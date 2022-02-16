@@ -1,0 +1,36 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:resinous_dust"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "eurekacraft:glide_board"
+    },
+    {
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "eurekacraft:resinous_dust"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "cook": true,
+  "extra": {
+    "item": "eurekacraft:resin_block"
+  },
+  "output": {
+    "item": "eurekacraft:ref_board_core"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:resin"
+    },
+    "chance": 0.5
+  }
+}
