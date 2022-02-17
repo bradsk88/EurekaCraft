@@ -20,7 +20,7 @@
     "Item": {
       "trigger": "eurekacraft:ref_table_trigger",
       "conditions": {
-        "result": {
+        "machine_output": {
           "item": "eurekacraft:ref_board"
         }
       }

@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 public class BrokenRefBoardModel extends AbstractBoardModel {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
-            EurekaCraft.MODID, "textures/items/glide_board.png"
+            EurekaCraft.MODID, "textures/render/dark_oak_planks.png"
     );
     @Override
     protected ModelRenderer build() {

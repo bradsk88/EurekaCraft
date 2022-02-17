@@ -4,6 +4,14 @@
 	"textures": {
 		"0": "minecraft:block/dark_oak_planks"
 	},
+	"overrides": [
+		{
+			"predicate": {
+				"eurekacraft:deployed": 1.0000000
+			},
+			"model": "eurekacraft:item/broken_ref_board_deployed"
+		}
+	],
 	"elements": [
 		{
 			"from": [-6, 2, 4],

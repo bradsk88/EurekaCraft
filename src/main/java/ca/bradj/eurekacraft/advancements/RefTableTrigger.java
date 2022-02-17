@@ -24,6 +24,9 @@ public class RefTableTrigger extends AbstractCriterionTrigger<RefTableTrigger.In
 
     @Override
     public Instance createInstance(JsonObject json, EntityPredicate.AndPredicate predicate, ConditionArrayParser parser) {
+        if (!json.has("machine_output")) {
+            throw new IllegalStateException("Recipe of type " + ID + " is missing machine_output [Recipe: " + parser.getAdvancementId() + "]");
+        }
         ItemPredicate aitempredicate = ItemPredicate.fromJson(json.get("machine_output"));
         return new RefTableTrigger.Instance(predicate, aitempredicate);
     }
