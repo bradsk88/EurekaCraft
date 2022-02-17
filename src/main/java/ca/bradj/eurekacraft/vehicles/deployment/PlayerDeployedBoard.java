@@ -71,7 +71,11 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return boardOptional.cast();
+        String t = cap.getName();
+        if ("ca.bradj.eurekacraft.vehicles.deployment.IPlayerEntityBoardDeployed".equals(t)) {
+            return boardOptional.cast();
+        }
+        return LazyOptional.empty();
     }
 
     @Override
