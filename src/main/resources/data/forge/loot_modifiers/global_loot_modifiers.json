@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "entries": [
+    "eurekacraft:blueprint_in_abandoned_mineshaft",
+    "eurekacraft:blueprint_in_village_plains_house",
+    "eurekacraft:blueprint_in_simple_dungeon",
+    "eurekacraft:blueprint_in_village_savanna_house",
+    "eurekacraft:blueprint_in_village_taiga_house",
+    "eurekacraft:blueprint_in_village_desert_house"
+  ]
+}
