@@ -14,8 +14,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -35,17 +38,21 @@ public class EntityRefBoard extends Entity {
     private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
     private static Block[] PASSABLE_BLOCKS = {
-            Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS,
+            Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS, Blocks.WATER,
             BlocksInit.TRAPAR_WAVE_BLOCK.get(), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
     };
     // Prefer PASSABLE_BLOCKS when possible
     private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{
             FlowerBlock.class, TallGrassBlock.class,
     };
+    private static final Class<?>[] DESTROYABLE_BLOCK_CLASSES = new Class[]{
+            FlowerBlock.class, TallGrassBlock.class,
+    };
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
     private static final float maxFlySpeed = 1f;
+    private static final float skimLift = 0.1f;
 
     private float initialSpeed;
     private PlayerEntity playerOrNull;
@@ -56,6 +63,7 @@ public class EntityRefBoard extends Entity {
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
     private double lastSpeed;
+    private int skimTime = 20; // TODO: Board stats?
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -146,7 +154,7 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        if (this.playerOrNull == null || this.playerOrNull.isOnGround() || this.playerOrNull.isInWater()) {
+        if (this.playerOrNull == null || this.playerOrNull.isOnGround() || this.skimTime <= 0) {
             this.kill();
             return;
         }
@@ -200,15 +208,25 @@ public class EntityRefBoard extends Entity {
 
         if (this.playerOrNull.isShiftKeyDown() || applyDamagedEffect) {
             liftOrFall = defaultLand * (1 - this.item.getStats().landResist());
-            flightSpeed = Math.max(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
+            flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
+            skimTime--;
         }
 
-        // TODO: Get vector on xy plane - disregard up/down (which reduces xy vectors)
+        if (this.playerOrNull.isInWater()) {
+            // TODO: Minimum speed for skim
+            this.skimTime--;
+            liftOrFall = skimLift;
+            flightSpeed = Math.max(0, flightSpeed / 1.1);
+            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+            level.playSound(null, this.blockPosition(), SoundEvents.PLAYER_SPLASH, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        }
+
         Vector3d look3D = this.playerOrNull.getViewVector(0);
         Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
-
-
         Vector3d add = look2D.multiply(turnSpeed, 1.0, turnSpeed);
 
         Vector3d nextRaw = this.lastDirection.add(add);
@@ -241,6 +259,7 @@ public class EntityRefBoard extends Entity {
             this.lastLift = liftOrFall;
         }
 
+        destroyBlocks();
         flightSpeed = reduceSpeedIfCrashed(flightSpeed);
 
 //        logger.debug("Speed: " + flightSpeed);
@@ -257,8 +276,18 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.fallDistance = 0; // To not die!
     }
 
+    private void destroyBlocks() {
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
+        for (Class<?> c : DESTROYABLE_BLOCK_CLASSES) {
+            if (blockInFront.getBlock().getClass() == c) {
+                this.level.destroyBlock(inFront, true);
+            }
+        }
+    }
+
     private double reduceSpeedIfCrashed(double flightSpeed) {
-        // TODO: Smash bushes/crops/leaves and slow down more gradually?
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
