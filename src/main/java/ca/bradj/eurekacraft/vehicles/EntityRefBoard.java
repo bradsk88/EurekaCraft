@@ -52,7 +52,8 @@ public class EntityRefBoard extends Entity {
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
     private static final float maxFlySpeed = 1f;
-    private static final float skimLift = 0.1f;
+    private static final float minSurfSpeed = runSpeed * 1.5f;
+    private static final float surfLift = 0.05f;
 
     private float initialSpeed;
     private PlayerEntity playerOrNull;
@@ -63,7 +64,7 @@ public class EntityRefBoard extends Entity {
     private Vector3d lastDirection = new Vector3d(0, 0, 0);
     private double lastLift = 0;
     private double lastSpeed;
-    private int skimTime = 20; // TODO: Board stats?
+    private int tickOf100 = 0;
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -148,13 +149,12 @@ public class EntityRefBoard extends Entity {
 
     @Override
     public void tick() {
-
         super.tick();
         if (this.level.isClientSide) {
             return;
         }
 
-        if (this.playerOrNull == null || this.playerOrNull.isOnGround() || this.skimTime <= 0) {
+        if (this.playerOrNull == null || this.playerOrNull.isOnGround()) {
             this.kill();
             return;
         }
@@ -163,14 +163,14 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        if (this.item.canFly()) {
-            fly();
-        }
+        this.tickOf100 = Math.floorMod(this.tickOf100 + 1, 100);
 
-        this.moveTo(this.playerOrNull.position());
+        if (this.item.canFly() || canSurf(minSurfSpeed)) {
+            flyOrSurf();
+        }
     }
 
-    private void fly() {
+    private void flyOrSurf() {
         boolean boosted = this.consumeBoost();
 
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
@@ -181,12 +181,14 @@ public class EntityRefBoard extends Entity {
         double boardSpeed = this.item.getStats().speed();
         double turnSpeed = this.item.getStats().agility();
         double liftFactor = this.item.getStats().lift();
+        double surf = this.item.getStats().surf();
 
         // Calculated base physics
         double defaultFall = -0.02 * boardWeight;
         double defaultAccel = 0.02 * boardWeight;
         double defaultLand = -1 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
+        double defaultWaterDecel = 1.01 + (0.10 - (0.10 * surf));
         double defaultMaxSpeed = boardSpeed * maxFlySpeed;
 
         double liftOrFall = this.lastLift;
@@ -210,21 +212,42 @@ public class EntityRefBoard extends Entity {
             liftOrFall = defaultLand * (1 - this.item.getStats().landResist());
             flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
-            skimTime--;
         }
 
-        if (this.playerOrNull.isInWater()) {
-            // TODO: Minimum speed for skim
-            this.skimTime--;
-            liftOrFall = skimLift;
-            flightSpeed = Math.max(0, flightSpeed / 1.1);
-            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-            level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
-            level.playSound(null, this.blockPosition(), SoundEvents.PLAYER_SPLASH, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        Vector3d nextDir = calculateDirection(turnSpeed, applyDamagedEffect);
+
+        if (canSurf(flightSpeed)) {
+            liftOrFall = surfLift;
+
+            flightSpeed = Math.max(0, this.lastSpeed / defaultWaterDecel);
+            animateSurf();
+        } else if (playerOrNull.isInWater()) {
+                this.kill();
+                return;
         }
 
+        flightSpeed = reduceSpeedIfCrashed(flightSpeed);
+        destroyBlocks();
+        storeForNextTick(liftOrFall, flightSpeed, nextDir);
+
+        Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
+        this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
+        this.playerOrNull.hurtMarked = true;
+        this.playerOrNull.fallDistance = 0; // To not die!
+        this.moveTo(this.playerOrNull.position());
+    }
+
+    private void animateSurf() {
+        level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        if (Math.floorMod(tickOf100, 4) == 0) {
+            level.playSound(null, this.blockPosition(), SoundEvents.GENERIC_SPLASH, SoundCategory.BLOCKS, 0.5f, 1.0f);
+        }
+    }
+
+    private Vector3d calculateDirection(double turnSpeed, boolean applyDamagedEffect) {
         Vector3d look3D = this.playerOrNull.getViewVector(0);
         Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
         Vector3d add = look2D.multiply(turnSpeed, 1.0, turnSpeed);
@@ -249,7 +272,10 @@ public class EntityRefBoard extends Entity {
 //            this.logger.debug("using " + this.lastDirection);
             nextDir = this.lastDirection;
         }
+        return nextDir;
+    }
 
+    private void storeForNextTick(double liftOrFall, double flightSpeed, Vector3d nextDir) {
         if (Math.abs(nextDir.x) > 0 || Math.abs(nextDir.z) > 0) {
             this.lastDirection = nextDir;
         }
@@ -259,21 +285,21 @@ public class EntityRefBoard extends Entity {
             this.lastLift = liftOrFall;
         }
 
-        destroyBlocks();
-        flightSpeed = reduceSpeedIfCrashed(flightSpeed);
-
 //        logger.debug("Speed: " + flightSpeed);
         if (Math.abs(flightSpeed) > 0) {
             this.lastSpeed = flightSpeed;
         }
+    }
 
-        Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
-
-//        this.logger.debug("add" + add + "go" + go);
-
-        this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
-        this.playerOrNull.hurtMarked = true;
-        this.playerOrNull.fallDistance = 0; // To not die!
+    private boolean canSurf(double flightSpeed) {
+        if (flightSpeed < minSurfSpeed) {
+            return false;
+        }
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
+        BlockState blockAboveFront = this.level.getBlockState(inFront.above(1));
+        return blockInFront.is(Blocks.WATER) && isPassable(blockAboveFront) && !blockAboveFront.is(Blocks.WATER);
     }
 
     private void destroyBlocks() {
@@ -291,18 +317,24 @@ public class EntityRefBoard extends Entity {
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
+        if (isPassable(blockInFront)) {
+            return flightSpeed;
+        }
+        return 0.01;
+    }
+
+    private boolean isPassable(BlockState blockInFront) {
         for (Block b : PASSABLE_BLOCKS) {
             if (blockInFront.is(b)) {
-                return flightSpeed;
+                return true;
             }
         }
         for (Class<?> c : PASSABLE_BLOCK_CLASSES) {
             if (blockInFront.getBlock().getClass() == c) {
-                return flightSpeed;
+                return true;
             }
         }
-        logger.debug("Crashed into " + blockInFront);
-        return 0.01;
+        return false;
     }
 
     private boolean consumeBoost() {
