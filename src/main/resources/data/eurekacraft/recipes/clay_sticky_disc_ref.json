@@ -23,5 +23,11 @@
   "cook": false,
   "output": {
     "item": "eurekacraft:clay_sticky_disc"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:clay_sticky_disc"
+    },
+    "chance": 1.0
   }
 }

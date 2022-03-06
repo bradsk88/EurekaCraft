@@ -138,6 +138,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
                     return;
                 }
+                if (!active.get().getResultItem().isStackable()) {
+                    return;
+                }
             }
 
             if (active.get().requiresCooking()) {

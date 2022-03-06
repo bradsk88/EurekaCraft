@@ -47,7 +47,11 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     @Override
     public boolean matches(IInventory inv, World p_77569_2_) {
         for (int i = 0; i < recipeItems.size(); i++) {
-            if (!recipeItems.get(i).test(inv.getItem(i))) {
+            ItemStack item = inv.getItem(i);
+            if (item.isDamageableItem() && item.isDamaged()) {
+                return false;
+            }
+            if (!recipeItems.get(i).test(item)) {
                 return false;
             }
         }

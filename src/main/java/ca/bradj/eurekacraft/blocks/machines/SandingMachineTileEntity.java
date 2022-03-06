@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
+import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
@@ -15,6 +16,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -145,10 +147,10 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
     }
 
     private boolean hasSandpaper() {
-        return this.itemHandler.getStackInSlot(abrasiveSlot).
-                sameItemStackIgnoreDurability(
-                        ItemsInit.FLINT_SANDING_DISC.get().getDefaultInstance()
-                );
+        Ingredient.TagList tags = new Ingredient.TagList(TagsInit.Items.SANDING_DISCS);
+        ItemStack abrasive = this.itemHandler.getStackInSlot(abrasiveSlot);
+        return tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+
     }
 
     private void doCook(Optional<SandingMachineRecipe> recipe) {

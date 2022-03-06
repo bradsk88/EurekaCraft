@@ -1,7 +1,9 @@
 {
-  "id": "eurekacraft:precision_board_wood_from_slab",
   "type": "eurekacraft:glide_board",
   "ingredients": [
+    {
+      "tag": "minecraft:wooden_slabs"
+    },
     {
       "tag": "minecraft:wooden_slabs"
     }
@@ -11,6 +13,12 @@
     "tag": "eurekacraft:sanding_disc"
   },
   "output": {
-    "item": "eurekacraft:precision_wood"
+    "item": "eurekacraft:polished_oak_slab"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:polished_oak_slab"
+    },
+    "chance": 1.0
   }
 }
