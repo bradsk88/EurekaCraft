@@ -1,5 +1,8 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraftforge.common.util.INBTSerializable;
+
 public class RefBoardStats {
 
     public static RefBoardStats BadBoard = new RefBoardStats(1.0, 0.25, 0.25, 0.25);
@@ -49,15 +52,19 @@ public class RefBoardStats {
         this.surf = surf;
     }
 
+    public static RefBoardStats FromNBT(CompoundNBT nbt) {
+        return new RefBoardStats(nbt.getDouble("weight"), nbt.getDouble("speed"), nbt.getDouble("agility"), nbt.getDouble("lift"));
+    }
+
     public RefBoardStats withLandResistance(double landResistance) {
         return new RefBoardStats(
-            this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, landResistance, this.surf
+                this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, landResistance, this.surf
         );
     }
 
     private RefBoardStats WithSurf(double surf) {
         return new RefBoardStats(
-            this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, this.landResistance, surf
+                this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, this.landResistance, surf
         );
     }
 
