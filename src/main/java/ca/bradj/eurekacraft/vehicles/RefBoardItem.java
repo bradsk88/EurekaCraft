@@ -2,10 +2,11 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.interfaces.ITechAffectable;
+import ca.bradj.eurekacraft.materials.BlueprintItem;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public abstract class RefBoardItem extends Item {
+public abstract class RefBoardItem extends Item implements ITechAffectable {
+
+    private static final String NBT_KEY_STATS = "stats";
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
@@ -40,6 +42,16 @@ public abstract class RefBoardItem extends Item {
         super(PROPS);
         this.baseStats = stats;
         this.id = boardId;
+    }
+
+    public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
+        if (!(itemStack.getItem() instanceof RefBoardItem)) {
+            throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");
+        }
+        if (itemStack.getTag() != null && itemStack.getTag().contains(NBT_KEY_STATS)) {
+            return RefBoardStats.FromNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
+        }
+        return ((RefBoardItem) itemStack.getItem()).baseStats;
     }
 
     @Override
@@ -121,31 +133,25 @@ public abstract class RefBoardItem extends Item {
         tooltip.add(new StringTextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
     }
 
-    @Nullable
     @Override
-    public Entity createEntity(World world, Entity location, ItemStack itemstack) {
-        // TODO: This doesn't work. Find the right hook. This is only for manually creeated baords. Get the stats from the blueprint for crafted boards.
-        CompoundNBT nbt = itemstack.getTag();
-        if (nbt != null && !nbt.contains("stats")) {
-            Random rand = new Random();
-            CompoundNBT stats = new CompoundNBT();
-            // TODO: Clamp to min/max
-            // TODO: Generate NBT and randomness from RefBoardStats.newNBT()
-            stats.putDouble("weight", baseStats.weight());
-            stats.putDouble("speed", baseStats.speed() + 1 - (2 * rand.nextDouble()));
-            stats.putDouble("agility", baseStats.agility() + 1 - (2 * rand.nextDouble()));
-            stats.putDouble("lift", baseStats.lift() + 1 - (2 * rand.nextDouble()));
-            nbt.put("stats", stats);
+    public void applyTechItem(ItemStack blueprint, ItemStack target, Random rand) {
+        if (blueprint.getItem() instanceof BlueprintItem) {
+            RefBoardStats refBoardStats = BlueprintItem.getBoardStatsFromNBTOrCreate(blueprint, baseStats, rand);
+
+            CompoundNBT nbt = refBoardStats.serializeNBT();
+
+            if (target.getTag() == null) {
+                target.setTag(new CompoundNBT());
+            }
+            target.getTag().put(NBT_KEY_STATS, nbt);
         }
-        return super.createEntity(world, location, itemstack);
     }
 
     RefBoardStats getStatsForStack(ItemStack stack) {
-        if (stack.getTag() == null || !stack.getTag().contains("stats")) {
-            logger.error("Board does not have NBT stats. Falling back to defaults");
+        if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_STATS)) {
             return baseStats;
         }
-        CompoundNBT nbt = stack.getTag().getCompound("stats");
+        CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
         return RefBoardStats.FromNBT(nbt);
     }
 }

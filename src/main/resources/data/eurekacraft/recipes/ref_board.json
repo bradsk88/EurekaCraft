@@ -11,7 +11,7 @@
       "item": "eurekacraft:reflection_film"
     },
     {
-      "item": "eurekacraft:reflection_film"
+      "item": "eurekacraft:ref_board_core"
     },
     {
       "item": "eurekacraft:reflection_film"
@@ -22,7 +22,7 @@
   ],
   "cook": true,
   "extra": {
-    "item": "eurekacraft:ref_board_core",
+    "item": "eurekacraft:blueprint",
     "consume": true
   },
   "output": {

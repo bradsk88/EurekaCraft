@@ -20,6 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -34,6 +35,7 @@ public class EntityRefBoard extends Entity {
     public static final String ENTITY_ID = "ref_board_entity";
 
     private static final int BOOST_TICKS = 3;
+    private static final float INITIAL_YROT = 0.000001f;
 
     private static Map<Integer, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
@@ -51,17 +53,20 @@ public class EntityRefBoard extends Entity {
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
-    private static final float maxFlySpeed = 1f;
+    private static final float maxFlySpeed = 2.0f;
     private static final float minSurfSpeed = runSpeed * 1.5f;
     private static final float surfLift = 0.05f;
 
     private float initialSpeed;
     private PlayerEntity playerOrNull;
     private Hand handHeld;
-    private RefBoardItem item;
+    private boolean damaged;
+    private boolean canFly;
+    private RefBoardStats boardStats;
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private Vector3d lastDirection = new Vector3d(0, 0, 0);
+    private float lastYRot = INITIAL_YROT;
+    private Vector3d lastDirection = new Vector3d(1.0, 1.0, 1.0);
     private double lastLift = 0;
     private double lastSpeed;
     private int tickOf100 = 0;
@@ -84,7 +89,11 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        this.item = (RefBoardItem) itemInHand.getItem();
+        ItemStack item = itemInHand.getStack();
+        damaged = ((RefBoardItem) item.getItem()).isDamagedBoard();
+        canFly = ((RefBoardItem) item.getItem()).canFly();
+        boardStats = RefBoardItem.GetStatsFromNBT(item);
+        logger.debug("Deployed ref board with stats" + boardStats);
 
         if (deployedBoards.containsKey(player.getId())) {
             deployedBoards.get(player.getId()).kill();
@@ -165,7 +174,7 @@ public class EntityRefBoard extends Entity {
 
         this.tickOf100 = Math.floorMod(this.tickOf100 + 1, 100);
 
-        if (this.item.canFly() || canSurf(minSurfSpeed)) {
+        if (canFly || canSurf(minSurfSpeed)) {
             flyOrSurf();
         }
     }
@@ -177,15 +186,15 @@ public class EntityRefBoard extends Entity {
             boosted = true;
         }
 
-        double boardWeight = this.item.getStats().weight();
-        double boardSpeed = this.item.getStats().speed();
-        double turnSpeed = this.item.getStats().agility();
-        double liftFactor = this.item.getStats().lift();
-        double surf = this.item.getStats().surf();
+        double boardWeight = boardStats.weight();
+        double boardSpeed = boardStats.speed();
+        double turnSpeed = boardStats.agility() * 10;
+        double liftFactor = boardStats.lift();
+        double surf = boardStats.surf();
 
         // Calculated base physics
         double defaultFall = -0.02 * boardWeight;
-        double defaultAccel = 0.02 * boardWeight;
+        double defaultAccel = 0.5 * boardWeight;
         double defaultLand = -1 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
         double defaultWaterDecel = 1.01 + (0.10 - (0.10 * surf));
@@ -204,17 +213,18 @@ public class EntityRefBoard extends Entity {
         }
 
         boolean applyDamagedEffect = false;
-        if (this.item.isDamagedBoard() && random.nextBoolean() && random.nextBoolean()) {
+        if (damaged && random.nextBoolean() && random.nextBoolean()) {
             applyDamagedEffect = true;
         }
 
         if (this.playerOrNull.isShiftKeyDown() || applyDamagedEffect) {
-            liftOrFall = defaultLand * (1 - this.item.getStats().landResist());
+            liftOrFall = defaultLand * (1 - boardStats.landResist());
             flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
             turnSpeed = 0.5 * turnSpeed;
         }
 
-        Vector3d nextDir = calculateDirection(turnSpeed, applyDamagedEffect);
+        float nextYRot = calculateYRot((float) turnSpeed);
+        Vector3d nextDir = calculateDirection(nextYRot, applyDamagedEffect);
 
         if (canSurf(flightSpeed)) {
             liftOrFall = surfLift;
@@ -231,6 +241,8 @@ public class EntityRefBoard extends Entity {
         storeForNextTick(liftOrFall, flightSpeed, nextDir);
 
         Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
+        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
+
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
@@ -247,12 +259,27 @@ public class EntityRefBoard extends Entity {
         }
     }
 
-    private Vector3d calculateDirection(double turnSpeed, boolean applyDamagedEffect) {
-        Vector3d look3D = this.playerOrNull.getViewVector(0);
-        Vector3d look2D = new Vector3d(look3D.x, 0, look3D.z).normalize();
-        Vector3d add = look2D.multiply(turnSpeed, 1.0, turnSpeed);
+    private float calculateYRot(float turnSpeed) { // TODO: Damaged effect
+        float lookYRot = this.playerOrNull.getViewYRot(1.0F);
+        if (this.lastYRot > 0 && this.lastYRot <= INITIAL_YROT) {
+            this.lastYRot = lookYRot;
+            return lookYRot;
+        }
+        float diff = MathHelper.degreesDifference(this.lastYRot, lookYRot);
+        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
+        if (diff > 0) {
+            this.lastYRot += turnSpeed;
+        } else {
+            this.lastYRot -= turnSpeed;
+        }
+        return this.lastYRot;
+    }
 
-        Vector3d nextRaw = this.lastDirection.add(add);
+    private Vector3d calculateDirection(float nextYRot, boolean applyDamagedEffect) {
+        nextYRot = nextYRot + 90;
+        double x = Math.cos(Math.PI * (nextYRot/180));
+        double z = Math.sin(Math.PI * (nextYRot/180));
+        Vector3d nextRaw = new Vector3d(x, 0 , z);
 
         if (applyDamagedEffect && random.nextBoolean()) {
             if (random.nextBoolean()) {

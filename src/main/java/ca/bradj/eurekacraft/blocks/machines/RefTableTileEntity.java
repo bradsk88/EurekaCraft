@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.interfaces.ITechAffectable;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -126,7 +128,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
         updateCookingStatus(activeRecipe);
         if (this.cooking) {
-            this.doCook(activeRecipe);
+            this.doCook(activeRecipe, level);
         }
     }
 
@@ -182,7 +184,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 );
     }
 
-    private void doCook(Optional<GlideBoardRecipe> recipe) {
+    private void doCook(Optional<GlideBoardRecipe> recipe, World level) {
         if (craftPercent < 100) {
             this.craftPercent++;
             this.makeCraftingNoise(recipe);
@@ -205,7 +207,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
 
             if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
-                useExtraIngredient(iRecipe);
+                useExtraIngredient(iRecipe, output, level);
             }
 
             itemHandler.insertItem(RefTableConsts.outputSlot, output, false);
@@ -245,14 +247,20 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     }
 
-    private void useExtraIngredient(GlideBoardRecipe iRecipe) {
-        ItemStack stackInSlot = itemHandler.getStackInSlot(RefTableConsts.techSlot);
-        stackInSlot.hurt(1, new Random(), null);
+    private void useExtraIngredient(
+            GlideBoardRecipe iRecipe, ItemStack craftedOutput, World level
+    ) {
+        ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        techStack.hurt(1, new Random(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
-        } else if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
+        } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
+        }
+
+        if (iRecipe.getResultItem().getItem() instanceof ITechAffectable) {
+            ((ITechAffectable) iRecipe.getResultItem().getItem()).applyTechItem(techStack, craftedOutput, level.getRandom());
         }
     }
 
