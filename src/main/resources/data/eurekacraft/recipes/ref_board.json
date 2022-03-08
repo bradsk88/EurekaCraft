@@ -22,7 +22,7 @@
   ],
   "cook": true,
   "extra": {
-    "item": "eurekacraft:blueprint",
+    "tag": "eurekacraft:blueprint",
     "consume": true
   },
   "output": {

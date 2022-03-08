@@ -12,6 +12,7 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
     private static final String NBT_KEY_STATS_SPEED = "speed";
     private static final String NBT_KEY_STATS_AGILITY = "agility";
     private static final String NBT_KEY_STATS_LIFT = "lift";
+    // TODO: land resistance and surf
 
     private static final double MAX_SPEED = 1.0;
     private static final double MAX_AGILITY = 1.0;
@@ -84,6 +85,13 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
         agility = Math.min(MAX_AGILITY, agility);
         lift = Math.min(MAX_LIFT, lift);
         return new RefBoardStats(weight, speed, agility, lift, creationReference.landResistance, creationReference.surf);
+    }
+
+    public RefBoardStats WithAllIncreased(double increase) {
+        return new RefBoardStats(
+                this.boardWeight, this.boardSpeed + increase, this.turnSpeed + increase, this.liftFactor + increase,
+                this.landResistance, this.surf
+        );
     }
 
     public RefBoardStats withLandResistance(double landResistance) {
