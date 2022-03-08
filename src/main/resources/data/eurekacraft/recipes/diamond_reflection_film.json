@@ -22,6 +22,7 @@
   ],
   "cook": true,
   "output": {
-    "item": "eurekacraft:diamond_reflection_film"
+    "item": "eurekacraft:broken_ref_board",
+    "note": "TODO: Change output to diamond reflection film"
   }
 }

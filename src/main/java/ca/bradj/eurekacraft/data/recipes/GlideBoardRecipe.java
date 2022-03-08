@@ -55,8 +55,14 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
                 return false;
             }
         }
-        if (extraIngredient != null && inv.getContainerSize() > recipeItems.size()) {
-            return extraIngredient.ingredient.test(inv.getItem(recipeItems.size()));
+        if (extraIngredient != null) {
+            if (inv.getContainerSize() == 1) {
+                return false;
+            }
+            if (inv.getContainerSize() > recipeItems.size()) {
+                ItemStack item = inv.getItem(recipeItems.size());
+                return extraIngredient.ingredient.test(item);
+            }
         }
 
         return true;

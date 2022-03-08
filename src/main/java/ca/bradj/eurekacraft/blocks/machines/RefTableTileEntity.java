@@ -5,7 +5,7 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
-import ca.bradj.eurekacraft.interfaces.ITechAffectable;
+import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -259,8 +259,8 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
         }
 
-        if (iRecipe.getResultItem().getItem() instanceof ITechAffectable) {
-            ((ITechAffectable) iRecipe.getResultItem().getItem()).applyTechItem(techStack, craftedOutput, level.getRandom());
+        if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
+            ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(techStack, craftedOutput, level.getRandom());
         }
     }
 
@@ -280,7 +280,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
         // Shaped
-        Inventory inv = new Inventory(RefTableConsts.inputSlots);
+        Inventory inv = new Inventory(RefTableConsts.inputSlots + 1);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < RefTableConsts.inputSlots; i++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(i);
@@ -289,6 +289,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 shapeless.add(stackInSlot);
             }
         }
+        ItemStack techItem = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        inv.setItem(RefTableConsts.inputSlots, techItem);
+        shapeless.add(techItem);
 
         RecipeManager recipeManager = level.getRecipeManager();
         Optional<GlideBoardRecipe> recipe = recipeManager.getRecipeFor(

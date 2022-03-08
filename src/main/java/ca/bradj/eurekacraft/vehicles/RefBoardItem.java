@@ -4,7 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
-import ca.bradj.eurekacraft.interfaces.ITechAffectable;
+import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
 import net.minecraft.client.util.ITooltipFlag;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public abstract class RefBoardItem extends Item implements ITechAffectable {
+public abstract class RefBoardItem extends Item implements ITechAffected {
 
     private static final String NBT_KEY_STATS = "stats";
 
@@ -135,10 +135,10 @@ public abstract class RefBoardItem extends Item implements ITechAffectable {
     }
 
     @Override
-    public void applyTechItem(ItemStack blueprint, ItemStack target, Random rand) {
+    public void applyTechItem(ItemStack blueprint, ItemStack target, Random random) {
         if (blueprint.getItem() instanceof IBoardStatsFactoryProvider) {
             IBoardStatsFactory factory = ((IBoardStatsFactoryProvider) blueprint.getItem()).getBoardStatsFactory();
-            RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(blueprint, baseStats, rand);
+            RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(blueprint, baseStats, random);
 
             CompoundNBT nbt = refBoardStats.serializeNBT();
 
