@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.core.init;
 import ca.bradj.eurekacraft.materials.RefBoardCoreItem;
 import ca.bradj.eurekacraft.render.*;
 import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
+import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import net.minecraft.util.ResourceLocation;
@@ -16,6 +17,7 @@ public class ModelsInit {
 
     public static void registerModels() {
         BOARD_MODELS.put(StandardRefBoard.ID, new RefBoardModel());
+        BOARD_MODELS.put(EliteRefBoard.ID, new EliteRefBoardModel());
         BOARD_MODELS.put(GlideBoard.ID, new GlideBoardModel());
         BOARD_MODELS.put(BrokenRefBoard.ID, new BrokenRefBoardModel());
         BOARD_MODELS.put(RefBoardCoreItem.ID, new RefBoardCoreModel());

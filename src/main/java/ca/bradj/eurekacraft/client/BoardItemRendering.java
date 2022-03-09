@@ -23,6 +23,7 @@ public class BoardItemRendering {
 
     public static void initItemProperties() {
         logger.debug("initItemProperties");
+        // TODO: Central board registry to reduce duplication here
         ItemModelsProperties.register(
                 ItemsInit.GLIDE_BOARD.get(),
                 new ResourceLocation(EurekaCraft.MODID, "deployed"),
@@ -40,6 +41,11 @@ public class BoardItemRendering {
         );
         ItemModelsProperties.register(
                 ItemsInit.REF_BOARD_CORE.get(),
+                new ResourceLocation(EurekaCraft.MODID, "deployed"),
+                new DeployedPropGetter()
+        );
+        ItemModelsProperties.register(
+                ItemsInit.ELITE_BOARD.get(),
                 new ResourceLocation(EurekaCraft.MODID, "deployed"),
                 new DeployedPropGetter()
         );

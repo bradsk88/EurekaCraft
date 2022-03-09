@@ -2,10 +2,10 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "tag": "eurekacraft:precision_wood"
+      "item": "eurekacraft:precision_wood"
     },
     {
-      "tag": "eurekacraft:precision_wood"
+      "item": "eurekacraft:precision_wood"
     }
   ],
   "cook": "false",

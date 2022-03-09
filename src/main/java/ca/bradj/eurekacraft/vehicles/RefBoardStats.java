@@ -31,7 +31,7 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
             WithSurf(0.80);
     public static RefBoardStats SurfBoard = new RefBoardStats(1.0, 0.75, MAX_AGILITY, MIN_LIFT).
             WithSurf(MAX_SURF);
-    public static RefBoardStats StandardBoard = new RefBoardStats(0.5, 0.5, 0.5, 0.5);
+    public static RefBoardStats StandardBoard = new RefBoardStats(0.75, 0.5, 0.5, 0.5);
     public static RefBoardStats SpeedBoard = new RefBoardStats(0.5, MAX_SPEED, 0.5, 0.5);
     public static RefBoardStats EliteBoard = new RefBoardStats(0.25, 0.75, MAX_AGILITY, MAX_LIFT);
     private double boardWeight;

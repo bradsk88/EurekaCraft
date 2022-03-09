@@ -6,10 +6,7 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.materials.*;
-import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
-import ca.bradj.eurekacraft.vehicles.GlideBoard;
-import ca.bradj.eurekacraft.vehicles.RefBoardItem;
-import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
+import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -70,6 +67,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> STANDARD_BOARD = ITEMS.register(
 			RefBoardItem.ItemIDs.REF_BOARD, StandardRefBoard::new
+	);
+
+	public static final RegistryObject<Item> ELITE_BOARD = ITEMS.register(
+			EliteRefBoard.ITEM_ID, EliteRefBoard::new
 	);
 
 	public static final RegistryObject<Item> BROKEN_BOARD = ITEMS.register(

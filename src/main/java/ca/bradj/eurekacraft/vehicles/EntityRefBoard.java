@@ -48,7 +48,7 @@ public class EntityRefBoard extends Entity {
             FlowerBlock.class, TallGrassBlock.class,
     };
     private static final Class<?>[] DESTROYABLE_BLOCK_CLASSES = new Class[]{
-            FlowerBlock.class, TallGrassBlock.class,
+            FlowerBlock.class, TallGrassBlock.class, VineBlock.class,
     };
 
     private static final float runSpeed = 0.13f;
@@ -194,7 +194,7 @@ public class EntityRefBoard extends Entity {
 
         // Calculated base physics
         double defaultFall = -0.02 * boardWeight;
-        double defaultAccel = 0.5 * boardWeight;
+        double defaultAccel = 0.01 * (boardWeight + boardSpeed);
         double defaultLand = -1 * Math.sqrt(boardWeight);
         double defaultLandAccel = 2 * defaultAccel;
         double defaultWaterDecel = 1.01 + (0.10 - (0.10 * surf));
@@ -320,6 +320,7 @@ public class EntityRefBoard extends Entity {
 
     private boolean canSurf(double flightSpeed) {
         if (flightSpeed < minSurfSpeed) {
+            this.kill();
             return false;
         }
         Direction faceDir = this.playerOrNull.getDirection();
