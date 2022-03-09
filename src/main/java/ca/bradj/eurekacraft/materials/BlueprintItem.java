@@ -14,6 +14,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -54,7 +56,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public void applyTechItem(ItemStack blueprint, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
         if (!(blueprint.getItem() instanceof BlueprintItem)) {
@@ -63,9 +65,18 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         if (target.getTag() == null) {
             target.setTag(new CompoundNBT());
         }
+
         // TODO: Consider making blueprint stats "relative" so they affect different boards differently
         RefBoardStats reference = RefBoardStats.StandardBoard;
-        RefBoardStats existingStats = FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(blueprint, reference, random);
+
+        ArrayList<RefBoardStats> inputStats = new ArrayList<>();
+        for (ItemStack item : inputs) {
+            if (item.getItem() instanceof BlueprintItem) { // TODO: Maybe take an interface?
+                inputStats.add(FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(item, reference, random));
+            }
+        }
+
+        RefBoardStats existingStats = RefBoardStats.Average(inputStats);
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(existingStats, random);
         target.getTag().put(NBT_KEY_BOARD_STATS, newStats.serializeNBT());
     }

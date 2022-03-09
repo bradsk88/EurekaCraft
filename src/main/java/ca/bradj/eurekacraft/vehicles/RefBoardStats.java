@@ -4,7 +4,9 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.SerializationException;
 
+import java.util.Collection;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class RefBoardStats implements INBTSerializable<CompoundNBT> {
 
@@ -14,6 +16,8 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
     private static final String NBT_KEY_STATS_LIFT = "lift";
     // TODO: land resistance and surf
 
+    private static final double MIN_WEIGHT = 0.1;
+    private static final double MAX_WEIGHT = 1.0;
     private static final double MAX_SPEED = 1.0;
     private static final double MAX_AGILITY = 1.0;
     private static final double MIN_LIFT = 0.0;
@@ -35,9 +39,9 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
     private double boardSpeed;
     private double turnSpeed;
     private double liftFactor;
-    private double landResistance = 0;
+    private double landResistance ;
     private boolean damaged;
-    private double surf = 0.40;
+    private double surf;
 
     private RefBoardStats(
             double boardWeight,
@@ -45,10 +49,7 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
             double turnSpeed, // This is a boost and is not coupled to weight
             double liftFactor // This is a boost and is not coupled to weight
     ) {
-        this.boardWeight = boardWeight;
-        this.boardSpeed = boardSpeed;
-        this.turnSpeed = turnSpeed;
-        this.liftFactor = liftFactor;
+        this(boardWeight, boardSpeed, turnSpeed, liftFactor, 0, 0.4);
     }
 
     private RefBoardStats(
@@ -59,10 +60,10 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
             double landResistance,
             double surf
     ) {
-        this.boardWeight = boardWeight;
-        this.boardSpeed = boardSpeed;
-        this.turnSpeed = turnSpeed;
-        this.liftFactor = liftFactor;
+        this.boardWeight = Math.min(MAX_WEIGHT, Math.max(MIN_WEIGHT, boardWeight));
+        this.boardSpeed = Math.min(MAX_SPEED, boardSpeed);
+        this.turnSpeed = Math.min(MAX_AGILITY, turnSpeed);
+        this.liftFactor = Math.min(MAX_LIFT, liftFactor);
         this.landResistance = landResistance;
         this.surf = surf;
     }
@@ -85,6 +86,25 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
         agility = Math.min(MAX_AGILITY, agility);
         lift = Math.min(MAX_LIFT, lift);
         return new RefBoardStats(weight, speed, agility, lift, creationReference.landResistance, creationReference.surf);
+    }
+
+    public static RefBoardStats Average(Collection<RefBoardStats> inputStats) {
+            
+        double avgWeight = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::weight));
+        double avgSpeed = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::speed));
+        double avgAgility = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::agility));
+        double avgLift = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::lift));
+        double avgLandRes = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::landResist));
+        double avgSurf = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::surf));
+        return new RefBoardStats(
+                avgWeight, avgSpeed, avgAgility, avgLift, avgLandRes, avgSurf
+        );
+    }
+
+    public RefBoardStats copy() {
+        return new RefBoardStats(
+                this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, this.landResistance, this.surf
+        );
     }
 
     public RefBoardStats WithAllIncreased(double increase) {
@@ -158,5 +178,29 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
         this.boardSpeed = nbt.getDouble(NBT_KEY_STATS_SPEED);
         this.turnSpeed = nbt.getDouble(NBT_KEY_STATS_AGILITY);
         this.liftFactor = nbt.getDouble(NBT_KEY_STATS_LIFT);
+    }
+
+    public RefBoardStats WithWeight(double newWeight) {
+        RefBoardStats out = this.copy();
+        out.boardWeight = newWeight;
+        return out;
+    }
+
+    public RefBoardStats WithSpeed(double newSpeed) {
+        RefBoardStats out = this.copy();
+        out.boardSpeed = newSpeed;
+        return out;
+    }
+
+    public RefBoardStats WithAgility(double newSpeed) {
+        RefBoardStats out = this.copy();
+        out.turnSpeed = newSpeed;
+        return out;
+    }
+
+    public RefBoardStats WithLift(double newSpeed) {
+        RefBoardStats out = this.copy();
+        out.liftFactor = newSpeed;
+        return out;
     }
 }

@@ -1,0 +1,24 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:glide_board"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:flint_sanding_disc_stack",
+    "consume": true
+  },
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:glide_board"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:resinous_dust"
+    },
+    "chance": 0.25
+  },
+  "experience": 5.0,
+  "cookingTime": 20
+}

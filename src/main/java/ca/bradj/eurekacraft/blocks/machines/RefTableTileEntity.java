@@ -38,10 +38,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -202,12 +199,21 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
             }
 
+            Collection<ItemStack> inputs = new ArrayList<>();
+            for (int i = 0; i < RefTableConsts.inputSlots; i++) {
+                ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+                if (stackInSlot.isEmpty()) {
+                    continue;
+                }
+                inputs.add(stackInSlot);
+            }
+
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
                 itemHandler.extractItem(i, 1, false);
             }
 
             if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
-                useExtraIngredient(iRecipe, output, level);
+                useExtraIngredient(iRecipe, inputs, output, level);
             }
 
             itemHandler.insertItem(RefTableConsts.outputSlot, output, false);
@@ -248,7 +254,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private void useExtraIngredient(
-            GlideBoardRecipe iRecipe, ItemStack craftedOutput, World level
+            GlideBoardRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, World level
     ) {
         ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
         techStack.hurt(1, new Random(), null);
@@ -260,7 +266,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         }
 
         if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
-            ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(techStack, craftedOutput, level.getRandom());
+            ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(inputs, techStack, craftedOutput, level.getRandom());
         }
     }
 

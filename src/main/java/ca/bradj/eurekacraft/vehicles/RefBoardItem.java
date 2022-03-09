@@ -2,9 +2,7 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
-import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
-import ca.bradj.eurekacraft.interfaces.ITechAffected;
+import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
 import net.minecraft.client.util.ITooltipFlag;
@@ -23,11 +21,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public abstract class RefBoardItem extends Item implements ITechAffected {
+public abstract class RefBoardItem extends Item implements ITechAffected, IBoardStatsGetterProvider {
 
     private static final String NBT_KEY_STATS = "stats";
 
@@ -37,12 +36,14 @@ public abstract class RefBoardItem extends Item implements ITechAffected {
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats baseStats;
     private final BoardType id;
+    private final StatsGetter statsGetter;
     protected boolean canFly = true;
 
     protected RefBoardItem(RefBoardStats stats, BoardType boardId) {
         super(PROPS);
         this.baseStats = stats;
         this.id = boardId;
+        this.statsGetter = new StatsGetter(stats);
     }
 
     public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
@@ -100,10 +101,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected {
         PlayerDeployedBoard.remove(player);
     }
 
-    public RefBoardStats getStats() {
-        return this.baseStats;
-    }
-
     public boolean isDamagedBoard() {
         return this.baseStats.isDamaged();
     }
@@ -135,18 +132,48 @@ public abstract class RefBoardItem extends Item implements ITechAffected {
     }
 
     @Override
-    public void applyTechItem(ItemStack blueprint, ItemStack target, Random random) {
-        if (blueprint.getItem() instanceof IBoardStatsFactoryProvider) {
-            IBoardStatsFactory factory = ((IBoardStatsFactoryProvider) blueprint.getItem()).getBoardStatsFactory();
-            RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(blueprint, baseStats, random);
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, Random random) {
+        if (techItem.getItem() instanceof IBoardStatsFactoryProvider) {
+            IBoardStatsFactory factory = ((IBoardStatsFactoryProvider) techItem.getItem()).getBoardStatsFactory();
+            RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(techItem, baseStats, random);
 
-            CompoundNBT nbt = refBoardStats.serializeNBT();
-
-            if (target.getTag() == null) {
-                target.setTag(new CompoundNBT());
-            }
-            target.getTag().put(NBT_KEY_STATS, nbt);
+            storeStatsOnStack(target, refBoardStats);
         }
+        applyBoardShaping(inputs, techItem, target);
+    }
+
+    private void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
+        CompoundNBT nbt = refBoardStats.serializeNBT();
+
+        if (target.getTag() == null) {
+            target.setTag(new CompoundNBT());
+        }
+        target.getTag().put(NBT_KEY_STATS, nbt);
+    }
+
+    private void applyBoardShaping(Collection<ItemStack> inputs, ItemStack techStack, ItemStack targetStack) {
+        if (inputs.size() != 1) {
+            return;
+        }
+        ItemStack inputBoardStack = (ItemStack) inputs.toArray()[0];
+        Item inputBoard = inputBoardStack.getItem();
+        if (!(inputBoard instanceof RefBoardItem)) {
+            return;
+        }
+        Item targetBoard = targetStack.getItem();
+        if (!(targetBoard instanceof  RefBoardItem)) {
+            return;
+        }
+        Item techItem = techStack.getItem();
+        if (!(techItem instanceof IBoardStatsModifier)) {
+            return;
+        }
+        if (!(targetStack.getItem() instanceof IBoardStatsGetterProvider)) {
+            return;
+        }
+        RefBoardStats originalStats = ((RefBoardItem) inputBoard).boardStatsGetter().getBoardStats(inputBoardStack);
+        RefBoardStats newStats = ((IBoardStatsModifier) techItem).modifyBoardStats(originalStats); // TODO: Enforce maximum
+        storeStatsOnStack(targetStack, newStats);
     }
 
     RefBoardStats getStatsForStack(ItemStack stack) {
@@ -155,5 +182,28 @@ public abstract class RefBoardItem extends Item implements ITechAffected {
         }
         CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
         return RefBoardStats.FromNBT(nbt);
+    }
+
+    @Override
+    public IBoardStatsGetter boardStatsGetter() {
+        return this.statsGetter;
+    }
+
+    public static class StatsGetter implements IBoardStatsGetter {
+
+        private final RefBoardStats baseStats;
+
+        private StatsGetter(RefBoardStats baseStats) {
+            this.baseStats = baseStats;
+        }
+
+        @Override
+        public RefBoardStats getBoardStats(ItemStack stack) {
+            if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_STATS)) {
+                return baseStats;
+            }
+            CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
+            return RefBoardStats.FromNBT(nbt);
+        }
     }
 }
