@@ -9,6 +9,8 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 
@@ -21,11 +23,12 @@ public class ScubGoggles extends ArmorItem {
         super(ArmorMaterial.LEATHER, EquipmentSlotType.HEAD, PROPS);
     }
 
+    @OnlyIn(Dist.CLIENT)
     @Nullable
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
         if (EquipmentSlotType.HEAD == armorSlot) {
-            return (A) new ScubGoggleHelmetModel(1f); // TODO: Probably need to make sided
+            return (A) new ScubGoggleHelmetModel(1f);
         }
         return _default;
     }
