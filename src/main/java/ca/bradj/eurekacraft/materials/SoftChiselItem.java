@@ -10,18 +10,18 @@ import net.minecraft.util.SoundEvents;
 import java.util.Optional;
 import java.util.Random;
 
-public class FlintSandingDiscStackItem extends Item implements NoisyCraftingItem, IBoardStatsModifier {
+public class SoftChiselItem extends Item implements NoisyCraftingItem, IBoardStatsModifier {
     private static final double MAX_STAT_BOOST = 0.1;
     private static final Optional<NoisyItem> CRAFTING_SOUND = Optional.of(
-            new NoisyItem(8, SoundEvents.GRAVEL_STEP)
+            new NoisyItem(16, SoundEvents.VILLAGER_WORK_TOOLSMITH)
     );
 
-    public static final String ITEM_ID = "flint_sanding_disc_stack";
+    public static final String ITEM_ID = "soft_chisel";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP).
             durability(3 * 6).
             setNoRepair();
 
-    public FlintSandingDiscStackItem() {
+    public SoftChiselItem() {
         super(PROPS);
     }
 
@@ -35,6 +35,6 @@ public class FlintSandingDiscStackItem extends Item implements NoisyCraftingItem
         Random random = new Random();
         return stats.
                 WithWeight(stats.weight() - (random.nextDouble() * MAX_STAT_BOOST)).
-                WithSpeed(stats.speed() + (random.nextDouble() * MAX_STAT_BOOST));
+                WithAgility(stats.agility() + (random.nextDouble() * MAX_STAT_BOOST));
     }
 }

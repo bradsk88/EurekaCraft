@@ -110,8 +110,16 @@ public class ItemsInit {
 			FlintSandingDiscStackItem.ITEM_ID, FlintSandingDiscStackItem::new
 	);
 
+	public static final RegistryObject<Item> SOFT_CHISEL = ITEMS.register(
+			SoftChiselItem.ITEM_ID, SoftChiselItem::new
+	);
+
 	public static final RegistryObject<Item> PRECISION_WOOD = ITEMS.register(
 			PrecisionWoodItem.ITEM_ID, PrecisionWoodItem::new
+	);
+
+	public static final RegistryObject<Item> PRECISION_WOOD_STICK = ITEMS.register(
+			PrecisionWoodStickItem.ITEM_ID, PrecisionWoodStickItem::new
 	);
 
 	public static final RegistryObject<Item> REF_BOARD_CORE = ITEMS.register(

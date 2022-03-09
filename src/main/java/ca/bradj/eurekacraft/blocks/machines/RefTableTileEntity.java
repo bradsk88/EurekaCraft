@@ -245,9 +245,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 float volume = 0.5f;
                 float pitch = 0.5f;
                 this.level.playSound(
-                        null, this.getBlockPos(), s, SoundCategory.BLOCKS, volume, pitch
+                        null, this.getBlockPos(), s.event, SoundCategory.BLOCKS, volume, pitch
                 );
-                this.noiseCooldown = 8; // TODO: maybe add to the NoisyCraftingItem so each item can decide cooldown?
+                this.noiseCooldown = s.noiseCooldown;
             });
         });
 
