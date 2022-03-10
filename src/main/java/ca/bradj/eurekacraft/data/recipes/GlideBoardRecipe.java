@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.data.recipes;
 
-import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,8 +16,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +25,6 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     private final ResourceLocation id;
     private final ItemStack output;
     private final NonNullList<Ingredient> recipeItems;
-    private static final int recipeSize = 6; // TOO: Confirm
     private final boolean cook;
     private final Secondary secondaryOutput;
     private ExtraInput extraIngredient;
@@ -47,7 +44,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     @Override
     public boolean matches(IInventory inv, World p_77569_2_) {
         int itemsInInput = 0;
-        for (int i = 0; i < inv.getContainerSize(); i++) {
+        for (int i = 0; i < Math.min(inv.getContainerSize(), RefTableConsts.inputSlots); i++) {
             if (inv.getItem(i).isEmpty()) {
                 continue;
             }

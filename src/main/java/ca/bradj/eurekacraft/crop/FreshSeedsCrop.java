@@ -1,11 +1,13 @@
 package ca.bradj.eurekacraft.crop;
 
+import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -89,10 +91,15 @@ public class FreshSeedsCrop extends CropsBlock {
             BlockState blockState, World world, BlockPos blockPos,
             PlayerEntity player, Hand hand, BlockRayTraceResult rtr
     ) {
+        if (world.isClientSide()) {
+            return ActionResultType.CONSUME;
+        }
         if (isMaxAge(blockState)) {
             world.destroyBlock(blockPos, true);
+            AdvancementsInit.FRESH_CROPS_HARVEST_TRIGGER.trigger((ServerPlayerEntity) player);
             world.setBlock(blockPos, this.getStateForAge(0), 2);
+            return ActionResultType.CONSUME;
         }
-        return super.use(blockState, world, blockPos, player, hand, rtr);
+        return ActionResultType.PASS;
     }
 }
