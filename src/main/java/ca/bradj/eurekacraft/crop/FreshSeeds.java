@@ -1,10 +1,9 @@
 package ca.bradj.eurekacraft.crop;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockNamedItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.IPlantable;
@@ -14,11 +13,11 @@ public class FreshSeeds extends BlockNamedItem implements IPlantable {
 
 	public static final String ITEM_ID = "fresh_seeds";
 
-	public static final Item.Properties FRESH_SEEDS_PROPS = new Item.Properties().tab(ItemGroup.TAB_MISC);
+	private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 	
 	public FreshSeeds() {
 		super(
-				BlocksInit.FRESH_SEEDS_CROP.get(), FRESH_SEEDS_PROPS
+				BlocksInit.FRESH_SEEDS_CROP.get(), PROPS
 		);
 	}
 

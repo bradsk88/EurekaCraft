@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
+import ca.bradj.eurekacraft.crop.FreshSmellingLeaves;
 import ca.bradj.eurekacraft.materials.*;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
@@ -22,6 +23,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> FRESH_SEEDS_ITEM = ITEMS.register(
 			FreshSeeds.ITEM_ID, FreshSeeds::new
+	);
+
+	public static final RegistryObject<Item> FRESH_LEAVES_ITEM = ITEMS.register(
+			FreshSmellingLeaves.ITEM_ID, FreshSmellingLeaves::new
 	);
 
 //	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
