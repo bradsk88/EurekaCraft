@@ -1,0 +1,33 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:clay_ball"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:clay_ball"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:clay_ball"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:clay_sticky_disc"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:clay_sticky_disc"
+    },
+    "chance": 1.0
+  }
+}

@@ -2,9 +2,12 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
+import ca.bradj.eurekacraft.materials.BlueprintItem;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -18,6 +21,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // FIXME: Rename to RefTableRecipe
 public class GlideBoardRecipe implements IGlideBoardRecipe {
@@ -43,31 +51,46 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
 
     @Override
     public boolean matches(IInventory inv, World p_77569_2_) {
-        int itemsInInput = 0;
+        if (recipeItems.get(0).getItems()[0].getItem() instanceof BlueprintItem) {
+            int x = 0;
+        }
+
+        ArrayList<Item> itemsInInput = new ArrayList<>();
         for (int i = 0; i < Math.min(inv.getContainerSize(), RefTableConsts.inputSlots); i++) {
             if (inv.getItem(i).isEmpty()) {
                 continue;
             }
-            itemsInInput++;
+            itemsInInput.add(inv.getItem(i).getItem());
         }
-        if (itemsInInput != recipeItems.size()) {
+        if (itemsInInput.size() != recipeItems.size()) {
             return false;
         }
-        for (int i = 0; i < recipeItems.size(); i++) {
-            ItemStack item = inv.getItem(i);
-            if (item.isDamageableItem() && item.isDamaged()) {
+        if (recipeItems.size() < RefTableConsts.inputSlots) {
+            Stream<Item> itemStream = recipeItems.stream().map(v -> v.getItems()[0].getItem());
+            HashSet<Item> recipeSet = new HashSet<>(itemsInInput);
+            Set<Item> itemSet = itemStream.collect(Collectors.toSet());
+            Sets.SetView<Item> difference = Sets.difference(itemSet, recipeSet);
+            if (!difference.isEmpty()) {
                 return false;
             }
-            if (!recipeItems.get(i).test(item)) {
-                return false;
+        } else {
+            // Shaped
+            for (int i = 0; i < recipeItems.size(); i++) {
+                ItemStack item = inv.getItem(i);
+                if (item.isDamageableItem() && item.isDamaged()) {
+                    return false;
+                }
+                if (!recipeItems.get(i).test(item)) {
+                    return false;
+                }
             }
         }
-        if (extraIngredient != null) {
+        if (extraIngredient != null && !extraIngredient.ingredient.isEmpty()) {
             if (inv.getContainerSize() == 1) {
                 return false;
             }
-            if (inv.getContainerSize() > recipeItems.size()) {
-                ItemStack item = inv.getItem(recipeItems.size());
+            if (inv.getContainerSize() > RefTableConsts.inputSlots) {
+                ItemStack item = inv.getItem(RefTableConsts.inputSlots);
                 return extraIngredient.ingredient.test(item);
             }
         }
