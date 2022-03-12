@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -25,7 +26,7 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
     private final DefaultPlayerBoardDeployed board = new DefaultPlayerBoardDeployed();
     private final LazyOptional<IPlayerEntityBoardDeployed> boardOptional = LazyOptional.of(() -> board);
 
-    public static Optional<BoardType> get(PlayerEntity p) {
+    public static Optional<BoardType> get(Entity p) {
         LazyOptional<IPlayerEntityBoardDeployed> c = p.getCapability(DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY);
         if (c.isPresent() && c.resolve().isPresent()) {
             return c.resolve().map(IPlayerEntityBoardDeployed::getBoardType);
@@ -33,7 +34,7 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
         return Optional.empty();
     }
 
-    public static void set(PlayerEntity p, BoardType t) {
+    public static void set(Entity p, BoardType t) {
         if (BoardType.NONE.equals(t)) {
             remove(p);
         }
@@ -50,7 +51,7 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
         });
     }
 
-    public static void remove(PlayerEntity p) {
+    public static void remove(Entity p) {
         LazyOptional<IPlayerEntityBoardDeployed> c = p.getCapability(DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY);
         c.ifPresent(v -> {
             if (BoardType.NONE.equals(v.getBoardType())) {

@@ -1,8 +1,11 @@
-package ca.bradj.eurekacraft.vehicles;
+package ca.bradj.eurekacraft.entity;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.RefBoardItem;
+import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.block.*;
@@ -16,7 +19,6 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -58,8 +60,7 @@ public class EntityRefBoard extends Entity {
     private static final float surfLift = 0.05f;
 
     private float initialSpeed;
-    private PlayerEntity playerOrNull;
-    private Hand handHeld;
+    private Entity playerOrNull;
     private boolean damaged;
     private boolean canFly;
     private RefBoardStats boardStats;
@@ -75,21 +76,20 @@ public class EntityRefBoard extends Entity {
         super(entity, world);
     }
 
-    public EntityRefBoard(PlayerEntity player, World world, Hand hand) {
+    public EntityRefBoard(Entity player, World world, ItemStack boardItem) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
         if (world.isClientSide()) {
             return;
         }
 
-        ItemStack itemInHand = player.getItemInHand(hand);
-        if (!(itemInHand.getItem() instanceof RefBoardItem)) {
+        ItemStack item = boardItem.getStack();
+        if (!(item.getItem() instanceof RefBoardItem)) {
             logger.error("Item in hand was not ref board. Killing entity");
             this.kill();
             return;
         }
 
-        ItemStack item = itemInHand.getStack();
         damaged = ((RefBoardItem) item.getItem()).isDamagedBoard();
         canFly = ((RefBoardItem) item.getItem()).canFly();
         boardStats = RefBoardItem.GetStatsFromNBT(item);
@@ -101,9 +101,13 @@ public class EntityRefBoard extends Entity {
 
         deployedBoards.put(player.getId(), this);
 
-        this.handHeld = hand;
         this.playerOrNull = player;
-        this.initialSpeed = runEquivalent * (player.getSpeed() / runSpeed);
+
+        this.initialSpeed = runEquivalent;
+        if (player instanceof PlayerEntity) {
+            this.initialSpeed = runEquivalent * (((PlayerEntity) player).getSpeed() / runSpeed);
+        }
+
         this.lastSpeed = initialSpeed;
     }
 
@@ -112,6 +116,18 @@ public class EntityRefBoard extends Entity {
             return;
         }
         boostedPlayers.put(id, BOOST_TICKS);
+    }
+
+    public static EntityRefBoard spawnNew(Entity player, World level, ItemStack boardItem, BoardType id) {
+        if (level.isClientSide()) {
+            return null;
+        }
+        EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
+        Vector3d position = player.position();
+        glider.setPos(position.x, position.y, position.z);
+        level.addFreshEntity(glider);
+        PlayerDeployedBoard.set(player, id);
+        return glider;
     }
 
     @Override
@@ -123,10 +139,6 @@ public class EntityRefBoard extends Entity {
                 deployedBoards.remove(this.playerOrNull.getId());
             }
         }
-    }
-
-    public Hand getHandHeld() {
-        return this.handHeld;
     }
 
     @Override
@@ -181,6 +193,10 @@ public class EntityRefBoard extends Entity {
 
     private void flyOrSurf() {
         boolean boosted = this.consumeBoost();
+        if (this.playerOrNull instanceof JudgeEntity) {
+            // TODO: Remove. Judge should set off trapar bombs
+            boosted = true;
+        }
 
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
             boosted = true;
@@ -232,8 +248,10 @@ public class EntityRefBoard extends Entity {
             flightSpeed = Math.max(0, this.lastSpeed / defaultWaterDecel);
             animateSurf();
         } else if (playerOrNull.isInWater()) {
+            if (!(playerOrNull instanceof JudgeEntity)) { // TODO: More generic check
                 this.kill();
                 return;
+            }
         }
 
         flightSpeed = reduceSpeedIfCrashed(flightSpeed);
@@ -241,7 +259,7 @@ public class EntityRefBoard extends Entity {
         storeForNextTick(liftOrFall, flightSpeed, nextDir);
 
         Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
-        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
+//        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
 
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
@@ -261,6 +279,11 @@ public class EntityRefBoard extends Entity {
 
     private float calculateYRot(float turnSpeed) { // TODO: Damaged effect
         float lookYRot = this.playerOrNull.getViewYRot(1.0F);
+        if (playerOrNull instanceof  JudgeEntity) {
+            this.lastYRot = lookYRot;
+            return lookYRot;
+        }
+
         if (this.lastYRot > 0 && this.lastYRot <= INITIAL_YROT) {
             this.lastYRot = lookYRot;
             return lookYRot;
@@ -319,15 +342,23 @@ public class EntityRefBoard extends Entity {
     }
 
     private boolean canSurf(double flightSpeed) {
+        if (playerOrNull instanceof JudgeEntity) {
+            // TODO More generic check
+            return false;
+        }
+
         if (flightSpeed < minSurfSpeed) {
-            this.kill();
             return false;
         }
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
         BlockState blockAboveFront = this.level.getBlockState(inFront.above(1));
-        return blockInFront.is(Blocks.WATER) && isPassable(blockAboveFront) && !blockAboveFront.is(Blocks.WATER);
+        boolean underWater = blockAboveFront.is(Blocks.WATER);
+        if (underWater) {
+            this.kill();
+        }
+        return blockInFront.is(Blocks.WATER) && isPassable(blockAboveFront) && !underWater;
     }
 
     private void destroyBlocks() {

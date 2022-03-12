@@ -4,7 +4,7 @@ package ca.bradj.eurekacraft.blocks;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.render.TraparWaveShapes;
-import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
+import ca.bradj.eurekacraft.entity.EntityRefBoard;
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

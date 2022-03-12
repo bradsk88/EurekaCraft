@@ -1,9 +1,8 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.vehicles.EntityRefBoard;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
+import ca.bradj.eurekacraft.entity.EntityRefBoard;
+import ca.bradj.eurekacraft.entity.JudgeEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -24,5 +23,16 @@ public class EntitiesInit {
                     of(EntityRefBoard::new, EntityClassification.MISC).
                     build(REF_BOARD_ID)
     );
+
+    public static final RegistryObject<EntityType<JudgeEntity>> JUDGE;
+
+    static {
+        JUDGE = ENTITIES.register(
+                JudgeEntity.ENTITY_ID.getPath(),
+                () -> EntityType.Builder.
+                        of(JudgeEntity::new, EntityClassification.CREATURE).
+                        build(JudgeEntity.ENTITY_ID.getPath())
+        );
+    }
 
 }

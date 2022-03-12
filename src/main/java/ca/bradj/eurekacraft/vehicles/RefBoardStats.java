@@ -18,9 +18,11 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
 
     private static final double MIN_WEIGHT = 0.1;
     private static final double MAX_WEIGHT = 1.0;
-    private static final double MAX_SPEED = 1.0;
+    public static final double MAX_SPEED = 1.0;
+    public static final double MIN_SPEED = 0.1;
     private static final double MAX_AGILITY = 1.0;
-    private static final double MIN_LIFT = 0.0;
+    public static final double MIN_LIFT = 0.0;
+    public static final double MIN_POSITIVE_LIFT = 0.1;
     private static final double MAX_LIFT = 1.0;
     private static final double MAX_SURF = 1.0;
 

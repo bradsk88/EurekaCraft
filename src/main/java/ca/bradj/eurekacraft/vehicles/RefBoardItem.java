@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.entity.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
@@ -76,22 +77,14 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
                 despawnGlider(player, world, glider);
             }
             if (glider != null && glider.isAlive()) {
-                if (glider.getHandHeld() == hand) despawnGlider(player, world, glider);
-                // if deployed glider is in other hand, ignore
-            } else spawnGlider(player, player.level, hand, this.id);
+                despawnGlider(player, world, glider);
+            } else {
+                ItemStack boardItem = player.getItemInHand(hand);
+                spawnedGlidersMap.put(player, EntityRefBoard.spawnNew(player, player.level, boardItem, this.id));
+            }
         }
 
         return ActionResult.success(s);
-    }
-
-    // Server Side Only
-    private static void spawnGlider(PlayerEntity player, World world, Hand hand, BoardType id) {
-        EntityRefBoard glider = new EntityRefBoard(player, world, hand);
-        Vector3d position = player.position();
-        glider.setPos(position.x, position.y, position.z);
-        world.addFreshEntity(glider);
-        spawnedGlidersMap.put(player, glider);
-        PlayerDeployedBoard.set(player, id);
     }
 
     // Server Side only

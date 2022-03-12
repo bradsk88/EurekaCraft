@@ -70,7 +70,7 @@ public class ItemsInit {
 			RefBoardItem.ItemIDs.GLIDE_BOARD, GlideBoard::new
 	);
 
-	public static final RegistryObject<Item> STANDARD_BOARD = ITEMS.register(
+	public static final RegistryObject<StandardRefBoard> STANDARD_BOARD = ITEMS.register(
 			RefBoardItem.ItemIDs.REF_BOARD, StandardRefBoard::new
 	);
 
