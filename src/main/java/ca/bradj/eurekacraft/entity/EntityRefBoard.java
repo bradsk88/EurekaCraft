@@ -1,6 +1,8 @@
 package ca.bradj.eurekacraft.entity;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.advancements.BoardTrickTrigger;
+import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.vehicles.BoardType;
@@ -9,9 +11,12 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.block.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
@@ -25,11 +30,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 // TODO: Destroy ref board on player disconnect
 
@@ -109,6 +117,16 @@ public class EntityRefBoard extends Entity {
         }
 
         this.lastSpeed = initialSpeed;
+
+        if (playerOrNull instanceof ServerPlayerEntity) {
+            AdvancementsInit.BOARD_TRICK_TRIGGER.trigger(
+                    (ServerPlayerEntity) playerOrNull,
+                    BoardTrickTrigger.Trick.FirstRefFlight
+            );
+
+            // TODO: Only spawn if player has not already receive reward/achivo?
+            JudgeEntity.spawnToRewardPlayer((ServerPlayerEntity) playerOrNull);
+        }
     }
 
     public static void boostPlayer(World world, int id) {
@@ -193,7 +211,7 @@ public class EntityRefBoard extends Entity {
 
     private void flyOrSurf() {
         boolean boosted = this.consumeBoost();
-        if (this.playerOrNull instanceof JudgeEntity) {
+        if (this.playerOrNull instanceof JudgeEntity && !damaged) {
             // TODO: Remove. Judge should set off trapar bombs
             boosted = true;
         }

@@ -1,0 +1,36 @@
+{
+  "display": {
+    "title": {
+      "text": "Maiden Voyage",
+      "color": "white"
+    },
+    "description": {
+      "text": "Deploy a Ref Board and take flight"
+    },
+    "icon": {
+      "item": "eurekacraft:advancement_first_flight"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Trigger": {
+      "trigger": "eurekacraft:board_trick_trigger",
+      "conditions": {
+        "trick_id": "first_ref_flight"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Trigger"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "parent": "eurekacraft:root"
+}

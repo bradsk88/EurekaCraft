@@ -48,6 +48,7 @@ public class EurekaCraft {
         TilesInit.TILES.register(bus);
         BlocksInit.BLOCKS.register(bus);
         ItemsInit.register(bus);
+        AdvancementsInit.registerIconItems(bus);
         EntitiesInit.ENTITIES.register(bus);
         FeaturesInit.PLACEMENTS.register(bus);
         FeaturesInit.FEATURES.register(bus);

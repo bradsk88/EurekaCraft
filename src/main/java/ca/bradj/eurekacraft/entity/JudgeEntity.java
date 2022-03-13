@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.entity;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -40,19 +42,37 @@ public class JudgeEntity extends CreatureEntity {
     private static final RefBoardStats BOARD_STATS = RefBoardStats.StandardBoard.
             WithSpeed(RefBoardStats.MIN_SPEED * 2).
             WithLift(RefBoardStats.MIN_POSITIVE_LIFT);
+    private ServerPlayerEntity rewardRecipient;
 
     private BlockPos targetDestination;
     private boolean hasAward = true;
     private Vector3d awardPos;
+    private int giveCooldown = 100;
 
     public JudgeEntity(EntityType<? extends CreatureEntity> entity, World world) {
         super(entity, world);
+    }
 
+    public JudgeEntity(ServerPlayerEntity rewardRecipient, World world) {
+        this(EntitiesInit.JUDGE.get(), world);
+        this.rewardRecipient = rewardRecipient;
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
         return MobEntity.createMobAttributes().
                 add(Attributes.MAX_HEALTH, 10.0D);
+    }
+
+    public static void spawnToRewardPlayer(ServerPlayerEntity player) {
+        JudgeEntity judge = new JudgeEntity(player, player.level);
+        Vector3d viewVector = player.getViewVector(1.0f);
+        BlockPos spawnPos = new BlockPos(
+                player.position().x + viewVector.x,
+                player.position().y + viewVector.y,
+                player.position().z + viewVector.z
+        );
+        judge.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        player.level.addFreshEntity(judge);
     }
 
     @Nullable
@@ -72,7 +92,21 @@ public class JudgeEntity extends CreatureEntity {
 
     @Override
     protected ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+        if (!this.hasAward) {
+            return ActionResultType.CONSUME;
+        }
+
         BlockPos ownPos = blockPosition();
+
+        if (this.rewardRecipient != p_230254_1_) {
+            this.level.playLocalSound(
+                    ownPos.getX(), ownPos.getY(), ownPos.getZ(),
+                    SoundEvents.VILLAGER_NO, SoundCategory.NEUTRAL,
+                    0.5f, 1.2f, false
+            );
+            return ActionResultType.CONSUME;
+        }
+
         this.level.playLocalSound(
                 ownPos.getX(), ownPos.getY(), ownPos.getZ(),
                 SoundEvents.VILLAGER_YES, SoundCategory.NEUTRAL,
@@ -107,6 +141,11 @@ public class JudgeEntity extends CreatureEntity {
     @Override
     public void tick() {
         super.tick();
+
+
+        if (!this.hasAward) {
+            this.giveCooldown--;
+        }
 
         if (awardPos != null) {
 
@@ -160,10 +199,61 @@ public class JudgeEntity extends CreatureEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new WaitForPlayerGoal(this, 0.2));
-        this.goalSelector.addGoal(1, new LookAtPlayerGoal(this, PlayerEntity.class, 10.0F));
+        this.goalSelector.addGoal(0, new InitialLandGoal(this));
+        this.goalSelector.addGoal(0, new FindSafePlaceGoal(this, 0.2));
+        this.goalSelector.addGoal(1, new WaitForPlayerGoal(this, 0.2));
+        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, PlayerEntity.class, 10.0F));
         this.goalSelector.addGoal(3, new FlyAwayGoal(this));
         this.goalSelector.addGoal(4, new WalkAwayGoal(this));
+    }
+
+    public static class InitialLandGoal extends Goal {
+
+        private final JudgeEntity self;
+
+        InitialLandGoal(JudgeEntity entity) {
+            this.self = entity;
+        }
+
+        @Override
+        public boolean canUse() {
+            // TODO: also use this for initial landing
+            return this.self.hasAward && !this.self.isOnGround();
+        }
+
+        @Override
+        public void start() {
+            EntityRefBoard.spawnNew(
+                    this.self,
+                    this.self.level,
+                    ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
+                    EliteRefBoard.ID
+            );
+        }
+    }
+
+    public static class FindSafePlaceGoal extends WaterAvoidingRandomWalkingGoal {
+
+        FindSafePlaceGoal(JudgeEntity entity, double dunno) {
+            super(entity, dunno);
+        }
+
+        @Override
+        public boolean canUse() {
+            return this.mob.isInWater();
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            if (this.mob.isInWater()) {
+                BlockPos oldPos = this.mob.blockPosition();
+                this.mob.setPos(
+                        oldPos.getX(), oldPos.getY() + 1, oldPos.getZ()
+                );
+            }
+        }
+
     }
 
     public static class WaitForPlayerGoal extends WaterAvoidingRandomWalkingGoal {
@@ -206,6 +296,9 @@ public class JudgeEntity extends CreatureEntity {
         @Override
         public boolean canUse() {
             if (this.self.hasAward) {
+                return false;
+            }
+            if (this.self.giveCooldown > 0) {
                 return false;
             }
             return self.isOnGround();
