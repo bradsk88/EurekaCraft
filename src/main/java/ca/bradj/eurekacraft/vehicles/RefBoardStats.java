@@ -25,6 +25,7 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
     public static final double MIN_POSITIVE_LIFT = 0.1;
     private static final double MAX_LIFT = 1.0;
     private static final double MAX_SURF = 1.0;
+    public static final double MAX_SURF_FOREVER = 1.1;
 
     public static RefBoardStats BadBoard = new RefBoardStats(1.0, 0.25, 0.25, 0.25);
     public static RefBoardStats HeavyBoard = new RefBoardStats(1.0, 0.5, 0.25, 0.25);
@@ -122,10 +123,10 @@ public class RefBoardStats implements INBTSerializable<CompoundNBT> {
         );
     }
 
-    private RefBoardStats WithSurf(double surf) {
-        return new RefBoardStats(
-                this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, this.landResistance, surf
-        );
+    public RefBoardStats WithSurf(double surf) {
+        RefBoardStats copy = this.copy();
+        copy.surf = surf;
+        return copy;
     }
 
     public RefBoardStats damaged() {

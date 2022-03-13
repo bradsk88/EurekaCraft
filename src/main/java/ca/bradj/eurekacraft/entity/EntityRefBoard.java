@@ -29,8 +29,10 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,6 +63,8 @@ public class EntityRefBoard extends Entity {
             FlowerBlock.class, TallGrassBlock.class, VineBlock.class,
     };
 
+    public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
     private static final float maxFlySpeed = 2.0f;
@@ -73,12 +77,12 @@ public class EntityRefBoard extends Entity {
     private boolean canFly;
     private RefBoardStats boardStats;
 
-    public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private float lastYRot = INITIAL_YROT;
     private Vector3d lastDirection = new Vector3d(1.0, 1.0, 1.0);
     private double lastLift = 0;
     private double lastSpeed;
     private int tickOf100 = 0;
+    private UUID waitingForPlayer;
 
     public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
         super(entity, world);
@@ -129,6 +133,18 @@ public class EntityRefBoard extends Entity {
         }
     }
 
+    @Override
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        EntityRefBoard.Serializer ser = new EntityRefBoard.Serializer(this);
+        nbt.put("ec_ref_board_state", ser.serializeNBT());
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        EntityRefBoard.Serializer ser = new EntityRefBoard.Serializer(this);
+        ser.deserializeNBT(nbt.getCompound("ec_ref_board_state"));
+    }
+
     public static void boostPlayer(World world, int id) {
         if (world.isClientSide()) {
             return;
@@ -168,20 +184,6 @@ public class EntityRefBoard extends Entity {
         super.onSyncedDataUpdated(dataParam);
     }
 
-    @Override
-    protected void readAdditionalSaveData(CompoundNBT p_70037_1_) {
-        // TODO: Implement?
-        if (this.level.isClientSide) {
-        }
-    }
-
-    @Override
-    protected void addAdditionalSaveData(CompoundNBT p_213281_1_) {
-        // TODO: Implement?
-        if (this.level.isClientSide) {
-        }
-    }
-
     public IPacket<?> getAddEntityPacket() {
         return new SSpawnObjectPacket(this);
     }
@@ -189,6 +191,14 @@ public class EntityRefBoard extends Entity {
     @Override
     public void tick() {
         super.tick();
+        if (this.waitingForPlayer != null) {
+            logger.debug(String.format(
+                    "Board waiting for player %s at %s", waitingForPlayer.toString(), this.blockPosition()
+            ));
+            // TODO: Implement this
+            return;
+        }
+
         if (this.level.isClientSide) {
             return;
         }
@@ -307,7 +317,7 @@ public class EntityRefBoard extends Entity {
             return lookYRot;
         }
         float diff = MathHelper.degreesDifference(this.lastYRot, lookYRot);
-        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
+//        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
         if (diff > 0) {
             this.lastYRot += turnSpeed;
         } else {
@@ -360,17 +370,17 @@ public class EntityRefBoard extends Entity {
     }
 
     private boolean canSurf(double flightSpeed) {
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
         if (playerOrNull instanceof JudgeEntity) {
             // TODO More generic check
-            return false;
+            return blockInFront.is(Blocks.WATER);
         }
 
         if (flightSpeed < minSurfSpeed) {
             return false;
         }
-        Direction faceDir = this.playerOrNull.getDirection();
-        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
-        BlockState blockInFront = this.level.getBlockState(inFront);
         BlockState blockAboveFront = this.level.getBlockState(inFront.above(1));
         boolean underWater = blockAboveFront.is(Blocks.WATER);
         if (underWater) {
@@ -423,6 +433,80 @@ public class EntityRefBoard extends Entity {
             boostedPlayers.put(playerId, boost - 1);
         }
         return boosted;
+    }
+
+    private static class Serializer implements INBTSerializable<CompoundNBT> {
+
+        private final EntityRefBoard board;
+
+        public  Serializer(EntityRefBoard board) {
+            this.board = board;
+        }
+
+        @Override
+        public CompoundNBT serializeNBT() {
+            CompoundNBT n = new CompoundNBT();
+//            private float initialSpeed;
+            n.putFloat("initial_speed", board.initialSpeed);
+//            private Entity playerOrNull;
+            if (board.waitingForPlayer != null) {
+                n.putString("player_uuid", board.waitingForPlayer.toString());
+            } else {
+                n.putString("player_uuid", board.playerOrNull.getStringUUID());
+            }
+//            private boolean damaged;
+            n.putBoolean("damaged", board.damaged);
+//            private boolean canFly;
+            n.putBoolean("can_fly", board.canFly);
+//            private RefBoardStats boardStats;
+            n.put("stats", board.boardStats.serializeNBT());
+//
+//            private float lastYRot = INITIAL_YROT;
+            n.putFloat("last_yrot", board.lastYRot);
+//            private Vector3d lastDirection = new Vector3d(1.0, 1.0, 1.0);
+            n.put("last_dir", serializeVector(board.lastDirection));
+//            private double lastLift = 0;
+            n.putDouble("last_lift", board.lastLift);
+//            private double lastSpeed;
+            n.putDouble("last_speed", board.lastSpeed);
+//            private int tickOf100 = 0;
+            n.putInt("tick_of_100", board.tickOf100);
+
+            return n;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundNBT nbt) {
+            UUID playerUUID = UUID.fromString(nbt.getString("player_uuid"));
+            if (board.level.getPlayerByUUID(playerUUID) == null) {
+                board.waitingForPlayer = playerUUID; // TODO: Implement this
+            }
+
+            board.initialSpeed = nbt.getFloat("initial_speed");
+            board.waitingForPlayer = UUID.fromString(nbt.getString("player_uuid"));
+            board.damaged = nbt.getBoolean("damaged");
+            board.canFly = nbt.getBoolean("can_fly");
+            board.boardStats.deserializeNBT(nbt.getCompound("stats"));
+            board.lastYRot = nbt.getFloat("last_yrot");
+            board.lastDirection = deserializePos(nbt.getCompound("last_dir"));
+            board.lastLift = nbt.getDouble("last_lift");
+            board.lastSpeed = nbt.getDouble("last_speed");
+            board.tickOf100 = nbt.getInt("tick_of_100");
+        }
+        private CompoundNBT serializeVector(Vector3d p) {
+            CompoundNBT pos = new CompoundNBT();
+            pos.putDouble("x", p.x);
+            pos.putDouble("y", p.y);
+            pos.putDouble("z", p.z);
+            return pos;
+        }
+
+        private Vector3d deserializePos(CompoundNBT n) {
+            double x = n.getDouble("x");
+            double y = n.getDouble("y");
+            double z = n.getDouble("z");
+            return new Vector3d(x, y, z);
+        }
     }
 
 }

@@ -7,11 +7,11 @@ import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -25,6 +25,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,13 +42,18 @@ public class JudgeEntity extends CreatureEntity {
 
     private static final RefBoardStats BOARD_STATS = RefBoardStats.StandardBoard.
             WithSpeed(RefBoardStats.MIN_SPEED * 2).
-            WithLift(RefBoardStats.MIN_POSITIVE_LIFT);
+            WithLift(RefBoardStats.MIN_POSITIVE_LIFT).
+            WithSurf(RefBoardStats.MAX_SURF_FOREVER);
     private ServerPlayerEntity rewardRecipient;
 
-    private BlockPos targetDestination;
+    private BlockPos vanishDestination;
     private boolean hasAward = true;
-    private Vector3d awardPos;
-    private int giveCooldown = 100;
+    private BlockPos awardPos;
+    private int vanishWarmup = 100;
+    private int timeInWater = 0;
+    private int timeOutOfWater = 0;
+    private int timeStuck = 0;
+    private BlockPos lastPos;
 
     public JudgeEntity(EntityType<? extends CreatureEntity> entity, World world) {
         super(entity, world);
@@ -61,6 +67,20 @@ public class JudgeEntity extends CreatureEntity {
     public static AttributeModifierMap.MutableAttribute createAttributes() {
         return MobEntity.createMobAttributes().
                 add(Attributes.MAX_HEALTH, 10.0D);
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundNBT nbt) {
+        Serializer ser = new Serializer(this);
+        nbt.put("ec_judge_state", ser.serializeNBT());
+        super.addAdditionalSaveData(nbt);
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundNBT nbt) {
+        super.readAdditionalSaveData(nbt);
+        Serializer ser = new Serializer(this);
+        ser.deserializeNBT(nbt.getCompound("ec_judge_state"));
     }
 
     public static void spawnToRewardPlayer(ServerPlayerEntity player) {
@@ -91,14 +111,18 @@ public class JudgeEntity extends CreatureEntity {
     }
 
     @Override
-    protected ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+    protected ActionResultType mobInteract(PlayerEntity player, Hand p_230254_2_) {
+        World world = player.level;
+        if (world.isClientSide()) {
+            return ActionResultType.PASS;
+        }
         if (!this.hasAward) {
             return ActionResultType.CONSUME;
         }
 
         BlockPos ownPos = blockPosition();
 
-        if (this.rewardRecipient != p_230254_1_) {
+        if (this.rewardRecipient != player) {
             this.level.playLocalSound(
                     ownPos.getX(), ownPos.getY(), ownPos.getZ(),
                     SoundEvents.VILLAGER_NO, SoundCategory.NEUTRAL,
@@ -119,7 +143,7 @@ public class JudgeEntity extends CreatureEntity {
         );
 
         if (this.level.isClientSide()) {
-            return super.mobInteract(p_230254_1_, p_230254_2_);
+            return super.mobInteract(player, p_230254_2_);
         }
         this.level.addFreshEntity(
                 new ItemEntity(
@@ -133,7 +157,7 @@ public class JudgeEntity extends CreatureEntity {
         );
 
         this.hasAward = false;
-        this.awardPos = this.position();
+        this.awardPos = this.blockPosition();
 
         return ActionResultType.CONSUME;
     }
@@ -142,21 +166,42 @@ public class JudgeEntity extends CreatureEntity {
     public void tick() {
         super.tick();
 
+        if(this.isInWater()) {
+            this.timeInWater++;
+        } else {
+            this.timeOutOfWater++;
+            if (this.timeOutOfWater > 10) {
+                this.timeInWater = 0;
+            }
+        }
+
+        if (this.blockPosition().equals(this.lastPos)) {
+            timeStuck++;
+        }
+
+        if (this.timeStuck > 10) {
+            this.timeStuck = 0;
+            this.moveTo(
+                    this.blockPosition().relative(Direction.getRandom(level.random)),
+                    1.0f, 1.0f
+            );
+            logger.debug("bumping due to stuck");
+        }
 
         if (!this.hasAward) {
-            this.giveCooldown--;
+            this.vanishWarmup--;
         }
 
         if (awardPos != null) {
 
-            if (targetDestination == null || level.random.nextInt(20) == 0) {
+            if (vanishDestination == null || level.random.nextInt(20) == 0) {
                 chooseNewDirection();
             }
 
             if (position().distanceTo(new Vector3d(
-                    awardPos.x,
-                    awardPos.y,
-                    awardPos.z
+                    awardPos.getX(),
+                    awardPos.getY(),
+                    awardPos.getZ()
             )) > 100) {
                 // FIXME: This is not adding particles or sound :(
                 this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
@@ -171,6 +216,8 @@ public class JudgeEntity extends CreatureEntity {
                 this.remove();
             }
         }
+
+        this.lastPos = this.blockPosition();
     }
 
     void chooseNewDirection() {
@@ -192,16 +239,15 @@ public class JudgeEntity extends CreatureEntity {
             return;
         }
 
-        this.targetDestination = newPos;
-        logger.debug("Judge is moving toward " + this.targetDestination);
+        this.vanishDestination = newPos;
+        logger.debug("Judge is moving toward " + this.vanishDestination);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new InitialLandGoal(this));
-        this.goalSelector.addGoal(0, new FindSafePlaceGoal(this, 0.2));
-        this.goalSelector.addGoal(1, new WaitForPlayerGoal(this, 0.2));
+        this.goalSelector.addGoal(0, new FindSafePlaceGoal(this));
         this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, PlayerEntity.class, 10.0F));
         this.goalSelector.addGoal(3, new FlyAwayGoal(this));
         this.goalSelector.addGoal(4, new WalkAwayGoal(this));
@@ -210,6 +256,7 @@ public class JudgeEntity extends CreatureEntity {
     public static class InitialLandGoal extends Goal {
 
         private final JudgeEntity self;
+        private Vector3d landTarget;
 
         InitialLandGoal(JudgeEntity entity) {
             this.self = entity;
@@ -222,7 +269,23 @@ public class JudgeEntity extends CreatureEntity {
         }
 
         @Override
+        public void tick() {
+            super.tick();
+            if (landTarget == null) {
+                return;
+            }
+            this.self.lookControl.setLookAt(this.landTarget);
+
+            if (this.landTarget.distanceTo(this.self.position()) < 2) {
+                this.stop();
+            }
+        }
+
+        @Override
         public void start() {
+            logger.debug("Starting goal " + this);
+            this.landTarget = RandomPositionGenerator.getLandPos(this.self, 15, 7);
+
             EntityRefBoard.spawnNew(
                     this.self,
                     this.self.level,
@@ -232,57 +295,73 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    public static class FindSafePlaceGoal extends WaterAvoidingRandomWalkingGoal {
+    public static class FindSafePlaceGoal extends Goal {
 
-        FindSafePlaceGoal(JudgeEntity entity, double dunno) {
-            super(entity, dunno);
+        private final JudgeEntity self;
+
+        FindSafePlaceGoal(JudgeEntity entity) {
+            this.self = entity;
         }
 
         @Override
         public boolean canUse() {
-            return this.mob.isInWater();
+            return this.self.isInWater();
         }
 
         @Override
         public void tick() {
             super.tick();
-            if (this.mob.isInWater()) {
-                BlockPos oldPos = this.mob.blockPosition();
-                this.mob.setPos(
-                        oldPos.getX(), oldPos.getY() + 1, oldPos.getZ()
+            JudgeEntity judge = (JudgeEntity) this.self;
+            logger.debug(String.format(
+                    "timeInWater %d timeOutOfWater %d", judge.timeInWater, judge.timeOutOfWater
+            ));
+            Vector3d oldMov = judge.getDeltaMovement();
+            if (judge.isInWater()) {
+                judge.setDeltaMovement(
+                        oldMov.x, oldMov.y + 1, oldMov.z
+                );
+            }
+            if (judge.timeInWater > 20) {
+                judge.moveTo(
+                        oldMov.x, oldMov.y + 1, oldMov.z
                 );
             }
         }
 
-    }
-
-    public static class WaitForPlayerGoal extends WaterAvoidingRandomWalkingGoal {
-
-        public WaitForPlayerGoal(JudgeEntity entity, double p_i47301_2_) {
-            super(entity, p_i47301_2_);
-        }
-
         @Override
-        public boolean canUse() {
-            return ((JudgeEntity) this.mob).hasAward;
+        public void start() {
+            super.start();
+            logger.debug("Starting goal " + this);
+            Vector3d landTarget = RandomPositionGenerator.getLandPos(this.self, 15, 7);
+            if (landTarget == null) {
+                landTarget = this.self.position().add(100, 0, 0);
+            }
+            this.self.navigation.moveTo(landTarget.x, landTarget.y, landTarget.z, 0.5);
         }
-
     }
 
     public static class LookAtPlayerGoal extends LookAtGoal {
 
-        public LookAtPlayerGoal(MobEntity p_i1631_1_, Class<? extends LivingEntity> p_i1631_2_, float p_i1631_3_) {
+        private final JudgeEntity self;
+
+        public LookAtPlayerGoal(JudgeEntity p_i1631_1_, Class<? extends LivingEntity> p_i1631_2_, float p_i1631_3_) {
             super(p_i1631_1_, p_i1631_2_, p_i1631_3_);
+            this.self = p_i1631_1_;
         }
 
         @Override
         public boolean canUse() {
-            if (((JudgeEntity) this.mob).hasAward) {
+            if (this.self.hasAward) {
                 return super.canUse();
             }
             return false;
         }
 
+        @Override
+        public void start() {
+            super.start();
+            logger.debug("Starting goal " + this);
+        }
     }
 
     public static class FlyAwayGoal extends Goal {
@@ -298,7 +377,7 @@ public class JudgeEntity extends CreatureEntity {
             if (this.self.hasAward) {
                 return false;
             }
-            if (this.self.giveCooldown > 0) {
+            if (this.self.vanishWarmup > 0) {
                 return false;
             }
             return self.isOnGround();
@@ -307,7 +386,7 @@ public class JudgeEntity extends CreatureEntity {
         @Override
         public void tick() {
             super.tick();
-            BlockPos t = self.targetDestination;
+            BlockPos t = self.vanishDestination;
             if (t == null) {
                 return;
             }
@@ -319,6 +398,7 @@ public class JudgeEntity extends CreatureEntity {
 
         @Override
         public void start() {
+            logger.debug("Starting goal " + this);
             if (this.self.level.isClientSide()) {
                 return;
             }
@@ -358,17 +438,18 @@ public class JudgeEntity extends CreatureEntity {
 
         @Override
         public void start() {
+            logger.debug("Starting goal " + this);
             if (this.self.level.isClientSide()) {
                 return;
             }
-            if (self.targetDestination == null) {
+            if (self.vanishDestination == null) {
                 return;
             }
 
             this.self.navigation.moveTo(
-                    self.targetDestination.getX(),
-                    self.targetDestination.getY(),
-                    self.targetDestination.getZ(),
+                    self.vanishDestination.getX(),
+                    self.vanishDestination.getY(),
+                    self.vanishDestination.getZ(),
                     0.5
             );
         }
@@ -378,5 +459,58 @@ public class JudgeEntity extends CreatureEntity {
             super.stop();
             this.self.navigation.stop();
         }
+    }
+
+    private static class Serializer implements INBTSerializable<CompoundNBT> {
+
+        private final JudgeEntity entity;
+
+        private Serializer(JudgeEntity entity) {
+            this.entity = entity;
+        }
+
+        @Override
+        public CompoundNBT serializeNBT() {
+            CompoundNBT n = new CompoundNBT();
+
+            n.put("vanish_pos", serializePos(entity.vanishDestination));
+            n.putBoolean("has_award", entity.hasAward);
+            n.put("award_pos", serializePos(entity.awardPos));
+            n.putInt("vanish_warmup", entity.vanishWarmup);
+            n.putInt("time_in_water", entity.timeInWater);
+            n.putInt("time_out_of_water", entity.timeOutOfWater);
+            n.putInt("time_stuck", entity.timeStuck);
+            n.put("last_pos", serializePos(entity.lastPos));
+
+            return n;
+        }
+
+        @Override
+        public void deserializeNBT(CompoundNBT nbt) {
+            entity.vanishDestination = deserializePos(nbt.getCompound("vanish_pos"));
+            entity.hasAward = nbt.getBoolean("has_award");
+            entity.awardPos = deserializePos(nbt.getCompound("award_pos"));
+            entity.vanishWarmup = nbt.getInt("vanish_warmup");
+            entity.timeInWater = nbt.getInt("time_in_water");
+            entity.timeOutOfWater = nbt.getInt("time_out_of_water");
+            entity.timeStuck = nbt.getInt("time_stuck");
+            entity.lastPos = deserializePos(nbt.getCompound("last_pos"));
+        }
+
+        private CompoundNBT serializePos(BlockPos p) {
+            CompoundNBT pos = new CompoundNBT();
+            pos.putInt("x", p.getX());
+            pos.putInt("y", p.getY());
+            pos.putInt("z", p.getZ());
+            return pos;
+        }
+
+        private BlockPos deserializePos(CompoundNBT n) {
+            int x = n.getInt("x");
+            int y = n.getInt("y");
+            int z = n.getInt("z");
+            return new BlockPos(x, y, z);
+        }
+
     }
 }
