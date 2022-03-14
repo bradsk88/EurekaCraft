@@ -2,7 +2,7 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import ca.bradj.eurekacraft.entity.EntityRefBoard;
+import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
@@ -14,10 +14,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +80,12 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
                 despawnGlider(player, world, glider);
             } else {
                 ItemStack boardItem = player.getItemInHand(hand);
-                spawnedGlidersMap.put(player, EntityRefBoard.spawnNew(player, player.level, boardItem, this.id));
+                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(player, (ServerWorld) player.level, boardItem, this.id);
+                if (spawned == null) {
+                    spawnedGlidersMap.remove(player);
+                } else {
+                    spawnedGlidersMap.put(player, spawned);
+                }
             }
         }
 

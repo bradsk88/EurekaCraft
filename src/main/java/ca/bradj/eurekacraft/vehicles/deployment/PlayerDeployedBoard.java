@@ -35,13 +35,13 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
     }
 
     public static void set(Entity p, BoardType t) {
-        if (BoardType.NONE.equals(t)) {
-            remove(p);
-        }
         LazyOptional<IPlayerEntityBoardDeployed> c = p.getCapability(DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY);
         c.ifPresent(v -> {
             if (t.equals(v.getBoardType())) {
                 return;
+            }
+            if (BoardType.NONE.equals(t)) {
+                remove(p);
             }
             v.setBoardType(t);
             EurekaCraftNetwork.CHANNEL.send(

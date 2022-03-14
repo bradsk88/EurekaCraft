@@ -69,9 +69,7 @@ public class BoardTrickTrigger extends AbstractCriterionTrigger<BoardTrickTrigge
     }
 
     public void trigger(ServerPlayerEntity player, Trick trickID) {
-        super.trigger(player, instance -> {
-            return instance.matches(trickID);
-        });
+        super.trigger(player, instance -> instance.matches(trickID));
     }
 
     public static class Instance extends CriterionInstance {

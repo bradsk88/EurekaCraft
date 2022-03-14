@@ -35,7 +35,7 @@ public class DeployedBoardMessage {
     public static DeployedBoardMessage decode(PacketBuffer buffer) {
         String bt = buffer.readUtf(BOARD_ID_MAX_LENGTH);
         int playerId = buffer.readInt();
-        return new DeployedBoardMessage(playerId, new BoardType(bt));
+        return new DeployedBoardMessage(playerId, BoardType.fromNBT(bt));
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {

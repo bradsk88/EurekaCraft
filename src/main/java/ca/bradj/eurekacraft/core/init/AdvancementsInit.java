@@ -17,7 +17,7 @@ public class AdvancementsInit {
     );
 
     public static final class IDs {
-        public static final String FirstFlight = "advancement_first_flight";
+        public static final String FirstFlight = "trick_first_flight";
     }
 
     static {

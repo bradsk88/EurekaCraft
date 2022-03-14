@@ -6,8 +6,12 @@ import net.minecraft.util.ResourceLocation;
 public class BoardType extends ResourceLocation {
     public static final BoardType NONE = new BoardType("--none--");
 
-    public BoardType(String boardID) {
+    protected BoardType(String boardID) {
         super(EurekaCraft.MODID, boardID);
+    }
+
+    public static BoardType fromNBT(String boardType) {
+        return new BoardType(boardType);
     }
 
     @Override
