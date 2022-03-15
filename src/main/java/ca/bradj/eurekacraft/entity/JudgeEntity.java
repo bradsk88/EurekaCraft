@@ -26,6 +26,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -40,7 +41,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-// TODO: Persist internal state
 public class JudgeEntity extends CreatureEntity {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -68,7 +68,7 @@ public class JudgeEntity extends CreatureEntity {
     private int timeInWater = 0;
     private int timeOutOfWater = 0;
     private int timeStuck = 0;
-    private BlockPos lastBoardPos;
+    private BlockPos lastPos;
 
     public JudgeEntity(EntityType<? extends CreatureEntity> entity, World world) {
         super(entity, world);
@@ -96,6 +96,9 @@ public class JudgeEntity extends CreatureEntity {
         super.readAdditionalSaveData(nbt);
         Serializer ser = new Serializer(this);
         ser.deserializeNBT(nbt.getCompound("ec_judge_state"));
+        if (this.vanishDestination != null && !this.isOnGround()) {
+            spawnRefBoard();
+        }
     }
 
     @Nonnull
@@ -110,19 +113,34 @@ public class JudgeEntity extends CreatureEntity {
     public static void spawnToRewardPlayer(ServerPlayerEntity player) {
         JudgeEntity judge = new JudgeEntity(player, player.level);
         Vector3d viewVector = player.getViewVector(1.0f);
-        BlockPos spawnPos = new BlockPos(
-                player.position().x + viewVector.x,
-                player.position().y + viewVector.y,
-                player.position().z + viewVector.z
+        Vector3d max = new Vector3d(
+                player.position().x + (viewVector.x * 20),
+                player.position().y + (viewVector.y * 20),
+                player.position().z + (viewVector.z * 20)
         );
-        judge.setPos(spawnPos.getX(), spawnPos.getY(), spawnPos.getZ());
+        Vector3d min = new Vector3d(
+                player.position().x + (viewVector.x * 10),
+                player.position().y + (viewVector.y * 10),
+                player.position().z + (viewVector.z * 10)
+        );
+        judge.setPos(min.x, min.y, min.z);
+        Vector3d airPos = RandomPositionGenerator.getAirPosTowards(judge, 8, 3, -2, max, Math.PI / 10f);
+        if (airPos == null) {
+            airPos = player.position();
+        }
+        judge.setPos(airPos.x, airPos.y, airPos.z);
+        judge.setYBodyRot(player.yBodyRot);
         player.level.addFreshEntity(judge);
+        player.level.playSound(
+                null, airPos.x, airPos.y, airPos.z, SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0f, 0.5f
+        );
+        player.sendMessage(new TranslationTextComponent("message.tricks.judge_appeared"), Util.NIL_UUID);
     }
 
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.VILLAGER_CELEBRATE;
+        return SoundEvents.VILLAGER_YES;
     }
 
     @Nullable
@@ -138,60 +156,62 @@ public class JudgeEntity extends CreatureEntity {
     protected ActionResultType mobInteract(PlayerEntity player, Hand p_230254_2_) {
         World world = player.level;
         if (world.isClientSide()) {
-            return ActionResultType.PASS;
-        }
-        if (!this.hasAward) {
-            return ActionResultType.CONSUME;
+            this.hasAward = false;
+            return super.mobInteract(player, p_230254_2_);
         }
 
         BlockPos ownPos = blockPosition();
 
-        if (this.rewardRecipient != player.getUUID()) {
-            this.level.playLocalSound(
-                    ownPos.getX(), ownPos.getY(), ownPos.getZ(),
-                    SoundEvents.VILLAGER_NO, SoundCategory.NEUTRAL,
-                    0.5f, 1.2f, false
+        if (!this.rewardRecipient.equals(player.getUUID()) || !this.hasAward) {
+            logger.debug("RewardRecipient " + rewardRecipient + " player " + player.getUUID() + " [hasAward:" + hasAward + "]");
+            this.level.playSound(
+                    null, ownPos, SoundEvents.VILLAGER_NO, SoundCategory.NEUTRAL, 0.5f, 1.2f
             );
             return ActionResultType.CONSUME;
         }
 
-        this.level.playLocalSound(
-                ownPos.getX(), ownPos.getY(), ownPos.getZ(),
-                SoundEvents.VILLAGER_YES, SoundCategory.NEUTRAL,
-                0.5f, 1.2f, false
+        giveAwardToPlayer(player);
+
+        return ActionResultType.CONSUME;
+    }
+
+    private void giveAwardToPlayer(PlayerEntity player) {
+        BlockPos ownPos = blockPosition();
+        this.level.playSound(
+                null, ownPos, SoundEvents.VILLAGER_CELEBRATE, SoundCategory.NEUTRAL, 0.5f, 1.2f
         );
-        this.level.playLocalSound(
-                ownPos.getX(), ownPos.getY(), ownPos.getZ(),
-                SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.NEUTRAL,
-                0.5f, 0.2f, false
+        this.level.playSound(
+                null, ownPos, SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.NEUTRAL, 0.5f, 0.2f
         );
 
-        if (this.level.isClientSide()) {
-            return super.mobInteract(player, p_230254_2_);
-        }
-        this.level.addFreshEntity(
-                new ItemEntity(
-                        level,
-                        ownPos.getX(), ownPos.getY() + 2, ownPos.getZ(),
-                        new ItemStack(
-                                ItemsInit.REFLECTION_FILM::get, 1
-                        )
-                )
-                // TODO: Give award instead of film
+        // TODO: Give award instead of film
+        ItemStack awardStack = new ItemStack(ItemsInit.REFLECTION_FILM::get, 1);
+        ItemEntity awardEntity = new ItemEntity(
+                level, ownPos.getX(), ownPos.getY() + 2, ownPos.getZ(), awardStack
         );
+        this.level.addFreshEntity(awardEntity);
 
         this.hasAward = false;
         this.awardPos = this.blockPosition();
 
-        return ActionResultType.CONSUME;
+        player.sendMessage(new TranslationTextComponent("message.tricks.congrats"), Util.NIL_UUID);
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        // TODO: Can this all be server side?
+        if (level.isClientSide()) {
+            return;
+        }
 
+        trackTimeSpentInWater();
+        flyAwayTick();
+
+        this.lastPos = blockPosition();
+    }
+
+    private void trackTimeSpentInWater() {
         if (this.isInWater()) {
             this.timeInWater++;
         } else {
@@ -200,58 +220,84 @@ public class JudgeEntity extends CreatureEntity {
                 this.timeInWater = 0;
             }
         }
+    }
 
-        if (!level.isClientSide() && this.lastBoardPos != null && PlayerDeployedBoard.get(this).isPresent()) {
-            BlockPos blockPos = this.blockPosition();
-            logger.debug("Yes there is a board deployed at " + blockPos + " [lastPos: " + lastBoardPos + "]");
-            if (
-                    blockPos.getX() == this.lastBoardPos.getX() &&
-                            blockPos.getZ() == this.lastBoardPos.getZ()
-            ) {
-                timeStuck++;
-            }
-            this.lastBoardPos = blockPos;
-        } else {
-            timeStuck = 0;
-        }
-
-        if (this.timeStuck > 10) {
-            this.timeStuck = 0;
-            this.moveTo(
-                    this.blockPosition().relative(Direction.getRandom(level.random)),
-                    1.0f, 1.0f
-            );
-            logger.debug("bumping due to stuck");
-        }
-
+    private void flyAwayTick() {
         if (!this.hasAward) {
             this.vanishWarmup--;
         }
 
         if (awardPos != null) {
-
-            if (vanishDestination == null || level.random.nextInt(20) == 0) {
+            if (vanishDestination == null || level.random.nextInt(10) == 0) {
                 chooseNewDirection();
             }
 
-            if (position().distanceTo(new Vector3d(
-                    awardPos.getX(),
-                    awardPos.getY(),
-                    awardPos.getZ()
-            )) > 100) {
-                // FIXME: This is not adding particles or sound :(
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-                this.level.playLocalSound(this.getX(), this.getY(), this.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 1.0f, 1.0f, false);
-                this.remove();
+            if (shouldVanish()) {
+                vanish();
             }
         }
+
+        avoidGettingStuck();
+    }
+
+    private void avoidGettingStuck() {
+        int lastTimeStuck = timeStuck;
+        timeStuck = 0;
+        if (this.lastPos == null) {
+            return;
+        }
+        if (this.isOnGround()) {
+            return;
+        }
+        if (!PlayerDeployedBoard.get(this).isPresent()) {
+            return;
+        }
+
+        BlockPos blockPos = this.blockPosition();
+        logger.debug("Checking stuck [Current: " + blockPos + "] [Last: " + this.lastPos + "]");
+        boolean sameX = blockPos.getX() == this.lastPos.getX();
+        boolean sameZ = blockPos.getZ() == this.lastPos.getZ();
+        if (sameX && sameZ) {
+            timeStuck = lastTimeStuck + 1;
+        }
+
+        if (timeStuck < 50) {
+            return;
+        }
+
+        Direction randDir = Direction.Plane.HORIZONTAL.getRandomDirection(level.random);
+        BlockPos newPosition = this.blockPosition().relative(randDir);
+        if (level.getBlockState(newPosition).isAir()) {
+            if (level.getBlockState(newPosition.above()).isAir()) {
+                if (level.getBlockState(newPosition.below()).isAir()) {
+                    this.moveTo(newPosition, 1.0f, 1.0f);
+                    logger.debug("bumping due to stuck");
+                    timeStuck = 0;
+                }
+            }
+        }
+    }
+
+    private boolean shouldVanish() {
+        return position().distanceTo(new Vector3d(
+                awardPos.getX(),
+                awardPos.getY(),
+                awardPos.getZ()
+        )) > 100;
+    }
+
+    private void vanish() {
+        // FIXME: This is not adding particles
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
+        this.level.playSound(null, this.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 1.0f, 0.5f);
+        this.remove();
     }
 
     void chooseNewDirection() {
@@ -274,7 +320,7 @@ public class JudgeEntity extends CreatureEntity {
         }
 
         this.vanishDestination = newPos;
-//        logger.debug("Judge is moving toward " + this.vanishDestination);
+        logger.debug("Judge is moving toward " + this.vanishDestination);
     }
 
     @Override
@@ -287,7 +333,15 @@ public class JudgeEntity extends CreatureEntity {
         this.goalSelector.addGoal(4, new WalkAwayGoal(this));
     }
 
-    public static class InitialLandGoal extends Goal {
+    private abstract static class JudgeGoal extends Goal {
+        @Override
+        public void start() {
+            super.start();
+            logger.debug("Starting goal " + this);
+        }
+    }
+
+    public static class InitialLandGoal extends JudgeGoal {
 
         private final JudgeEntity self;
         private Vector3d landTarget;
@@ -329,7 +383,7 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    public static class FindSafePlaceGoal extends Goal {
+    public static class FindSafePlaceGoal extends JudgeGoal {
 
         private final JudgeEntity self;
 
@@ -398,7 +452,7 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    public static class FlyAwayGoal extends Goal {
+    public static class FlyAwayGoal extends JudgeGoal {
 
         private final JudgeEntity self;
 
@@ -432,21 +486,13 @@ public class JudgeEntity extends CreatureEntity {
 
         @Override
         public void start() {
-//            logger.debug("Starting goal " + this);
             if (this.self.level.isClientSide()) {
                 return;
             }
             BlockPos ownPos = this.self.blockPosition();
 
-
             this.self.setPos(ownPos.getX(), ownPos.getY() + 1, ownPos.getZ());
-            EntityRefBoard.spawnFromInventory(
-                    this.self,
-                    (ServerWorld) this.self.level,
-                    new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
-                    }),
-                    EliteRefBoard.ID
-            );
+            this.self.spawnRefBoard();
         }
 
         @Override
@@ -455,7 +501,17 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    public static class WalkAwayGoal extends Goal {
+    private void spawnRefBoard() {
+        EntityRefBoard.spawnFromInventory(
+                this,
+                (ServerWorld) this.level,
+                new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
+                }),
+                EliteRefBoard.ID
+        );
+    }
+
+    public static class WalkAwayGoal extends JudgeGoal {
 
         private final JudgeEntity self;
 
@@ -514,8 +570,8 @@ public class JudgeEntity extends CreatureEntity {
             if (entity.awardPos != null) {
                 n.put("award_pos", serializePos(entity.awardPos));
             }
-            if (entity.lastBoardPos != null) {
-                n.put("last_pos", serializePos(entity.lastBoardPos));
+            if (entity.lastPos != null) {
+                n.put("last_pos", serializePos(entity.lastPos));
             }
             n.putBoolean("has_award", entity.hasAward);
             n.putInt("vanish_warmup", entity.vanishWarmup);
@@ -536,7 +592,7 @@ public class JudgeEntity extends CreatureEntity {
                 entity.awardPos = deserializePos(nbt.getCompound("award_pos"));
             }
             if (nbt.contains("last_pos")) {
-                entity.lastBoardPos = deserializePos(nbt.getCompound("last_pos"));
+                entity.lastPos = deserializePos(nbt.getCompound("last_pos"));
             }
             entity.hasAward = nbt.getBoolean("has_award");
             entity.vanishWarmup = nbt.getInt("vanish_warmup");
