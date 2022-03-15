@@ -195,7 +195,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                ItemStack sOutput = iRecipe.getSecondaryResultItem().output;
+                ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
                 itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
             }
 
@@ -216,7 +216,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 useExtraIngredient(iRecipe, inputs, output, level);
             }
 
-            itemHandler.insertItem(RefTableConsts.outputSlot, output, false);
+            itemHandler.insertItem(RefTableConsts.outputSlot, output.copy(), false);
 
             setChanged();
         });
