@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -117,6 +118,19 @@ public class StormSavedData extends WorldSavedData {
 
     public static StormSavedData forBlockPosition(BlockPos blockPosition) {
         return forChunk(new ChunkPos(blockPosition));
+    }
+
+    public static void triggerTraparExplosion(BlockPos blockPosition, int blockRadius, float intensity) {
+        ChunkPos cp = new ChunkPos(blockPosition);
+        forChunk(cp).traparLevel = intensity;
+        // TODO: Implement true radius
+        for (Direction d : Direction.Plane.HORIZONTAL) {
+            for (int i = 1; i < blockRadius; i++) {
+                int stepX = d.getStepX() * blockRadius;
+                int stepZ = d.getStepZ() * blockRadius;
+                forChunk(new ChunkPos(cp.x + stepX, cp.z + stepZ)).traparLevel = intensity;
+            }
+        }
     }
 
     private void buildUp() {
