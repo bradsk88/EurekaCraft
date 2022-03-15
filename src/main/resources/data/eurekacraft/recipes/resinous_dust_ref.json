@@ -1,0 +1,22 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "tag": "minecraft:logs"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:resinous_dust"
+  },
+  "extra": {
+    "tag": "eurekacraft:sanding_disc",
+    "consume": false
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:resinous_dust"
+    },
+    "chance": 1.0
+  }
+}

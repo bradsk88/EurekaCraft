@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.entity.board;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
@@ -15,7 +14,7 @@ public class TrickEvents {
 
     @SubscribeEvent
     public static void FirstRideJudgeSpawn(AdvancementEvent event) {
-        if (event.getPlayer() instanceof ClientPlayerEntity) {
+        if (event.getPlayer().level.isClientSide()) {
             return;
         }
         ResourceLocation firstFlight = new ResourceLocation(EurekaCraft.MODID, AdvancementsInit.IDs.FirstFlight);

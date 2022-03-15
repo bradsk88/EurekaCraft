@@ -2,12 +2,9 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
-import ca.bradj.eurekacraft.materials.BlueprintItem;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
@@ -22,10 +19,6 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // FIXME: Rename to RefTableRecipe
 public class GlideBoardRecipe implements IGlideBoardRecipe {
@@ -49,28 +42,45 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         this.secondaryOutput = secondary;
     }
 
+    private boolean findMatchAndRemove(
+            ArrayList<Ingredient> ingredients, ArrayList<ItemStack> inputs
+    ) {
+        for (ItemStack i : inputs) {
+            for (Ingredient n : ingredients) {
+                if (n.test(i)) {
+                    ingredients.remove(n);
+                    inputs.remove(i);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean matches(IInventory inv, World p_77569_2_) {
-        if (recipeItems.get(0).getItems()[0].getItem() instanceof BlueprintItem) {
-            int x = 0;
+        if (inv.isEmpty()) {
+            return false;
         }
 
-        ArrayList<Item> itemsInInput = new ArrayList<>();
+        ArrayList<ItemStack> itemsInInput = new ArrayList<>();
         for (int i = 0; i < Math.min(inv.getContainerSize(), RefTableConsts.inputSlots); i++) {
             if (inv.getItem(i).isEmpty()) {
                 continue;
             }
-            itemsInInput.add(inv.getItem(i).getItem());
+            itemsInInput.add(inv.getItem(i));
         }
         if (itemsInInput.size() != recipeItems.size()) {
             return false;
         }
         if (recipeItems.size() < RefTableConsts.inputSlots) {
-            Stream<Item> itemStream = recipeItems.stream().map(v -> v.getItems()[0].getItem());
-            HashSet<Item> recipeSet = new HashSet<>(itemsInInput);
-            Set<Item> itemSet = itemStream.collect(Collectors.toSet());
-            Sets.SetView<Item> difference = Sets.difference(itemSet, recipeSet);
-            if (!difference.isEmpty()) {
+            ArrayList<Ingredient> recipeCopy = new ArrayList<>(recipeItems);
+            ArrayList<ItemStack> inputsCopy = new ArrayList<>(itemsInInput);
+            boolean foundMatch = true;
+            while (foundMatch) {
+                foundMatch = findMatchAndRemove(recipeCopy, inputsCopy);
+            }
+            if (recipeCopy.size() > 0 || inputsCopy.size() > 0) {
                 return false;
             }
         } else {

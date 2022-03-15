@@ -20,7 +20,7 @@
       "tag": "minecraft:planks"
     }
   ],
-  "cook": false,
+  "cook": true,
   "output": {
     "item": "eurekacraft:reflection_film_mold"
   }
