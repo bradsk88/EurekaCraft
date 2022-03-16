@@ -1,0 +1,16 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "eurekacraft:precision_wood_stick"
+    }
+  ],
+  "cook": "false",
+  "output": {
+    "item": "eurekacraft:soft_chisel",
+    "TODO": "TODO: output more than one"
+  }
+}

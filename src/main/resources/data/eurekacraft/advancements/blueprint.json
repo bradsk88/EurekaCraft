@@ -1,0 +1,38 @@
+{
+  "display": {
+    "title": {
+      "text": "Thirst for knowledge",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft your own blueprint"
+    },
+    "icon": {
+      "item": "eurekacraft:blueprint"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Item": {
+      "trigger": "eurekacraft:ref_table_trigger",
+      "conditions": {
+        "machine_output": {
+          "item": "eurekacraft:blueprint"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Item"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "parent": "eurekacraft:ref_table"
+}

@@ -1,6 +1,7 @@
 {
 	"itemGroup.eurekaCraftTab": "EurekaCraft",
 	"item.eurekacraft.fresh_seeds": "Fresh-Smelling Seeds",
+	"item.eurekacraft.fresh_smelling_leaves": "Fresh-Smelling Leaves",
 	"item.eurekacraft.reflection_film": "Reflection Film",
 	"item.eurekacraft.glide_board": "Glide Board",
 	"item.eurekacraft.ref_board": "Ref Board",
@@ -11,8 +12,12 @@
 	"item.eurekacraft.clay_sticky_disc": "Clay Sticky Disc",
 	"item.eurekacraft.flint_sticky_disc": "Flint Sticky Disc",
 	"item.eurekacraft.flint_sanding_disc": "Flint Sanding Disc",
+	"item.eurekacraft.soft_chisel": "Soft Chisel",
+	"item.eurekacraft.flint_sanding_disc_stack": "Stack of Flint Sanding Discs",
 	"item.eurekacraft.precision_wood": "Precision Wood",
+	"item.eurekacraft.precision_wood_stick": "Precision Wood Stick",
 	"item.eurekacraft.blueprint": "Blueprint",
+	"item.eurekacraft.blueprint_advanced": "Blueprint (Advanced)",
 	"item.eurekacraft.polished_oak_slab": "Polished Slab",
 	"item.eurekacraft.resinous_dust": "Resinous Dust",
 	"item.eurekacraft.resin": "Ball of Resin",
@@ -24,5 +29,7 @@
 	"block.eurekacraft.ref_table_block": "Ref Table",
 	"block.eurekacraft.sanding_machine_block": "Sanding Machine",
 	"container.eurekacraft.ref_table": "Ref Table",
-	"container.eurekacraft.sanding_machine": "Sanding Machine"
+	"container.eurekacraft.sanding_machine": "Sanding Machine",
+	"message.tricks.judge_appeared": "A judge has appeared to reward you for your latest trick. Speak to them to receive your reward.",
+	"message.tricks.congrats": "<Judge> Great work! Here's a little something for your effort. See ya later!"
 }

@@ -20,6 +20,10 @@
       "item": "eurekacraft:precision_wood"
     }
   ],
+  "extra": {
+    "item": "eurekacraft:resin_block",
+    "consume": true
+  },
   "cook": true,
   "output": {
     "item": "eurekacraft:glide_board"

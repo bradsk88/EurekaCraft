@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.data.recipes;
 
-import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,10 +16,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 // FIXME: Rename to RefTableRecipe
 public class GlideBoardRecipe implements IGlideBoardRecipe {
@@ -27,7 +26,6 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     private final ResourceLocation id;
     private final ItemStack output;
     private final NonNullList<Ingredient> recipeItems;
-    private static final int recipeSize = 6; // TOO: Confirm
     private final boolean cook;
     private final Secondary secondaryOutput;
     private ExtraInput extraIngredient;
@@ -44,15 +42,67 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         this.secondaryOutput = secondary;
     }
 
-    @Override
-    public boolean matches(IInventory inv, World p_77569_2_) {
-        for (int i = 0; i < recipeItems.size(); i++) {
-            if (!recipeItems.get(i).test(inv.getItem(i))) {
-                return false;
+    private boolean findMatchAndRemove(
+            ArrayList<Ingredient> ingredients, ArrayList<ItemStack> inputs
+    ) {
+        for (ItemStack i : inputs) {
+            for (Ingredient n : ingredients) {
+                if (n.test(i)) {
+                    ingredients.remove(n);
+                    inputs.remove(i);
+                    return true;
+                }
             }
         }
-        if (extraIngredient != null && inv.getContainerSize() > recipeItems.size()) {
-            return extraIngredient.ingredient.test(inv.getItem(recipeItems.size()));
+        return false;
+    }
+
+    @Override
+    public boolean matches(IInventory inv, World p_77569_2_) {
+        if (inv.isEmpty()) {
+            return false;
+        }
+
+        ArrayList<ItemStack> itemsInInput = new ArrayList<>();
+        for (int i = 0; i < Math.min(inv.getContainerSize(), RefTableConsts.inputSlots); i++) {
+            if (inv.getItem(i).isEmpty()) {
+                continue;
+            }
+            itemsInInput.add(inv.getItem(i));
+        }
+        if (itemsInInput.size() != recipeItems.size()) {
+            return false;
+        }
+        if (recipeItems.size() < RefTableConsts.inputSlots) {
+            ArrayList<Ingredient> recipeCopy = new ArrayList<>(recipeItems);
+            ArrayList<ItemStack> inputsCopy = new ArrayList<>(itemsInInput);
+            boolean foundMatch = true;
+            while (foundMatch) {
+                foundMatch = findMatchAndRemove(recipeCopy, inputsCopy);
+            }
+            if (recipeCopy.size() > 0 || inputsCopy.size() > 0) {
+                return false;
+            }
+        } else {
+            // Shaped
+            for (int i = 0; i < recipeItems.size(); i++) {
+                ItemStack item = inv.getItem(i);
+                if (item.isDamageableItem() && item.isDamaged()) {
+                    return false;
+                }
+                if (!recipeItems.get(i).test(item)) {
+                    return false;
+                }
+            }
+        }
+        if (extraIngredient != null && !extraIngredient.ingredient.isEmpty()) {
+            if (inv.getContainerSize() == 1) {
+                return false;
+            }
+            if (inv.getContainerSize() > RefTableConsts.inputSlots) {
+                ItemStack item = inv.getItem(RefTableConsts.inputSlots);
+                return extraIngredient.ingredient.test(item);
+            }
         }
 
         return true;

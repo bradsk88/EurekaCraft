@@ -1,11 +1,11 @@
 {
   "display": {
     "title": {
-      "text": "Get Fresh Seeds",
+      "text": "Tired of searching",
       "color": "green"
     },
     "description": {
-      "text": "Someday these will do something"
+      "text": "Get Fresh Seeds"
     },
     "icon": {
       "item": "eurekacraft:fresh_seeds"

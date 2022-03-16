@@ -1,0 +1,24 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "tag": "minecraft:wooden_slabs"
+    },
+    {
+      "tag": "minecraft:wooden_slabs"
+    }
+  ],
+  "cook": "false",
+  "extra": {
+    "tag": "eurekacraft:sanding_disc"
+  },
+  "output": {
+    "item": "eurekacraft:polished_oak_slab"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:polished_oak_slab"
+    },
+    "chance": 1.0
+  }
+}

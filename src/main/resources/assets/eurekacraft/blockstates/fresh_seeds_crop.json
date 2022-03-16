@@ -1,6 +1,20 @@
 {
 	"variants": {
 		"age=0": {"model": "eurekacraft:block/fresh_seeds_crop_0" },
-		"age=1": {"model": "eurekacraft:block/fresh_seeds_crop_1" }
+		"age=1": {"model": "eurekacraft:block/fresh_seeds_crop_1" },
+		"age=2": {"model": "eurekacraft:block/fresh_seeds_crop_2" },
+		"age=3": {"model": "eurekacraft:block/fresh_seeds_crop_3" },
+		"age=4": {"model": "eurekacraft:block/fresh_seeds_crop_4" },
+		"age=5": {"model": "eurekacraft:block/fresh_seeds_crop_5" },
+		"age=6": {"model": "eurekacraft:block/fresh_seeds_crop_6" },
+		"age=7": {"model": "eurekacraft:block/fresh_seeds_crop_7" },
+		"age=8": {"model": "eurekacraft:block/fresh_seeds_crop_8" },
+		"age=9": {"model": "eurekacraft:block/fresh_seeds_crop_9" },
+		"age=10": {"model": "eurekacraft:block/fresh_seeds_crop_10" },
+		"age=11": {"model": "eurekacraft:block/fresh_seeds_crop_11" },
+		"age=12": {"model": "eurekacraft:block/fresh_seeds_crop_12" },
+		"age=13": {"model": "eurekacraft:block/fresh_seeds_crop_13" },
+		"age=14": {"model": "eurekacraft:block/fresh_seeds_crop_14" },
+		"age=15": {"model": "eurekacraft:block/fresh_seeds_crop_15" }
 	}
 }

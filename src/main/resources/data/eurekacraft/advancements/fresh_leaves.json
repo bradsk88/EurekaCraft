@@ -1,0 +1,33 @@
+{
+  "display": {
+    "title": {
+      "text": "Get Cookin'",
+      "color": "green"
+    },
+    "description": {
+      "text": "Harvest Fresh Leaves"
+    },
+    "icon": {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Harvest": {
+      "trigger": "eurekacraft:fresh_seeds_harvest_trigger"
+    }
+  },
+  "requirements": [
+    [
+      "Harvest"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  },
+  "parent": "eurekacraft:fresh_seeds"
+}

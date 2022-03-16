@@ -32,7 +32,7 @@ public class DeploymentCapability {
         @Override
         public void readNBT(Capability<IPlayerEntityBoardDeployed> capability, IPlayerEntityBoardDeployed instance, Direction side, INBT nbt) {
             String boardType = ((CompoundNBT) nbt).getString("board_type");
-            instance.setBoardType(new BoardType(boardType));
+            instance.setBoardType(BoardType.fromNBT(boardType));
         }
     }
 

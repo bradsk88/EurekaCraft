@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -36,10 +38,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -126,7 +125,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
         Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
         updateCookingStatus(activeRecipe);
         if (this.cooking) {
-            this.doCook(activeRecipe);
+            this.doCook(activeRecipe, level);
         }
     }
 
@@ -136,6 +135,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             ItemStack outSlot = this.itemHandler.getStackInSlot(RefTableConsts.outputSlot);
             if (!outSlot.isEmpty()) {
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
+                    return;
+                }
+                if (!active.get().getResultItem().isStackable()) {
                     return;
                 }
             }
@@ -179,7 +181,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 );
     }
 
-    private void doCook(Optional<GlideBoardRecipe> recipe) {
+    private void doCook(Optional<GlideBoardRecipe> recipe, World level) {
         if (craftPercent < 100) {
             this.craftPercent++;
             this.makeCraftingNoise(recipe);
@@ -193,8 +195,17 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                ItemStack sOutput = iRecipe.getSecondaryResultItem().output;
+                ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
                 itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
+            }
+
+            Collection<ItemStack> inputs = new ArrayList<>();
+            for (int i = 0; i < RefTableConsts.inputSlots; i++) {
+                ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+                if (stackInSlot.isEmpty()) {
+                    continue;
+                }
+                inputs.add(stackInSlot);
             }
 
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
@@ -202,10 +213,10 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
             }
 
             if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
-                useExtraIngredient(iRecipe);
+                useExtraIngredient(iRecipe, inputs, output, level);
             }
 
-            itemHandler.insertItem(RefTableConsts.outputSlot, output, false);
+            itemHandler.insertItem(RefTableConsts.outputSlot, output.copy(), false);
 
             setChanged();
         });
@@ -234,22 +245,28 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 float volume = 0.5f;
                 float pitch = 0.5f;
                 this.level.playSound(
-                        null, this.getBlockPos(), s, SoundCategory.BLOCKS, volume, pitch
+                        null, this.getBlockPos(), s.event, SoundCategory.BLOCKS, volume, pitch
                 );
-                this.noiseCooldown = 8; // TODO: maybe add to the NoisyCraftingItem so each item can decide cooldown?
+                this.noiseCooldown = s.noiseCooldown;
             });
         });
 
     }
 
-    private void useExtraIngredient(GlideBoardRecipe iRecipe) {
-        ItemStack stackInSlot = itemHandler.getStackInSlot(RefTableConsts.techSlot);
-        stackInSlot.hurt(1, new Random(), null);
+    private void useExtraIngredient(
+            GlideBoardRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, World level
+    ) {
+        ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        techStack.hurt(1, new Random(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
-        } else if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
+        } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
+        }
+
+        if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
+            ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(inputs, techStack, craftedOutput, level.getRandom());
         }
     }
 
@@ -269,7 +286,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
         // Shaped
-        Inventory inv = new Inventory(RefTableConsts.inputSlots);
+        Inventory inv = new Inventory(RefTableConsts.inputSlots + 1);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < RefTableConsts.inputSlots; i++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(i);
@@ -278,6 +295,9 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 shapeless.add(stackInSlot);
             }
         }
+        ItemStack techItem = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        inv.setItem(RefTableConsts.inputSlots, techItem);
+        shapeless.add(techItem);
 
         RecipeManager recipeManager = level.getRecipeManager();
         Optional<GlideBoardRecipe> recipe = recipeManager.getRecipeFor(

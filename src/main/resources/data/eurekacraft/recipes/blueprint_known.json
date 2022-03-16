@@ -1,0 +1,17 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:blueprint"
+    }
+  ], "extra": {
+    "item": "eurekacraft:blueprint",
+    "consume": true
+  },
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:blueprint"
+  },
+  "experience": 5.0,
+  "cookingTime": 20
+}

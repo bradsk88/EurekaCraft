@@ -1,0 +1,38 @@
+{
+  "display": {
+    "title": {
+      "text": "Expertise",
+      "color": "white"
+    },
+    "description": {
+      "text": "Craft an advanced blueprint"
+    },
+    "icon": {
+      "item": "eurekacraft:blueprint_advanced"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "Item": {
+      "trigger": "eurekacraft:ref_table_trigger",
+      "conditions": {
+        "machine_output": {
+          "item": "eurekacraft:blueprint_advanced"
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "Item"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "parent": "eurekacraft:blueprint"
+}

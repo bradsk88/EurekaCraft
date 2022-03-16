@@ -8,7 +8,7 @@
   ],
   "cook": "false",
   "extra": {
-    "item": "eurekacraft:flint_sanding_disc"
+    "tag": "eurekacraft:sanding_disc"
   },
   "output": {
     "item": "eurekacraft:precision_wood"

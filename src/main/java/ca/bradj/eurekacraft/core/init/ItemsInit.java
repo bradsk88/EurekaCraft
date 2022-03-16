@@ -5,11 +5,9 @@ import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
+import ca.bradj.eurekacraft.crop.FreshSmellingLeaves;
 import ca.bradj.eurekacraft.materials.*;
-import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
-import ca.bradj.eurekacraft.vehicles.GlideBoard;
-import ca.bradj.eurekacraft.vehicles.RefBoardItem;
-import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
+import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -25,6 +23,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> FRESH_SEEDS_ITEM = ITEMS.register(
 			FreshSeeds.ITEM_ID, FreshSeeds::new
+	);
+
+	public static final RegistryObject<Item> FRESH_LEAVES_ITEM = ITEMS.register(
+			FreshSmellingLeaves.ITEM_ID, FreshSmellingLeaves::new
 	);
 
 //	public static final RegistryObject<Item> BROKEN_REF_BOARD_BLOCK = ITEMS.register(
@@ -68,8 +70,12 @@ public class ItemsInit {
 			RefBoardItem.ItemIDs.GLIDE_BOARD, GlideBoard::new
 	);
 
-	public static final RegistryObject<Item> STANDARD_BOARD = ITEMS.register(
+	public static final RegistryObject<StandardRefBoard> STANDARD_BOARD = ITEMS.register(
 			RefBoardItem.ItemIDs.REF_BOARD, StandardRefBoard::new
+	);
+
+	public static final RegistryObject<Item> ELITE_BOARD = ITEMS.register(
+			EliteRefBoard.ITEM_ID, EliteRefBoard::new
 	);
 
 	public static final RegistryObject<Item> BROKEN_BOARD = ITEMS.register(
@@ -106,8 +112,20 @@ public class ItemsInit {
 			FlintSandingDiscItem.ITEM_ID, FlintSandingDiscItem::new
 	);
 
+	public static final RegistryObject<Item> FLINT_SANDING_DISC_STACK = ITEMS.register(
+			FlintSandingDiscStackItem.ITEM_ID, FlintSandingDiscStackItem::new
+	);
+
+	public static final RegistryObject<Item> SOFT_CHISEL = ITEMS.register(
+			SoftChiselItem.ITEM_ID, SoftChiselItem::new
+	);
+
 	public static final RegistryObject<Item> PRECISION_WOOD = ITEMS.register(
 			PrecisionWoodItem.ITEM_ID, PrecisionWoodItem::new
+	);
+
+	public static final RegistryObject<Item> PRECISION_WOOD_STICK = ITEMS.register(
+			PrecisionWoodStickItem.ITEM_ID, PrecisionWoodStickItem::new
 	);
 
 	public static final RegistryObject<Item> REF_BOARD_CORE = ITEMS.register(
@@ -116,6 +134,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
 			BlueprintItem.ITEM_ID, BlueprintItem::new
+	);
+
+	public static final RegistryObject<Item> BLUEPRINT_ADVANCED = ITEMS.register(
+			BlueprintAdvancedItem.ITEM_ID, BlueprintAdvancedItem::new
 	);
 
 	public static final RegistryObject<Item> POLISHED_OAK_SLAB = ITEMS.register(

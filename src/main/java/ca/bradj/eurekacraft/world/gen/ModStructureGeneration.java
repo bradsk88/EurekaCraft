@@ -22,8 +22,21 @@ public class ModStructureGeneration {
                 Objects.requireNonNull(event.getName(),
                         "Non existing biome detected!"));
 
-        Set<BiomeDictionary.Type> types = BiomeDictionary.getTypes(biomeKey);
-        if (types.contains(BiomeDictionary.Type.PLAINS)) {
+        BiomeDictionary.Type[] shackTypes = {
+                BiomeDictionary.Type.PLAINS,
+                BiomeDictionary.Type.FOREST,
+                BiomeDictionary.Type.HILLS,
+        };
+
+        boolean isShackMatch = false;
+        for (BiomeDictionary.Type t : shackTypes) {
+            if (BiomeDictionary.hasType(biomeKey, t)) {
+                isShackMatch = true;
+                break;
+            }
+        }
+
+        if (isShackMatch) {
             List<Supplier<StructureFeature<?, ?>>> structures = event.getGeneration().getStructures();
             structures.add(() -> ModStructures.EMPTY_SHACK.get().configured(NoFeatureConfig.INSTANCE));
             structures.add(() -> ModStructures.TALL_SHACK.get().configured(NoFeatureConfig.INSTANCE));

@@ -1,0 +1,36 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    },
+    {
+      "item": "eurekacraft:fresh_smelling_leaves"
+    }
+  ],
+  "cook": true,
+  "extra": {
+    "item": "eurekacraft:reflection_film_mold"
+  },
+  "output": {
+    "item": "eurekacraft:reflection_film"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:resin"
+    },
+    "chance": 0.25
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    },
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    },
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    },
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    },
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    },
+    {
+      "item": "eurekacraft:flint_sanding_disc"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:flint_sanding_disc_stack"
+  }
+}

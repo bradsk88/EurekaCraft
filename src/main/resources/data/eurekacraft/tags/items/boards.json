@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "eurekacraft:glide_board",
+    "eurekacraft:ref_board",
+    "eurekacraft:elite_ref_board"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P ",
+    " P"
+  ],
+  "key": {
+    "P": {
+      "item": "eurekacraft:precision_wood"
+    }
+  },
+  "result": {
+    "item": "eurekacraft:precision_wood_stick"
+  }
+}
