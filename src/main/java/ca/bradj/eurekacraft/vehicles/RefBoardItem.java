@@ -59,7 +59,9 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
 
     @Override
     public ItemStack getDefaultInstance() {
-        return super.getDefaultInstance();
+        ItemStack defaultInstance = super.getDefaultInstance();
+        storeStatsOnStack(defaultInstance, baseStats);
+        return defaultInstance;
     }
 
     @Override

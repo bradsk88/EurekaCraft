@@ -344,9 +344,9 @@ public class EntityRefBoard extends Entity {
         }
         float diff = MathHelper.degreesDifference(this.lastYRot, lookYRot);
 //        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
-        if (diff > 0) {
+        if (diff > 5) {
             this.lastYRot += turnSpeed;
-        } else {
+        } else if (diff < -5 ) {
             this.lastYRot -= turnSpeed;
         }
         return this.lastYRot;
