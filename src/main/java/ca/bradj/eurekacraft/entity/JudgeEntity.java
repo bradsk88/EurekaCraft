@@ -50,7 +50,6 @@ public class JudgeEntity extends CreatureEntity {
             EurekaCraft.MODID, "judge_entity"
     );
 
-    // FIXME: Figure out why these stats are overriding the creative tab itemstack
     private static final RefBoardStats BOARD_STATS = RefBoardStats.StandardBoard.
             WithSpeed(RefBoardStats.MIN_SPEED * 2).
             WithLift(RefBoardStats.MIN_POSITIVE_LIFT).

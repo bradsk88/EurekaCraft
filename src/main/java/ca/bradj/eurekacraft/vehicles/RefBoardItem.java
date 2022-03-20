@@ -52,7 +52,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");
         }
         if (itemStack.getTag() != null && itemStack.getTag().contains(NBT_KEY_STATS)) {
-            return RefBoardStats.FromNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
+            return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
         }
         return ((RefBoardItem) itemStack.getItem()).baseStats;
     }
@@ -143,7 +143,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     }
 
     protected void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
-        CompoundNBT nbt = refBoardStats.serializeNBT();
+        CompoundNBT nbt = RefBoardStats.serializeNBT(refBoardStats);
 
         if (target.getTag() == null) {
             target.setTag(new CompoundNBT());
@@ -181,7 +181,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             return baseStats;
         }
         CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
-        return RefBoardStats.FromNBT(nbt);
+        return RefBoardStats.deserializeNBT(nbt);
     }
 
     @Override
@@ -203,7 +203,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
                 return baseStats;
             }
             CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
-            return RefBoardStats.FromNBT(nbt);
+            return RefBoardStats.deserializeNBT(nbt);
         }
     }
 }

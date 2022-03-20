@@ -48,7 +48,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
             tooltip.add(new StringTextComponent("Agility: ???")); // TODO: Translate
             tooltip.add(new StringTextComponent("Lift: ???")); // TODO: Translate
         } else {
-            RefBoardStats stats = RefBoardStats.FromNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
+            RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
             tooltip.add(new StringTextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
             tooltip.add(new StringTextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
             tooltip.add(new StringTextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
@@ -76,9 +76,9 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
             }
         }
 
-        RefBoardStats existingStats = RefBoardStats.Average(inputStats);
+        RefBoardStats existingStats = RefBoardStats.Average("blueprint", inputStats);
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(existingStats, random);
-        target.getTag().put(NBT_KEY_BOARD_STATS, newStats.serializeNBT());
+        target.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
     }
 
     public static class BoardStatsFactory implements IBoardStatsFactory {
@@ -90,10 +90,10 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
                 itemStack.setTag(new CompoundNBT());
             }
             if (itemStack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-                return RefBoardStats.FromNBT(itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS));
+                return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS));
             }
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(creationReference, rand);
-            itemStack.getTag().put(NBT_KEY_BOARD_STATS, s.serializeNBT());
+            itemStack.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(s));
             return s;
         }
     }

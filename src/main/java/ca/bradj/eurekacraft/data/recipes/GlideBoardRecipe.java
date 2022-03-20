@@ -150,6 +150,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         @Override
         public GlideBoardRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             ItemStack output = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "output"));
+            output = output.getItem().getDefaultInstance();
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
@@ -197,6 +198,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             boolean cook = buffer.readBoolean();
 
             ItemStack output = buffer.readItem();
+            output = output.getItem().getDefaultInstance();
 
             ItemStack secondaryItem = buffer.readItem();
             double secondaryChance = buffer.readDouble();

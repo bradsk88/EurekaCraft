@@ -481,7 +481,7 @@ public class EntityRefBoard extends Entity {
             n.putBoolean("can_fly", board.canFly);
 //            private RefBoardStats boardStats;
             if (board.boardStats != null) {
-                n.put("stats", board.boardStats.serializeNBT());
+                n.put("stats", RefBoardStats.serializeNBT(board.boardStats));
             }
 //
 //            private float lastYRot = INITIAL_YROT;
@@ -510,7 +510,7 @@ public class EntityRefBoard extends Entity {
                 board.boardStats = RefBoardStats.StandardBoard;
             }
 
-            board.boardStats.deserializeNBT(nbt.getCompound("stats"));
+            board.boardStats = RefBoardStats.deserializeNBT(nbt.getCompound("stats"));
             board.lastYRot = nbt.getFloat("last_yrot");
             board.lastDirection = deserializePos(nbt.getCompound("last_dir"));
             board.lastLift = nbt.getDouble("last_lift");
