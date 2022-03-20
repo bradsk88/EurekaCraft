@@ -252,10 +252,6 @@ public class EntityRefBoard extends Entity {
             boosted = true;
         }
 
-        if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
-            boosted = true;
-        }
-
         double boardWeight = boardStats.weight();
         double boardSpeed = boardStats.speed();
         double turnSpeed = boardStats.agility() * 10;
@@ -451,6 +447,10 @@ public class EntityRefBoard extends Entity {
     }
 
     private boolean consumeBoost() {
+        if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
+            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+        }
+
         boolean boosted = false;
         int playerId = this.playerOrNull.getId();
         int boost = boostedPlayers.getOrDefault(playerId, 0);

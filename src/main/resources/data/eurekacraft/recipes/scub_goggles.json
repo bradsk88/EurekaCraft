@@ -23,7 +23,7 @@
   "cook": false,
   "extra": {
     "item": "eurekacraft:blueprint",
-    "consume": false
+    "consume": true
   },
   "output": {
     "item": "eurekacraft:scub_goggles"

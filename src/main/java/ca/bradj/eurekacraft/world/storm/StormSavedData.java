@@ -40,7 +40,7 @@ public class StormSavedData extends WorldSavedData {
     private StormSavedData(String id, ChunkPos pos, float gainPerTick) {
         super(id);
         this.gainPerTick = gainPerTick;
-        this.lossPerTick = 100 * gainPerTick;
+        this.lossPerTick = 1 * gainPerTick;
         this.pos = pos;
         this.traparLevel = new Random().nextFloat();
     }
@@ -89,7 +89,7 @@ public class StormSavedData extends WorldSavedData {
                 e.getValue().buildUp();
             }
         }
-        logTraparForPlayers(world);
+//        logTraparForPlayers(world);
     }
 
     private static void logTraparForPlayers(World world) {
@@ -97,9 +97,9 @@ public class StormSavedData extends WorldSavedData {
             BlockPos bp = p.blockPosition();
             StormSavedData d = chunkData.get(new ChunkPos(bp));
             if (d == null) {
-//                logger.debug("Near " + p.getName().getContents() + ": null");
+                logger.debug("Near " + p.getName().getContents() + ": null");
             } else {
-//                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPerTick +"], p["+ d.pos+"]");
+                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPerTick +"], p["+ d.pos+"]");
             }
         }
     }
