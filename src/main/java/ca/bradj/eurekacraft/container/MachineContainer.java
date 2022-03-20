@@ -98,7 +98,7 @@ public abstract class MachineContainer extends Container {
         } else {
             sourceSlot.setChanged();
         }
-        sourceSlot.onTake(playerIn, sourceStack);
+        sourceSlot.onTake(playerIn, copyOfSourceStack);
         return copyOfSourceStack;
     }
 

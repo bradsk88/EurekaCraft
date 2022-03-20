@@ -27,9 +27,9 @@ public class ModStructures {
     public static void setupStructures() {
         Random r = new Random(308374);
         // spacing: Average distance between two structure placement attempts of this type in chunks
-        int spacing = 50;
+        int spacing = 20;
         // separation: Minimum distance between two structures of this type in chunks. Must be less than spacing.
-        int separation = 20;
+        int separation = 10;
         setupMapSpacingAndLand(EMPTY_SHACK.get(), new StructureSeparationSettings(spacing, separation, r.nextInt(Integer.MAX_VALUE)), true);
         setupMapSpacingAndLand(TALL_SHACK.get(), new StructureSeparationSettings(spacing, separation, r.nextInt(Integer.MAX_VALUE)), true);
     }

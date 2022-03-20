@@ -142,7 +142,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
         applyBoardShaping(inputs, techItem, target);
     }
 
-    private void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
+    protected void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
         CompoundNBT nbt = refBoardStats.serializeNBT();
 
         if (target.getTag() == null) {
