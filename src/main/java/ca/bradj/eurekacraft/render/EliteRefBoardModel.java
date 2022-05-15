@@ -4,7 +4,9 @@ package ca.bradj.eurekacraft.render;// Made with Blockbench 4.1.3
 
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 
 public class EliteRefBoardModel extends AbstractBoardModel {
@@ -14,7 +16,7 @@ public class EliteRefBoardModel extends AbstractBoardModel {
     );
 
     @Override
-    protected ModelRenderer build() {
+    protected LayerDefinition build() {
         ModelRenderer VoxelShapes = new ModelRenderer(this);
         VoxelShapes.setPos(0.0F, 0.0F, 0.0F);
         VoxelShapes.texOffs(0, 0).addBox(0.0F, 0.0F, -4.0F, 15.0F, -1.0F, 8.0F, 0.0F, false);

@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.crop;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class FreshSmellingLeaves extends Item {
 

@@ -4,17 +4,17 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.JsonUtils;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
@@ -58,7 +58,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     }
 
     @Override
-    public boolean matches(IInventory inv, World p_77569_2_) {
+    public boolean matches(Container inv, Level p_77569_2_) {
         if (inv.isEmpty()) {
             return false;
         }
@@ -131,7 +131,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     }
 
     @Override
-    public ItemStack assemble(IInventory p_77572_1_) {
+    public ItemStack assemble(Container p_77572_1_) {
         return null;
     }
 
@@ -141,15 +141,15 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return RecipesInit.GLIDE_BOARD_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<GlideBoardRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<GlideBoardRecipe> {
 
         @Override
         public GlideBoardRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            ItemStack output = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "output"));
+            ItemStack output = ShapedRecipe.itemFromJson(JsonUtils.getAsJsonObject(json, "output"));
             output = output.getItem().getDefaultInstance();
             Secondary secondary;
             if (json.has("secondary")) {
@@ -186,7 +186,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
 
         @Nullable
         @Override
-        public GlideBoardRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public GlideBoardRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int rSize = buffer.readInt();
             NonNullList<Ingredient> inputs = NonNullList.withSize(rSize, Ingredient.EMPTY);
             for (int i = 0; i < inputs.size(); i++) {
@@ -208,7 +208,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, GlideBoardRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, GlideBoardRecipe recipe) {
             buffer.writeInt(recipe.getIngredients().size());
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buffer);
@@ -222,7 +222,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         }
     }
 
-    public static class Type implements IRecipeType<GlideBoardRecipe> {
+    public static class Type implements RecipeType<GlideBoardRecipe> {
         @Override
         public String toString() {
             return GlideBoardRecipe.TYPE_ID.toString();

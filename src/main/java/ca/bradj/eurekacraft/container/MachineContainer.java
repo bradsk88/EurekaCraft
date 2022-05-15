@@ -1,23 +1,23 @@
 package ca.bradj.eurekacraft.container;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-public abstract class MachineContainer extends Container {
+public abstract class MachineContainer extends AbstractContainerMenu {
     private static final int boxHeight = 18, boxWidth = 18;
     private static final int inventoryLeftX = 8;
     private static final int margin = 4;
 
     private final IItemHandler playerInventory;
 
-    protected MachineContainer(ContainerType<?> cType, int windowId, PlayerInventory pi) {
+    protected MachineContainer(MenuType<?> cType, int windowId, Container pi) {
         super(cType, windowId);
         this.playerInventory = new InvWrapper(pi);
     }
@@ -70,7 +70,7 @@ public abstract class MachineContainer extends Container {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(Player playerIn, int index) {
         Slot sourceSlot = slots.get(index);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();

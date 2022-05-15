@@ -8,15 +8,11 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class BlocksInit {
 

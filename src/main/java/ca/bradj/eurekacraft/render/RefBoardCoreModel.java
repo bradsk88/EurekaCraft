@@ -4,7 +4,7 @@ package ca.bradj.eurekacraft.render;// Made with Blockbench 4.1.3
 
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class RefBoardCoreModel extends RefBoardModel {
 

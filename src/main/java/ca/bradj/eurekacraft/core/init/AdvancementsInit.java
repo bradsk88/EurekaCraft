@@ -5,7 +5,7 @@ import ca.bradj.eurekacraft.advancements.BoardTrickTrigger;
 import ca.bradj.eurekacraft.advancements.FreshCropHarvestTrigger;
 import ca.bradj.eurekacraft.advancements.RefTableTrigger;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

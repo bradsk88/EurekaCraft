@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
@@ -11,7 +12,7 @@ public class GlideBoardModel extends AbstractBoardModel {
     );
 
     @Override
-    protected ModelRenderer build() {
+    protected LayerDefinition build() {
         texWidth = 16;
         texHeight = 16;
 

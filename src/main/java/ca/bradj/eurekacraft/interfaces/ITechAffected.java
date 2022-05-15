@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.interfaces;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 import java.util.Random;

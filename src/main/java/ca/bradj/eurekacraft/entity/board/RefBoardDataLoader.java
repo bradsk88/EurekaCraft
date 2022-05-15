@@ -2,9 +2,10 @@ package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,21 +20,21 @@ public class RefBoardDataLoader {
 
     @SubscribeEvent
     public static void PauseOrCloseServer(WorldEvent.Save event) {
-        for (PlayerEntity player : event.getWorld().players()) {
-            storePlayBoard((ServerPlayerEntity) player, (ServerWorld) event.getWorld());
+        for (Player player : event.getWorld().players()) {
+            storePlayBoard((ServerPlayer) player, (ServerLevel) event.getWorld());
         }
     }
 
     @SubscribeEvent
     public static void PlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        PlayerEntity player = event.getPlayer();
-        if (!(player.level instanceof ServerWorld)) {
+        Player player = event.getPlayer();
+        if (!(player.level instanceof ServerLevel)) {
             return;
         }
-        storePlayBoard((ServerPlayerEntity) player, (ServerWorld) player.level);
+        storePlayBoard((ServerPlayer) player, (ServerLevel) player.level);
     }
 
-    private static void storePlayBoard(ServerPlayerEntity player, ServerWorld world) {
+    private static void storePlayBoard(ServerPlayer player, ServerLevel world) {
         EntityRefBoard board = EntityRefBoard.deployedBoards.get(player.getUUID());
 
         EntityRefBoard.Data data = new EntityRefBoard.Data(player.getUUID(), board);
@@ -43,14 +44,14 @@ public class RefBoardDataLoader {
 
     @SubscribeEvent
     public static void PlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getPlayer().level instanceof ServerWorld)) {
+        if (!(event.getPlayer().level instanceof ServerLevel)) {
             return;
         }
-        ServerWorld world = (ServerWorld) event.getPlayer().level;
+        ServerLevel world = (ServerLevel) event.getPlayer().level;
 
         EntityRefBoard board = new EntityRefBoard(event.getPlayer(), world);
         world.getDataStorage().get(
-                () -> new EntityRefBoard.Data(event.getPlayer().getUUID(), board),
+                (CompoundTag t) -> new EntityRefBoard.Data(event.getPlayer().getUUID(), board),
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
         if (board.isAlive()) {

@@ -2,7 +2,7 @@ package ca.bradj.eurekacraft.world.storm;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.world.DimensionType;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.server.ServerLevel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,7 +23,7 @@ public class StormSavedDataHandler {
         if (evt.getWorld().isClientSide()) {
             return;
         }
-        ServerWorld sw = (ServerWorld) evt.getWorld();
+        ServerLevel sw = (ServerLevel) evt.getWorld();
         StormSavedData.initChunk(sw.getSeed(), evt.getChunk().getPos());
     }
 

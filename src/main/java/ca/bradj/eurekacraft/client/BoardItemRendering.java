@@ -7,7 +7,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
@@ -62,10 +62,10 @@ public class BoardItemRendering {
             if (!(item.getItem() instanceof RefBoardItem)) {
                 return 0.0F;
             }
-            if (!(entity instanceof PlayerEntity)) {
+            if (!(entity instanceof Player)) {
                 return 0.0F;
             }
-            Optional<BoardType> boardType = PlayerDeployedBoard.get((PlayerEntity) entity);
+            Optional<BoardType> boardType = PlayerDeployedBoard.get((Player) entity);
             if (!boardType.isPresent()) {
                 return 0.0F;
             }

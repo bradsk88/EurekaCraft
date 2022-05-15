@@ -6,7 +6,7 @@ import ca.bradj.eurekacraft.vehicles.BrokenRefBoard;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;

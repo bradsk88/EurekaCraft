@@ -2,8 +2,8 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.world.NoisyItem;
-import net.minecraft.item.Item;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.item.Item;
 
 import java.util.Optional;
 

@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collection;
 import java.util.Random;
@@ -169,8 +169,8 @@ public class RefBoardStats {
         return this.surf;
     }
 
-    public static CompoundNBT serializeNBT(RefBoardStats stats) {
-        CompoundNBT nbt = new CompoundNBT();
+    public static CompoundTag serializeNBT(RefBoardStats stats) {
+        CompoundTag nbt = new CompoundTag();
         double weight = stats.weight();
         double speed = stats.speed();
         double agility = stats.agility();
@@ -185,7 +185,7 @@ public class RefBoardStats {
         return nbt;
     }
 
-    public static RefBoardStats deserializeNBT(CompoundNBT nbt) {
+    public static RefBoardStats deserializeNBT(CompoundTag nbt) {
         RefBoardStats out = StandardBoard.copy();
         if (nbt.contains(NBT_KEY_STATS_WEIGHT)) {
             if (nbt.getDouble(NBT_KEY_STATS_WEIGHT) != 0) {

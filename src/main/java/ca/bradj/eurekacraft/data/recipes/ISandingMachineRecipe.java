@@ -1,18 +1,18 @@
 package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeType;
 
-public interface ISandingMachineRecipe extends IRecipe<IInventory> {
+public interface ISandingMachineRecipe extends Recipe<Container> {
 
     ResourceLocation TYPE_ID = new ResourceLocation(EurekaCraft.MODID, "sanding_machine");
 
     @Override
-    default IRecipeType<?> getType() {
+    default RecipeType<?> getType() {
         return Registry.RECIPE_TYPE.getOptional(TYPE_ID).get();
     }
 

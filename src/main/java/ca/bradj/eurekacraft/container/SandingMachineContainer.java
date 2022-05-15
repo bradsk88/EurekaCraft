@@ -4,11 +4,12 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineTileEntity;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 public class SandingMachineContainer extends MachineContainer {
     private final SandingMachineTileEntity tileEntity;
-    private IntReferenceHolder cookProgressSlot;
+    private DataSlot cookProgressSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     public static final int boxHeight = 18, boxWidth = 18;
@@ -26,8 +27,8 @@ public class SandingMachineContainer extends MachineContainer {
     public static final int titleBarHeight = 12;
     public static final int margin = 4;
 
-    public SandingMachineContainer(int windowId, PlayerInventory playerInventory, SandingMachineTileEntity te) {
-        super(ContainerTypesInit.SANDING_MACHINE.get(), windowId, playerInventory);
+    public SandingMachineContainer(int windowId, Container playerInventory, SandingMachineTileEntity te) {
+        super(ContainerTypesInit.SANDING_MACHINE.get() ,windowId, playerInventory);
         this.tileEntity = te;
         layoutPlayerInventorySlots(86);
 
@@ -55,14 +56,14 @@ public class SandingMachineContainer extends MachineContainer {
             this.addDataSlot(this.cookProgressSlot = new FunctionalIntReferenceHolder(this.tileEntity::getCookingProgress, this.tileEntity::setCookingProgress));
         }
     }
-    public SandingMachineContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
+    public SandingMachineContainer(int windowId, Inventory playerInventory, FriendlyByteBuf data) {
         this(windowId, playerInventory, getTileEntity(playerInventory, data));
     }
 
-    private static SandingMachineTileEntity getTileEntity(final PlayerInventory pi, final PacketBuffer data) {
+    private static SandingMachineTileEntity getTileEntity(final Inventory pi, final FriendlyByteBuf data) {
         Objects.requireNonNull(pi, "PlayerInventory cannot be null");
         Objects.requireNonNull(data, "PacketBuffer cannot be null");
-        final TileEntity te = pi.player.level.getBlockEntity(data.readBlockPos());
+        final BlockEntity te = pi.player.level.getBlockEntity(data.readBlockPos());
         if (te instanceof SandingMachineTileEntity) {
             return (SandingMachineTileEntity) te;
         }
@@ -70,7 +71,7 @@ public class SandingMachineContainer extends MachineContainer {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true; // TODO: Based on distance
     }
 

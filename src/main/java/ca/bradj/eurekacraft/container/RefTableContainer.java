@@ -6,13 +6,13 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IntReferenceHolder;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.apache.logging.log4j.LogManager;
@@ -22,9 +22,9 @@ import java.util.Objects;
 
 public class RefTableContainer extends MachineContainer {
     private final RefTableTileEntity tileEntity;
-    private IntReferenceHolder fireTotalSlot;
-    private IntReferenceHolder cookProgressSlot;
-    private IntReferenceHolder fireRemainderSlot;
+    private FunctionalIntReferenceHolder fireTotalSlot;
+    private FunctionalIntReferenceHolder cookProgressSlot;
+    private FunctionalIntReferenceHolder fireRemainderSlot;
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     public static final int boxHeight = 18, boxWidth = 18;
@@ -42,7 +42,7 @@ public class RefTableContainer extends MachineContainer {
     public static final int topOfSecondary = topOfTech + boxHeight + margin - 1;
     public static final int leftOfSecondary = leftOfTech + (boxWidth * 3);
 
-    public RefTableContainer(int windowId, PlayerInventory playerInventory, RefTableTileEntity refTableTileEntity) {
+    public RefTableContainer(int windowId, Container playerInventory, RefTableTileEntity refTableTileEntity) {
         super(ContainerTypesInit.REF_TABLE.get(), windowId, playerInventory);
         this.tileEntity = refTableTileEntity;
         layoutPlayerInventorySlots(86);
@@ -63,13 +63,12 @@ public class RefTableContainer extends MachineContainer {
                 // Output
                 addSlot(new SlotItemHandler(h, RefTableConsts.outputSlot, leftOfOutput, topOfOutput) {
                     @Override
-                    public ItemStack onTake(PlayerEntity player, ItemStack stack) {
-                        ItemStack itemStack = super.onTake(player, stack);
+                    public void onTake(Player player, ItemStack stack) {
+                        super.onTake(player, stack);
 
-                        if (player instanceof ServerPlayerEntity) {
-                            AdvancementsInit.REF_TABLE_TRIGGER.trigger((ServerPlayerEntity) player, stack);
+                        if (player instanceof ServerPlayer) {
+                            AdvancementsInit.REF_TABLE_TRIGGER.trigger((ServerPlayer) player, stack);
                         }
-                        return itemStack;
                     }
                 });
 
@@ -81,14 +80,14 @@ public class RefTableContainer extends MachineContainer {
             this.addDataSlot(this.fireTotalSlot = new FunctionalIntReferenceHolder(this.tileEntity::getFireTotal, this.tileEntity::setFireTotal));
         }
     }
-    public RefTableContainer(int windowId, PlayerInventory playerInventory, PacketBuffer data) {
+    public RefTableContainer(int windowId, Inventory playerInventory, FriendlyByteBuf data) {
         this(windowId, playerInventory, getTileEntity(playerInventory, data));
     }
 
-    private static RefTableTileEntity getTileEntity(final PlayerInventory pi, final PacketBuffer data) {
+    private static RefTableTileEntity getTileEntity(final Inventory pi, final FriendlyByteBuf data) {
         Objects.requireNonNull(pi, "PlayerInventory cannot be null");
         Objects.requireNonNull(data, "PacketBuffer cannot be null");
-        final TileEntity te = pi.player.level.getBlockEntity(data.readBlockPos());
+        final BlockEntity te = pi.player.level.getBlockEntity(data.readBlockPos());
         if (te instanceof RefTableTileEntity) {
             return (RefTableTileEntity) te;
         }
@@ -96,7 +95,7 @@ public class RefTableContainer extends MachineContainer {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true; // TODO: Based on distance
     }
 

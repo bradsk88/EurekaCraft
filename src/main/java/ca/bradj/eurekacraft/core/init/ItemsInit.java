@@ -9,12 +9,12 @@ import ca.bradj.eurekacraft.crop.FreshSmellingLeaves;
 import ca.bradj.eurekacraft.materials.*;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ItemsInit {
 

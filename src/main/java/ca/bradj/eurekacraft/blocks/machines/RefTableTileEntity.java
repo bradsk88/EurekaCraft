@@ -7,27 +7,28 @@ import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -40,7 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class RefTableTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class RefTableTileEntity extends BlockEntity implements MenuProvider, TickingBlockEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
@@ -54,7 +55,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
-    public RefTableTileEntity(TileEntityType<?> typeIn) {
+    public RefTableTileEntity(BlockEntityType<?> typeIn) {
         super(typeIn);
     }
 
@@ -64,29 +65,29 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
 
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container." + EurekaCraft.MODID + ".ref_table");
+    public Component getDisplayName() {
+        return new TextComponent("container." + EurekaCraft.MODID + ".ref_table");
     }
 
 
-    @Nullable
+    @org.jetbrains.annotations.Nullable
     @Override
-    public Container createMenu(int id, PlayerInventory player, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int id, Inventory player, Player p_39956_) {
         return new RefTableContainer(id, player, this);
     }
 
     @Override
-    public void load(BlockState blockState, CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         itemHandler.deserializeNBT(nbt.getCompound("inv"));
         this.craftPercent = nbt.getInt("cooked");
-        super.load(blockState, nbt);
+        super.load(nbt);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    protected void saveAdditional(CompoundTag nbt) {
         nbt.put("inv", itemHandler.serializeNBT());
         nbt.putInt("cooked", this.craftPercent);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Nonnull
@@ -150,7 +151,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                         return;
                     }
                     this.itemHandler.extractItem(RefTableConsts.fuelSlot, 1, false);
-                    this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), IRecipeType.SMELTING);
+                    this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), RecipeType.SMELTING);
                     if (this.fireRemaining < 0) {
                         this.fireRemaining = 500;
                     }
@@ -181,7 +182,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 );
     }
 
-    private void doCook(Optional<GlideBoardRecipe> recipe, World level) {
+    private void doCook(Optional<GlideBoardRecipe> recipe, Level level) {
         if (craftPercent < 100) {
             this.craftPercent++;
             this.makeCraftingNoise(recipe);
@@ -245,7 +246,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
                 float volume = 0.5f;
                 float pitch = 0.5f;
                 this.level.playSound(
-                        null, this.getBlockPos(), s.event, SoundCategory.BLOCKS, volume, pitch
+                        null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch
                 );
                 this.noiseCooldown = s.noiseCooldown;
             });
@@ -254,14 +255,14 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
     }
 
     private void useExtraIngredient(
-            GlideBoardRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, World level
+            GlideBoardRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
     ) {
         ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
         techStack.hurt(1, new Random(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
         } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {
-            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
             this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
         }
 
@@ -286,7 +287,7 @@ public class RefTableTileEntity extends TileEntity implements INamedContainerPro
 
     private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
         // Shaped
-        Inventory inv = new Inventory(RefTableConsts.inputSlots + 1);
+        Container inv = new SimpleContainer(RefTableConsts.inputSlots + 1);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < RefTableConsts.inputSlots; i++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(i);

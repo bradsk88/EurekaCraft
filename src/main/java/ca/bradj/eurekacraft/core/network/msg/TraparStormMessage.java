@@ -1,11 +1,11 @@
 package ca.bradj.eurekacraft.core.network.msg;
 
 import ca.bradj.eurekacraft.client.TraparStormRendering;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -25,13 +25,13 @@ public class TraparStormMessage {
         this.storming = storming;
     }
 
-    public static void encode(TraparStormMessage msg, PacketBuffer buffer) {
+    public static void encode(TraparStormMessage msg, FriendlyByteBuf buffer) {
         buffer.writeBoolean(msg.storming);
         buffer.writeInt(msg.chunkPos.x);
         buffer.writeInt(msg.chunkPos.z);
     }
 
-    public static TraparStormMessage decode(PacketBuffer buffer) {
+    public static TraparStormMessage decode(FriendlyByteBuf buffer) {
         boolean storming = buffer.readBoolean();
         int x = buffer.readInt();
         int z = buffer.readInt();

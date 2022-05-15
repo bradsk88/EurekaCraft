@@ -1,8 +1,9 @@
 package ca.bradj.eurekacraft.vehicles.deployment;
 
 import ca.bradj.eurekacraft.vehicles.BoardType;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -16,22 +17,22 @@ public class DeploymentCapability {
     public static Capability<IPlayerEntityBoardDeployed> PLAYER_BOARD_DEPLOYED_CAPABILITY = null;
 
     public static void register() {
-        CapabilityManager.INSTANCE.register(IPlayerEntityBoardDeployed.class, new Storage(), DefaultPlayerBoardDeployed::new);
+        CapabilityManager.INSTANCE.injectCapabilities(IPlayerEntityBoardDeployed.class, new Storage(), DefaultPlayerBoardDeployed::new);
     }
 
     public static class Storage implements Capability.IStorage<IPlayerEntityBoardDeployed> {
 
         @Nullable
         @Override
-        public INBT writeNBT(Capability<IPlayerEntityBoardDeployed> capability, IPlayerEntityBoardDeployed instance, Direction side) {
-            CompoundNBT tag = new CompoundNBT();
+        public Tag writeNBT(Capability<IPlayerEntityBoardDeployed> capability, IPlayerEntityBoardDeployed instance, Direction side) {
+            CompoundTag tag = new CompoundTag();
             tag.putString("board_type", instance.getBoardType().getPath());
             return tag;
         }
 
         @Override
         public void readNBT(Capability<IPlayerEntityBoardDeployed> capability, IPlayerEntityBoardDeployed instance, Direction side, INBT nbt) {
-            String boardType = ((CompoundNBT) nbt).getString("board_type");
+            String boardType = ((CompoundTag) nbt).getString("board_type");
             instance.setBoardType(BoardType.fromNBT(boardType));
         }
     }

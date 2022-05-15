@@ -1,8 +1,8 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

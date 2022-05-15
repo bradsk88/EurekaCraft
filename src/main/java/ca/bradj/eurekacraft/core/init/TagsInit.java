@@ -1,20 +1,20 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.Tags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 
 public class TagsInit {
 
     public static class Items {
 
-        public static final Tags.IOptionalNamedTag<Item> SANDING_DISCS = createTag("sanding_disc");
+        public static final TagKey<Item> SANDING_DISCS = createTag("sanding_disc");
 
 
-        private static Tags.IOptionalNamedTag<Item> createTag(String name) {
-            return ItemTags.createOptional(new ResourceLocation(EurekaCraft.MODID, name));
+        private static TagKey<Item> createTag(String name) {
+            return ItemTags.create(new ResourceLocation(EurekaCraft.MODID, name));
         }
     }
 }

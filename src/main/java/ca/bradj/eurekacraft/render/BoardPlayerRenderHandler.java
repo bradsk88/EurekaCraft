@@ -4,11 +4,11 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,7 +29,7 @@ public class BoardPlayerRenderHandler {
     }
 
     private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, BoardType bt) {
-        MatrixStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         matrixStack.pushPose();
 
         if (BoardType.NONE.equals(bt)) {
@@ -46,10 +46,10 @@ public class BoardPlayerRenderHandler {
 
         float newYRot = (float) Math.toRadians(-living.yBodyRot);
 
-        IVertexBuilder ivertexbuilder = event.getBuffers().getBuffer(model.getRenderType());
+        VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
-                matrixStack, ivertexbuilder, event.getLight(),
+                matrixStack, ivertexbuilder, event.getPackedLight(),
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
 
@@ -58,7 +58,7 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRenderPost(RenderPlayerEvent.Post event) {
-        event.getMatrixStack().popPose(); // TODO: Move to Pre?
+        event.getPoseStack().popPose(); // TODO: Move to Pre?
     }
 
 }

@@ -1,10 +1,9 @@
 package ca.bradj.eurekacraft.blocks;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 
 public class ResinBlock extends Block {
 

@@ -6,18 +6,19 @@ import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import com.google.common.collect.MapMaker;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +33,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     private static final String NBT_KEY_STATS = "stats";
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private static Map<PlayerEntity, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
+    private static Map<Player, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats baseStats;
@@ -65,11 +66,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     }
 
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
 
         if (player.isOnGround()) {
-            return ActionResult.pass(s);
+            return InteractionResult.pass(s);
         }
 
         boolean serverSide = !world.isClientSide;
@@ -82,7 +83,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
                 despawnGlider(player, world, glider);
             } else {
                 ItemStack boardItem = player.getItemInHand(hand);
-                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(player, (ServerWorld) player.level, boardItem, this.id);
+                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(player, (ServerLevel) player.level, boardItem, this.id);
                 if (spawned == null) {
                     spawnedGlidersMap.remove(player);
                 } else {
@@ -91,11 +92,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             }
         }
 
-        return ActionResult.success(s);
+        return InteractionResult.success(s);
     }
 
     // Server Side only
-    private static void despawnGlider(PlayerEntity player, World world, EntityRefBoard glider) {
+    private static void despawnGlider(Player player, Level world, EntityRefBoard glider) {
         glider.kill();
         spawnedGlidersMap.remove(player);
         PlayerDeployedBoard.remove(player);
@@ -124,11 +125,13 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(
+            ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn
+    ) {
         RefBoardStats stats = getStatsForStack(stack);
-        tooltip.add(new StringTextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-        tooltip.add(new StringTextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-        tooltip.add(new StringTextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
+        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
+        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
     }
 
     @Override
@@ -143,10 +146,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     }
 
     protected void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
-        CompoundNBT nbt = RefBoardStats.serializeNBT(refBoardStats);
+        CompoundTag nbt = RefBoardStats.serializeNBT(refBoardStats);
 
         if (target.getTag() == null) {
-            target.setTag(new CompoundNBT());
+            target.setTag(new CompoundTag());
         }
         target.getTag().put(NBT_KEY_STATS, nbt);
     }
@@ -180,7 +183,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
         if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_STATS)) {
             return baseStats;
         }
-        CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
+        CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
         return RefBoardStats.deserializeNBT(nbt);
     }
 
@@ -202,7 +205,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_STATS)) {
                 return baseStats;
             }
-            CompoundNBT nbt = stack.getTag().getCompound(NBT_KEY_STATS);
+            CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
             return RefBoardStats.deserializeNBT(nbt);
         }
     }

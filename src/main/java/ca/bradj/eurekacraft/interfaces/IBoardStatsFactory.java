@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.interfaces;
 
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Random;
 

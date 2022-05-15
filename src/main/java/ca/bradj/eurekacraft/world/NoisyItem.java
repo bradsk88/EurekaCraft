@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.world;
 
-import net.minecraft.util.SoundEvent;
+import net.minecraft.sounds.SoundEvent;
 
 public class NoisyItem {
     public final int noiseCooldown;

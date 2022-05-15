@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class FlintStickyDiscItem extends Item {
     public static final String ITEM_ID = "flint_sticky_disc";

@@ -1,14 +1,20 @@
 package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import net.minecraft.block.*;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Item;
-import net.minecraft.state.StateContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
 
 import javax.annotation.Nullable;
 
-public class BrokenRefBoardBlock extends HorizontalBlock {
+import static net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
+
+public class BrokenRefBoardBlock extends HorizontalDirectionalBlock {
     public static final String ITEM_ID = "broken_ref_board_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
             tab(ModItemGroup.EUREKACRAFT_GROUP);
@@ -22,13 +28,13 @@ public class BrokenRefBoardBlock extends HorizontalBlock {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> b) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
         b.add(FACING);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
     }
 

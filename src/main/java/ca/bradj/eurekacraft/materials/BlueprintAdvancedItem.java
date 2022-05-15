@@ -4,8 +4,8 @@ import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Random;
 

@@ -12,25 +12,27 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.block.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,30 +80,30 @@ public class EntityRefBoard extends Entity {
     private RefBoardStats boardStats;
 
     private float lastYRot = INITIAL_YROT;
-    private Vector3d lastDirection = new Vector3d(1.0, 1.0, 1.0);
+    private Vec3 lastDirection = new Vec3(1.0, 1.0, 1.0);
     private double lastLift = 0;
     private double lastSpeed;
     private int tickOf100 = 0;
 
-    public EntityRefBoard(EntityType<? extends Entity> entity, World world) {
+    public EntityRefBoard(EntityType<? extends Entity> entity, Level world) {
         super(entity, world);
     }
 
-    EntityRefBoard(Entity player, World world) {
+    EntityRefBoard(Entity player, Level world) {
         super(EntitiesInit.REF_BOARD.get(), world);
         this.playerOrNull = player;
     }
 
-    public EntityRefBoard(Entity player, World world, ItemStack boardItem) {
+    public EntityRefBoard(Entity player, Level world, ItemStack boardItem) {
         super(EntitiesInit.REF_BOARD.get(), world);
 
         if (world.isClientSide()) {
             return;
         }
 
-        ItemStack item = boardItem.getStack();
+        ItemStack item = boardItem.copy();
         if (!(item.getItem() instanceof RefBoardItem)) {
-            logger.error("Item in hand was not ref board. Killing entity");
+            logger.error("Item in InteractionHand was not ref board. Killing entity");
             this.kill();
             return;
         }
@@ -113,71 +115,71 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull = player;
 
         this.initialSpeed = runEquivalent;
-        if (player instanceof PlayerEntity) {
-            this.initialSpeed = runEquivalent * (((PlayerEntity) player).getSpeed() / runSpeed);
+        if (player instanceof Player) {
+            this.initialSpeed = runEquivalent * (((Player) player).getSpeed() / runSpeed);
         }
 
         this.lastSpeed = initialSpeed;
 
-        if (playerOrNull instanceof ServerPlayerEntity) {
+        if (playerOrNull instanceof ServerPlayer) {
             AdvancementsInit.BOARD_TRICK_TRIGGER.trigger(
-                    (ServerPlayerEntity) playerOrNull,
+                    (ServerPlayer) playerOrNull,
                     BoardTrickTrigger.Trick.FirstRefFlight
             );
         }
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         nbt.put("ec_ref_board_state", this.serializeNBT());
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
         EntityRefBoard.Serializer ser = new EntityRefBoard.Serializer(this);
         return ser.serializeNBT();
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         this.deserializeNBT(nbt.getCompound("ec_ref_board_state"));
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         EntityRefBoard.Serializer ser = new EntityRefBoard.Serializer(this);
         ser.deserializeNBT(nbt);
     }
 
-    public static void boostPlayer(World world, int id) {
+    public static void boostPlayer(Level world, int id) {
         if (world.isClientSide()) {
             return;
         }
         boostedPlayers.put(id, BOOST_TICKS);
     }
 
-    public static EntityRefBoard spawnFromInventory(Entity player, ServerWorld level, ItemStack boardItem, BoardType id) {
+    public static EntityRefBoard spawnFromInventory(Entity player, ServerLevel level, ItemStack boardItem, BoardType id) {
         if (level.isClientSide()) {
             return null;
         }
         if (deployedBoards.containsKey(player.getUUID())) {
             logger.warn("Tried to spawn new. But there was already a deployed board");
-            deployedBoards.remove(player.getUUID()).remove();
+            deployedBoards.remove(player.getUUID()).remove(RemovalReason.DISCARDED);
             return null;
         }
         EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
-        Vector3d position = player.position();
+        Vec3 position = player.position();
         glider.setPos(position.x, position.y, position.z);
         spawn(player, level, glider, id);
         return glider;
     }
 
-    static void spawn(Entity player, ServerWorld level, EntityRefBoard board, BoardType id) {
+    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, BoardType id) {
         level.addFreshEntity(board);
         PlayerDeployedBoard.set(player, id);
 
         if (deployedBoards.containsKey(player.getUUID())) {
-            deployedBoards.get(player.getUUID()).remove();
+            deployedBoards.get(player.getUUID()).remove(RemovalReason.DISCARDED);
         }
         deployedBoards.put(player.getUUID(), board);
 
@@ -196,16 +198,19 @@ public class EntityRefBoard extends Entity {
         if (!this.level.isClientSide()) {
             deployedBoards.remove(this.playerOrNull.getUUID());
         }
-        if (level instanceof ServerWorld) {
-            ((ServerWorld) level).getDataStorage().set(
+        if (level instanceof ServerLevel) {
+            ((ServerLevel) level).getDataStorage().set(
+                    EntityRefBoard.Data.ID(this.playerOrNull.getUUID()),
                     EntityRefBoard.Data.NoBoardFor(this.playerOrNull.getUUID())
             );
         }
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void remove(
+            RemovalReason reason
+    ) {
+        super.remove(reason);
     }
 
     @Override
@@ -213,11 +218,11 @@ public class EntityRefBoard extends Entity {
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> dataParam) {
+    public void onSyncedDataUpdated(EntityDataAccessor<?> dataParam) {
         super.onSyncedDataUpdated(dataParam);
     }
 
-    public IPacket<?> getAddEntityPacket() {
+    public Packet<?> getAddEntityPacket() {
         return new SSpawnObjectPacket(this);
     }
 
@@ -290,7 +295,7 @@ public class EntityRefBoard extends Entity {
         }
 
         float nextYRot = calculateYRot((float) turnSpeed);
-        Vector3d nextDir = calculateDirection(nextYRot, applyDamagedEffect);
+        Vec3 nextDir = calculateDirection(nextYRot, applyDamagedEffect);
 
         if (canSurf(flightSpeed)) {
             liftOrFall = surfLift;
@@ -308,7 +313,7 @@ public class EntityRefBoard extends Entity {
         destroyBlocks();
         storeForNextTick(liftOrFall, flightSpeed, nextDir);
 
-        Vector3d go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
+        Vec3 go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
 //        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
 
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
@@ -323,7 +328,7 @@ public class EntityRefBoard extends Entity {
         level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         level.addParticle(ParticleTypes.SPLASH, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         if (Math.floorMod(tickOf100, 4) == 0) {
-            level.playSound(null, this.blockPosition(), SoundEvents.GENERIC_SPLASH, SoundCategory.BLOCKS, 0.5f, 1.0f);
+            level.playSound(null, this.blockPosition(), SoundEvents.GENERIC_SPLASH, SoundSource.BLOCKS, 0.5f, 1.0f);
         }
     }
 
@@ -348,21 +353,21 @@ public class EntityRefBoard extends Entity {
         return this.lastYRot;
     }
 
-    private Vector3d calculateDirection(float nextYRot, boolean applyDamagedEffect) {
+    private Vec3 calculateDirection(float nextYRot, boolean applyDamagedEffect) {
         nextYRot = nextYRot + 90;
         double x = Math.cos(Math.PI * (nextYRot / 180));
         double z = Math.sin(Math.PI * (nextYRot / 180));
-        Vector3d nextRaw = new Vector3d(x, 0, z);
+        Vec3 nextRaw = new Vec3(x, 0, z);
 
         if (applyDamagedEffect && random.nextBoolean()) {
             if (random.nextBoolean()) {
-                nextRaw = new Vector3d(0, this.lastDirection.y, this.lastDirection.z);
+                nextRaw = new Vec3(0, this.lastDirection.y, this.lastDirection.z);
             } else {
-                nextRaw = new Vector3d(this.lastDirection.x, 0, this.lastDirection.z);
+                nextRaw = new Vec3(this.lastDirection.x, 0, this.lastDirection.z);
             }
         }
 
-        Vector3d nextDir = nextRaw.normalize();
+        Vec3 nextDir = nextRaw.normalize();
 
 //        this.logger.debug("look2D" + look2D);
 //        this.logger.debug("add" + add);
@@ -375,7 +380,7 @@ public class EntityRefBoard extends Entity {
         return nextDir;
     }
 
-    private void storeForNextTick(double liftOrFall, double flightSpeed, Vector3d nextDir) {
+    private void storeForNextTick(double liftOrFall, double flightSpeed, Vec3 nextDir) {
         if (Math.abs(nextDir.x) > 0 || Math.abs(nextDir.z) > 0) {
             this.lastDirection = nextDir;
         }
@@ -461,7 +466,7 @@ public class EntityRefBoard extends Entity {
         return boosted;
     }
 
-    private static class Serializer implements INBTSerializable<CompoundNBT> {
+    private static class Serializer implements INBTSerializable<CompoundTag> {
 
         private final EntityRefBoard board;
 
@@ -470,8 +475,8 @@ public class EntityRefBoard extends Entity {
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT n = new CompoundNBT();
+        public CompoundTag serializeNBT() {
+            CompoundTag n = new CompoundTag();
 //            private float initialSpeed;
             n.putFloat("initial_speed", board.initialSpeed);
 //            private Entity playerOrNull;
@@ -486,7 +491,7 @@ public class EntityRefBoard extends Entity {
 //
 //            private float lastYRot = INITIAL_YROT;
             n.putFloat("last_yrot", board.lastYRot);
-//            private Vector3d lastDirection = new Vector3d(1.0, 1.0, 1.0);
+//            private Vec3 lastDirection = new Vec3(1.0, 1.0, 1.0);
             n.put("last_dir", serializeVector(board.lastDirection));
 //            private double lastLift = 0;
             n.putDouble("last_lift", board.lastLift);
@@ -501,7 +506,7 @@ public class EntityRefBoard extends Entity {
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             board.initialSpeed = nbt.getFloat("initial_speed");
             board.damaged = nbt.getBoolean("damaged");
             board.canFly = nbt.getBoolean("can_fly");
@@ -517,27 +522,27 @@ public class EntityRefBoard extends Entity {
             board.lastSpeed = nbt.getDouble("last_speed");
             board.tickOf100 = nbt.getInt("tick_of_100");
 
-            Vector3d pos = deserializePos(nbt.getCompound("position"));
+            Vec3 pos = deserializePos(nbt.getCompound("position"));
             board.setPos(pos.x, pos.y, pos.z);
         }
 
-        private CompoundNBT serializeVector(Vector3d p) {
-            CompoundNBT pos = new CompoundNBT();
+        private CompoundTag serializeVector(Vec3 p) {
+            CompoundTag pos = new CompoundTag();
             pos.putDouble("x", p.x);
             pos.putDouble("y", p.y);
             pos.putDouble("z", p.z);
             return pos;
         }
 
-        private Vector3d deserializePos(CompoundNBT n) {
+        private Vec3 deserializePos(CompoundTag n) {
             double x = n.getDouble("x");
             double y = n.getDouble("y");
             double z = n.getDouble("z");
-            return new Vector3d(x, y, z);
+            return new Vec3(x, y, z);
         }
     }
 
-    public static class Data extends WorldSavedData {
+    public static class Data extends SavedData {
 
         private final EntityRefBoard board;
 
@@ -546,18 +551,18 @@ public class EntityRefBoard extends Entity {
         }
 
         public Data(UUID playerUUID, @Nullable EntityRefBoard board) {
-            super(ID(playerUUID));
+            super();
             this.board = board;
         }
 
-        public static WorldSavedData NoBoardFor(UUID uuid) {
+        public static SavedData NoBoardFor(UUID uuid) {
             Data data = new Data(uuid, null);
             data.setDirty(true);
             return data;
         }
 
         @Override
-        public void load(CompoundNBT worldNBT) {
+        public void load(CompoundTag worldNBT) {
             if (this.board == null) {
                 throw new IllegalStateException("Cannot load from world into null board");
             }
@@ -566,12 +571,12 @@ public class EntityRefBoard extends Entity {
                 this.board.remove();
                 return;
             }
-            CompoundNBT nbt = worldNBT.getCompound("board_state");
+            CompoundTag nbt = worldNBT.getCompound("board_state");
             this.board.deserializeNBT(nbt);
         }
 
         @Override
-        public CompoundNBT save(CompoundNBT worldNBT) {
+        public CompoundTag save(CompoundTag worldNBT) {
             if (this.board == null) {
                 worldNBT.remove("board_state");
                 return worldNBT;

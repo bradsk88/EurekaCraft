@@ -2,31 +2,31 @@ package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class SandingMachineTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class SandingMachineTileEntity extends BlockEntity implements MenuProvider, TickingBlockEntity {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "sanding_machine_tile_entity";
@@ -58,7 +58,7 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
-    public SandingMachineTileEntity(TileEntityType<?> typeIn) {
+    public SandingMachineTileEntity(BlockEntityType<?> typeIn) {
         super(typeIn);
     }
 
@@ -68,29 +68,28 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
 
 
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container." + EurekaCraft.MODID + ".sanding_machine");
+    public Component getDisplayName() {
+        return new TranslatableComponent("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
-
-    @Nullable
+    @org.jetbrains.annotations.Nullable
     @Override
-    public Container createMenu(int id, PlayerInventory player, PlayerEntity playerEntity) {
+    public AbstractContainerMenu createMenu(int id, Inventory player, Player Player) {
         return new SandingMachineContainer(id, player, this);
     }
 
     @Override
-    public void load(BlockState blockState, CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         itemHandler.deserializeNBT(nbt.getCompound("inv"));
         this.sandPercent = nbt.getInt("cooked");
-        super.load(blockState, nbt);
+        super.load(nbt);
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public void saveAdditional(CompoundTag nbt) {
         nbt.put("inv", itemHandler.serializeNBT());
         nbt.putInt("cooked", this.sandPercent);
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @Nonnull
@@ -147,7 +146,7 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
     }
 
     private boolean hasSandpaper() {
-        Ingredient.TagList tags = new Ingredient.TagList(TagsInit.Items.SANDING_DISCS);
+        Ingredient.TagValue tags = new Ingredient.TagValue(TagsInit.Items.SANDING_DISCS);
         ItemStack abrasive = this.itemHandler.getStackInSlot(abrasiveSlot);
         return tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
 
@@ -196,7 +195,7 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
                 float volume = 0.5f;
                 float pitch = 0.5f;
                 this.level.playSound(
-                        null, this.getBlockPos(), s.event, SoundCategory.BLOCKS, volume, pitch
+                        null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch
                 );
                 this.noiseCooldown = s.noiseCooldown;
             });
@@ -208,14 +207,14 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
         ItemStack stackInSlot = itemHandler.getStackInSlot(abrasiveSlot);
         stackInSlot.hurt(1, new Random(), null);
         if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
-            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
             this.itemHandler.extractItem(abrasiveSlot, 1, false);
         }
     }
 
     private Optional<SandingMachineRecipe> getActiveRecipe() {
         // Shaped
-        Inventory inv = new Inventory(inputSlots);
+        Container inv = new SimpleContainer(inputSlots);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < inputSlots; i++) {
             ItemStack stackInSlot = itemHandler.getStackInSlot(i);
@@ -236,7 +235,7 @@ public class SandingMachineTileEntity extends TileEntity implements INamedContai
 
         // Shapeless
         // TODO: Reduce duplication with above
-        inv = new Inventory(shapeless.size());
+        inv = new SimpleContainer(shapeless.size());
         for (int i = 0; i < shapeless.size(); i++) {
             ItemStack stackInSlot = shapeless.get(i);
             inv.setItem(i, stackInSlot);

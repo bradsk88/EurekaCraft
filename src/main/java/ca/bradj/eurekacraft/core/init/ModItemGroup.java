@@ -1,11 +1,11 @@
 package ca.bradj.eurekacraft.core.init;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 
 public class ModItemGroup {
 
-    public static final ItemGroup EUREKACRAFT_GROUP = new ItemGroup("eurekaCraftTab") {
+    public static final CreativeModeTab EUREKACRAFT_GROUP = new CreativeModeTab("eurekaCraftTab") {
         @Override
         public ItemStack makeIcon() {
             return ItemsInit.STANDARD_BOARD.get().getDefaultInstance();

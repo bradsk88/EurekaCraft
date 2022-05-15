@@ -2,10 +2,10 @@ package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
-import net.minecraft.client.world.DimensionRenderInfo;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.DimensionSpecialEffects;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,11 +18,11 @@ public class TraparStormRenderStarter {
 
     private final IWeatherRenderHandler traparRenderer;
     private final IWeatherRenderHandler defaultRenderer;
-    private final DimensionRenderInfo dimension;
+    private final DimensionSpecialEffects dimension;
 
     private boolean gogglesOn = false;
 
-    public TraparStormRenderStarter(DimensionRenderInfo dimensionRenderInfo, IWeatherRenderHandler traparRenderer, IWeatherRenderHandler defaultRenderer) {
+    public TraparStormRenderStarter(DimensionSpecialEffects dimensionRenderInfo, IWeatherRenderHandler traparRenderer, IWeatherRenderHandler defaultRenderer) {
         this.dimension = dimensionRenderInfo;
         this.traparRenderer = traparRenderer;
         this.defaultRenderer = defaultRenderer;
@@ -30,13 +30,13 @@ public class TraparStormRenderStarter {
 
     @SubscribeEvent
     public void onArmorChange(TickEvent.PlayerTickEvent evt) {
-        if (evt.player instanceof ServerPlayerEntity) {
+        if (evt.player instanceof ServerPlayer) {
             return;
         }
 
         boolean oldWearing = this.gogglesOn;
 
-        ItemStack headwear = evt.player.getItemBySlot(EquipmentSlotType.HEAD);
+        ItemStack headwear = evt.player.getItemBySlot(EquipmentSlot.HEAD);
         this.gogglesOn = headwear.sameItemStackIgnoreDurability(ItemsInit.SCUB_GOGGLES.get().getDefaultInstance());
 
         if (oldWearing == this.gogglesOn) {

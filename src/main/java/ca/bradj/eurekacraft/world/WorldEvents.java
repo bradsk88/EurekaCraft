@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.DimensionStructuresSettings;
 import net.minecraft.world.gen.settings.StructureSeparationSettings;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.server.ServerLevel;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,8 +29,8 @@ public class WorldEvents {
 
     @SubscribeEvent
     public static void addDimensionalSpacing(final WorldEvent.Load event) {
-        if (event.getWorld() instanceof ServerWorld) {
-            ServerWorld sw = (ServerWorld) event.getWorld();
+        if (event.getWorld() instanceof ServerLevel) {
+            ServerLevel sw = (ServerLevel) event.getWorld();
             if (sw.getChunkSource().generator instanceof FlatChunkGenerator && sw.dimension().equals(World.OVERWORLD)) {
                 return;
             }

@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
@@ -10,7 +11,7 @@ public class BrokenRefBoardModel extends AbstractBoardModel {
             EurekaCraft.MODID, "textures/render/dark_oak_planks.png"
     );
     @Override
-    protected ModelRenderer build() {
+    protected LayerDefinition build() {
         texWidth = 64;
         texHeight = 64;
 

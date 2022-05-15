@@ -9,29 +9,34 @@ import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.IPlayerEntityBoardDeployed;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.LookAtGoal;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.AirRandomPos;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -42,7 +47,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class JudgeEntity extends CreatureEntity {
+public class JudgeEntity extends PathfinderMob {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -71,29 +76,29 @@ public class JudgeEntity extends CreatureEntity {
     private int timeStuck = 0;
     private BlockPos lastPos;
 
-    public JudgeEntity(EntityType<? extends CreatureEntity> entity, World world) {
+    public JudgeEntity(EntityType<? extends PathfinderMob> entity, Level world) {
         super(entity, world);
     }
 
-    public JudgeEntity(ServerPlayerEntity rewardRecipient, World world) {
+    public JudgeEntity(ServerPlayer rewardRecipient, Level world) {
         this(EntitiesInit.JUDGE.get(), world);
         this.rewardRecipient = rewardRecipient.getUUID();
     }
 
-    public static AttributeModifierMap.MutableAttribute createAttributes() {
-        return MobEntity.createMobAttributes().
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes().
                 add(Attributes.MAX_HEALTH, 10.0D);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT nbt) {
+    public void addAdditionalSaveData(CompoundTag nbt) {
         Serializer ser = new Serializer(this);
         nbt.put("ec_judge_state", ser.serializeNBT());
         super.addAdditionalSaveData(nbt);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT nbt) {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
         Serializer ser = new Serializer(this);
         ser.deserializeNBT(nbt.getCompound("ec_judge_state"));
@@ -111,21 +116,21 @@ public class JudgeEntity extends CreatureEntity {
         return super.getCapability(cap);
     }
 
-    public static void spawnToRewardPlayer(ServerPlayerEntity player) {
+    public static void spawnToRewardPlayer(ServerPlayer player) {
         JudgeEntity judge = new JudgeEntity(player, player.level);
-        Vector3d viewVector = player.getViewVector(1.0f);
-        Vector3d max = new Vector3d(
+        Vec3 viewVector = player.getViewVector(1.0f);
+        Vec3 max = new Vec3(
                 player.position().x + (viewVector.x * 20),
                 player.position().y + (viewVector.y * 20),
                 player.position().z + (viewVector.z * 20)
         );
-        Vector3d min = new Vector3d(
+        Vec3 min = new Vec3(
                 player.position().x + (viewVector.x * 10),
                 player.position().y + (viewVector.y * 10),
                 player.position().z + (viewVector.z * 10)
         );
         judge.setPos(min.x, min.y, min.z);
-        Vector3d airPos = RandomPositionGenerator.getAirPosTowards(judge, 8, 3, -2, max, Math.PI / 10f);
+        Vec3 airPos = AirRandomPos.getPosTowards(judge, 8, 3, -2, max, Math.PI / 10f);
         if (airPos == null) {
             airPos = player.position();
         }
@@ -133,9 +138,9 @@ public class JudgeEntity extends CreatureEntity {
         judge.setYBodyRot(player.yBodyRot);
         player.level.addFreshEntity(judge);
         player.level.playSound(
-                null, airPos.x, airPos.y, airPos.z, SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0f, 0.5f
+                null, airPos.x, airPos.y, airPos.z, SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0f, 0.5f
         );
-        player.sendMessage(new TranslationTextComponent("message.tricks.judge_appeared"), Util.NIL_UUID);
+        player.sendMessage(new TextComponent("message.tricks.judge_appeared"), Util.NIL_UUID);
     }
 
     @Nullable
@@ -144,18 +149,22 @@ public class JudgeEntity extends CreatureEntity {
         return SoundEvents.VILLAGER_YES;
     }
 
-    @Nullable
+    @org.jetbrains.annotations.Nullable
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld p_213386_1_, DifficultyInstance p_213386_2_, SpawnReason p_213386_3_, @Nullable ILivingEntityData p_213386_4_, @Nullable CompoundNBT p_213386_5_) {
-        ILivingEntityData spawn = super.finalizeSpawn(p_213386_1_, p_213386_2_, p_213386_3_, p_213386_4_, p_213386_5_);
-        setItemSlot(EquipmentSlotType.HEAD, ItemsInit.SCUB_GOGGLES.get().getDefaultInstance());
+    public SpawnGroupData finalizeSpawn(
+            ServerLevelAccessor acc, DifficultyInstance diff, MobSpawnType spawnType,
+            @org.jetbrains.annotations.Nullable SpawnGroupData sgData,
+            @org.jetbrains.annotations.Nullable CompoundTag tag
+    ) {
+        SpawnGroupData spawn = super.finalizeSpawn(acc, diff, spawnType, sgData, tag);
+        setItemSlot(EquipmentSlot.HEAD, ItemsInit.SCUB_GOGGLES.get().getDefaultInstance());
         // FIXME: Make these render
         return spawn;
     }
 
     @Override
-    protected ActionResultType mobInteract(PlayerEntity player, Hand p_230254_2_) {
-        World world = player.level;
+    protected InteractionResult mobInteract(Player player, InteractionHand p_230254_2_) {
+        Level world = player.level;
         if (world.isClientSide()) {
             this.hasAward = false;
             return super.mobInteract(player, p_230254_2_);
@@ -166,23 +175,23 @@ public class JudgeEntity extends CreatureEntity {
         if (!this.rewardRecipient.equals(player.getUUID()) || !this.hasAward) {
             logger.debug("RewardRecipient " + rewardRecipient + " player " + player.getUUID() + " [hasAward:" + hasAward + "]");
             this.level.playSound(
-                    null, ownPos, SoundEvents.VILLAGER_NO, SoundCategory.NEUTRAL, 0.5f, 1.2f
+                    null, ownPos, SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.5f, 1.2f
             );
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
 
         giveAwardToPlayer(player);
 
-        return ActionResultType.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
-    private void giveAwardToPlayer(PlayerEntity player) {
+    private void giveAwardToPlayer(Player player) {
         BlockPos ownPos = blockPosition();
         this.level.playSound(
-                null, ownPos, SoundEvents.VILLAGER_CELEBRATE, SoundCategory.NEUTRAL, 0.5f, 1.2f
+                null, ownPos, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.5f, 1.2f
         );
         this.level.playSound(
-                null, ownPos, SoundEvents.NOTE_BLOCK_CHIME, SoundCategory.NEUTRAL, 0.5f, 0.2f
+                null, ownPos, SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 0.5f, 0.2f
         );
 
         // TODO: Give award instead of film
@@ -195,7 +204,7 @@ public class JudgeEntity extends CreatureEntity {
         this.hasAward = false;
         this.awardPos = this.blockPosition();
 
-        player.sendMessage(new TranslationTextComponent("message.tricks.congrats"), Util.NIL_UUID);
+        player.sendMessage(new TextComponent("message.tricks.congrats"), Util.NIL_UUID);
     }
 
     @Override
@@ -274,7 +283,7 @@ public class JudgeEntity extends CreatureEntity {
     }
 
     private boolean shouldVanish() {
-        return position().distanceTo(new Vector3d(
+        return position().distanceTo(new Vec3(
                 awardPos.getX(),
                 awardPos.getY(),
                 awardPos.getZ()
@@ -291,9 +300,9 @@ public class JudgeEntity extends CreatureEntity {
         this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
         this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
         this.level.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY(), this.getZ(), 1.0, 1.0, 1.0);
-        this.level.playSound(null, this.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.AMBIENT, 1.0f, 0.5f);
+        this.level.playSound(null, this.blockPosition(), SoundEvents.FIRE_EXTINGUISH, SoundSource.AMBIENT, 1.0f, 0.5f);
         StormSavedData.triggerTraparExplosion(this.blockPosition(), 4, 2f);
-        this.remove();
+        this.remove(RemovalReason.DISCARDED);
     }
 
     void chooseNewDirection() {
@@ -324,7 +333,7 @@ public class JudgeEntity extends CreatureEntity {
         super.registerGoals();
         this.goalSelector.addGoal(0, new InitialLandGoal(this));
         this.goalSelector.addGoal(0, new FindSafePlaceGoal(this));
-        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, PlayerEntity.class, 10.0F));
+        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 10.0F));
         this.goalSelector.addGoal(3, new FlyAwayGoal(this));
         this.goalSelector.addGoal(4, new WalkAwayGoal(this));
     }
@@ -340,7 +349,7 @@ public class JudgeEntity extends CreatureEntity {
     public static class InitialLandGoal extends JudgeGoal {
 
         private final JudgeEntity self;
-        private Vector3d landTarget;
+        private Vec3 landTarget;
 
         InitialLandGoal(JudgeEntity entity) {
             this.self = entity;
@@ -368,11 +377,11 @@ public class JudgeEntity extends CreatureEntity {
         @Override
         public void start() {
 //            logger.debug("Starting goal " + this);
-            this.landTarget = RandomPositionGenerator.getLandPos(this.self, 15, 7);
+            this.landTarget = LandRandomPos.getPos(this.self, 15, 7);
 
             EntityRefBoard.spawnFromInventory(
                     this.self,
-                    (ServerWorld) this.self.level,
+                    (ServerLevel) this.self.level,
                     ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
                     EliteRefBoard.ID
             );
@@ -399,7 +408,7 @@ public class JudgeEntity extends CreatureEntity {
             logger.debug(String.format(
                     "timeInWater %d timeOutOfWater %d", judge.timeInWater, judge.timeOutOfWater
             ));
-            Vector3d oldMov = judge.getDeltaMovement();
+            Vec3 oldMov = judge.getDeltaMovement();
             if (judge.isInWater()) {
                 judge.setDeltaMovement(
                         oldMov.x, oldMov.y + 1, oldMov.z
@@ -416,7 +425,7 @@ public class JudgeEntity extends CreatureEntity {
         public void start() {
             super.start();
 //            logger.debug("Starting goal " + this);
-            Vector3d landTarget = RandomPositionGenerator.getLandPos(this.self, 15, 7);
+            Vec3 landTarget = LandRandomPos.getPos(this.self, 15, 7);
             if (landTarget == null) {
                 landTarget = this.self.position().add(100, 0, 0);
             }
@@ -424,7 +433,7 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    public static class LookAtPlayerGoal extends LookAtGoal {
+    public static class LookAtPlayerGoal extends net.minecraft.world.entity.ai.goal.LookAtPlayerGoal {
 
         private final JudgeEntity self;
 
@@ -500,7 +509,7 @@ public class JudgeEntity extends CreatureEntity {
     private void spawnRefBoard() {
         EntityRefBoard.spawnFromInventory(
                 this,
-                (ServerWorld) this.level,
+                (ServerLevel) this.level,
                 new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
                 }),
                 EliteRefBoard.ID
@@ -548,7 +557,7 @@ public class JudgeEntity extends CreatureEntity {
         }
     }
 
-    private static class Serializer implements INBTSerializable<CompoundNBT> {
+    private static class Serializer implements INBTSerializable<CompoundTag> {
 
         private final JudgeEntity entity;
 
@@ -557,8 +566,8 @@ public class JudgeEntity extends CreatureEntity {
         }
 
         @Override
-        public CompoundNBT serializeNBT() {
-            CompoundNBT n = new CompoundNBT();
+        public CompoundTag serializeNBT() {
+            CompoundTag n = new CompoundTag();
 
             if (entity.vanishDestination != null) {
                 n.put("vanish_pos", serializePos(entity.vanishDestination));
@@ -580,7 +589,7 @@ public class JudgeEntity extends CreatureEntity {
         }
 
         @Override
-        public void deserializeNBT(CompoundNBT nbt) {
+        public void deserializeNBT(CompoundTag nbt) {
             if (nbt.contains("vanish_pos")) {
                 entity.vanishDestination = deserializePos(nbt.getCompound("vanish_pos"));
             }
@@ -598,15 +607,15 @@ public class JudgeEntity extends CreatureEntity {
             entity.rewardRecipient = UUID.fromString(nbt.getString("recipient_uuid"));
         }
 
-        private CompoundNBT serializePos(BlockPos p) {
-            CompoundNBT pos = new CompoundNBT();
+        private CompoundTag serializePos(BlockPos p) {
+            CompoundTag pos = new CompoundTag();
             pos.putInt("x", p.getX());
             pos.putInt("y", p.getY());
             pos.putInt("z", p.getZ());
             return pos;
         }
 
-        private BlockPos deserializePos(CompoundNBT n) {
+        private BlockPos deserializePos(CompoundTag n) {
             int x = n.getInt("x");
             int y = n.getInt("y");
             int z = n.getInt("z");

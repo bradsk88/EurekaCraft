@@ -3,15 +3,15 @@ package ca.bradj.eurekacraft.world.storm;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class StormSavedData extends WorldSavedData {
+public class StormSavedData extends SavedData {
 
     public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "storm_saved_data");
     private static final StormSavedData NOT_STORMING = new StormSavedData(ID.toString());
@@ -38,7 +38,7 @@ public class StormSavedData extends WorldSavedData {
     private float traparLevel;
 
     private StormSavedData(String id, ChunkPos pos, float gainPerTick) {
-        super(id);
+        super();
         this.gainPerTick = gainPerTick;
         this.lossPerTick = 1 * gainPerTick;
         this.pos = pos;
@@ -70,7 +70,7 @@ public class StormSavedData extends WorldSavedData {
         chunkData.put(pos, new StormSavedData(seed, pos));
     }
 
-    public static void tick(World world) {
+    public static void tick(Level world) {
         if (world.isClientSide()) {
             return;
         }
@@ -92,8 +92,8 @@ public class StormSavedData extends WorldSavedData {
 //        logTraparForPlayers(world);
     }
 
-    private static void logTraparForPlayers(World world) {
-        for (PlayerEntity p : world.players()) {
+    private static void logTraparForPlayers(Level world) {
+        for (Player p : world.players()) {
             BlockPos bp = p.blockPosition();
             StormSavedData d = chunkData.get(new ChunkPos(bp));
             if (d == null) {
@@ -158,12 +158,12 @@ public class StormSavedData extends WorldSavedData {
     }
 
     @Override
-    public void load(CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         this.storming = nbt.getBoolean("storming");
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    public CompoundTag save(CompoundTag nbt) {
         nbt.putBoolean("storming", this.storming);
         return nbt;
     }

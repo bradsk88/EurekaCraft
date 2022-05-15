@@ -5,13 +5,13 @@ import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -42,16 +42,16 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
         if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-            tooltip.add(new StringTextComponent("Speed: ???")); // TODO: Translate
-            tooltip.add(new StringTextComponent("Agility: ???")); // TODO: Translate
-            tooltip.add(new StringTextComponent("Lift: ???")); // TODO: Translate
+            tooltip.add(new TextComponent("Speed: ???")); // TODO: Translate
+            tooltip.add(new TextComponent("Agility: ???")); // TODO: Translate
+            tooltip.add(new TextComponent("Lift: ???")); // TODO: Translate
         } else {
             RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
-            tooltip.add(new StringTextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-            tooltip.add(new StringTextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-            tooltip.add(new StringTextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+            tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
+            tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
+            tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
         }
     }
 
@@ -63,7 +63,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
             return;
         }
         if (target.getTag() == null) {
-            target.setTag(new CompoundNBT());
+            target.setTag(new CompoundTag());
         }
 
         // TODO: Consider making blueprint stats "relative" so they affect different boards differently
@@ -87,7 +87,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
                 ItemStack itemStack, RefBoardStats creationReference, Random rand
         ) {
             if (itemStack.getTag() == null) {
-                itemStack.setTag(new CompoundNBT());
+                itemStack.setTag(new CompoundTag());
             }
             if (itemStack.getTag().contains(NBT_KEY_BOARD_STATS)) {
                 return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS));

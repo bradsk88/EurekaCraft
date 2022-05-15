@@ -8,11 +8,17 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.model.VillagerModel;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.model.VillagerModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -20,8 +26,8 @@ public class JudgeRenderer extends MobRenderer<JudgeEntity, VillagerModel<JudgeE
     public static final ResourceLocation TEXTURE =
             new ResourceLocation(EurekaCraft.MODID, "textures/entity/judge.png");
 
-    public JudgeRenderer(EntityRendererManager manager) {
-        super(manager, new VillagerModel<>(0.0f), 0.5f);
+    public JudgeRenderer(EntityRendererProvider<JudgeEntity> manager) {
+        super(manager, new VillagerModel<JudgeEntity>(0.0f), 0.5f);
     }
 
     @Override
@@ -30,7 +36,7 @@ public class JudgeRenderer extends MobRenderer<JudgeEntity, VillagerModel<JudgeE
     }
 
     @Override
-    public void render(JudgeEntity living, float p_225623_2_, float p_225623_3_, MatrixStack matrixStack, IRenderTypeBuffer buffer, int lightMaybe) {
+    public void render(JudgeEntity living, float p_225623_2_, float p_225623_3_, PoseStack matrixStack, MultiBufferSource buffer, int lightMaybe) {
         super.render(living, p_225623_2_, p_225623_3_, matrixStack, buffer, lightMaybe);
 
         if (living.isOnGround()) {

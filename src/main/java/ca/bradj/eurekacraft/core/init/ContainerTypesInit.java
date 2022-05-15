@@ -5,24 +5,24 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineTileEntity;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraftforge.common.extensions.IForgeContainerType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ContainerTypesInit {
 
 
-        public static final DeferredRegister<ContainerType<?>> TYPES = DeferredRegister.create(
+        public static final DeferredRegister<MenuType<?>> TYPES = DeferredRegister.create(
                 ForgeRegistries.CONTAINERS, EurekaCraft.MODID
         );
 
-        public static final RegistryObject<ContainerType<RefTableContainer>> REF_TABLE = TYPES.register(
-                RefTableTileEntity.ENTITY_ID, () -> IForgeContainerType.create(RefTableContainer::new)
+        public static final RegistryObject<MenuType<RefTableContainer>> REF_TABLE = TYPES.register(
+                RefTableTileEntity.ENTITY_ID, () -> IForgeMenuType.create(RefTableContainer::new)
         );
-        public static final RegistryObject<ContainerType<SandingMachineContainer>> SANDING_MACHINE = TYPES.register(
-                SandingMachineTileEntity.ENTITY_ID, () -> IForgeContainerType.create(SandingMachineContainer::new)
+        public static final RegistryObject<MenuType<SandingMachineContainer>> SANDING_MACHINE = TYPES.register(
+                SandingMachineTileEntity.ENTITY_ID, () -> IForgeMenuType.create(SandingMachineContainer::new)
         );
 
 }

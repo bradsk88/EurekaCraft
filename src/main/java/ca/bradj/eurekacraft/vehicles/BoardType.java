@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 public class BoardType extends ResourceLocation {
     public static final BoardType NONE = new BoardType("--none--");

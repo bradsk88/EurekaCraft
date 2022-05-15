@@ -4,14 +4,17 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import net.minecraft.core.Direction;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Direction;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT> {
+public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundTag> {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -80,15 +83,15 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundNBT>
     }
 
     @Override
-    public CompoundNBT serializeNBT() {
+    public CompoundTag serializeNBT() {
         if (DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY == null) {
-            return new CompoundNBT();
+            return new CompoundTag();
         }
-        return (CompoundNBT) DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.writeNBT(board, null);
+        return (CompoundTag) DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.writeNBT(board, null);
     }
 
     @Override
-    public void deserializeNBT(CompoundNBT nbt) {
+    public void deserializeNBT(CompoundTag nbt) {
         if (DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY != null) {
             DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.readNBT(board, null, nbt);
         }

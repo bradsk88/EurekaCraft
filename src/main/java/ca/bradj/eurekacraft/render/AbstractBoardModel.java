@@ -1,15 +1,16 @@
 package ca.bradj.eurekacraft.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
 public abstract class AbstractBoardModel extends EntityModel<Entity> {
-    private final ModelRenderer VoxelShapes;
+    private final LayerDefinition VoxelShapes;
     private final ResourceLocation texture;
 
     public AbstractBoardModel() {
@@ -23,21 +24,21 @@ public abstract class AbstractBoardModel extends EntityModel<Entity> {
     }
 
     @Override
-    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
         VoxelShapes.render(matrixStack, buffer, packedLight, packedOverlay);
     }
 
-    public ModelRenderer getModelRenderer() {
+    public ModelPart getModelRenderer() {
         return VoxelShapes;
     }
 
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
     }
 
-    protected abstract ModelRenderer build();
+    protected abstract LayerDefinition build();
 
 
     public RenderType getRenderType() {
