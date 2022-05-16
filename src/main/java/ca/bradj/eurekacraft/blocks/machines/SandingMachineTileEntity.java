@@ -66,7 +66,7 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         return new TranslatableComponent("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player Player) {
         return new SandingMachineContainer(id, player, this);

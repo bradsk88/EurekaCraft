@@ -73,7 +73,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     }
 
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player p_39956_) {
         return new RefTableContainer(id, player, this);

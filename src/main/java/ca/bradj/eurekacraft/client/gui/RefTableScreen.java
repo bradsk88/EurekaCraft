@@ -5,6 +5,8 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,7 +15,7 @@ public class RefTableScreen extends AbstractContainerScreen<RefTableContainer> {
 
     private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
 
-    public RefTableScreen(RefTableContainer container, Inventory playerInv, TextComponent title) {
+    public RefTableScreen(RefTableContainer container, Inventory playerInv, Component title) {
         super(container, playerInv, title);
     }
 
@@ -26,8 +28,9 @@ public class RefTableScreen extends AbstractContainerScreen<RefTableContainer> {
 
     @Override
     protected void renderBg(PoseStack stack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        this.minecraft.getTextureManager().bindForSetup(GUI);
+        RenderSystem.setShaderTexture(0, GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         // Arrow
