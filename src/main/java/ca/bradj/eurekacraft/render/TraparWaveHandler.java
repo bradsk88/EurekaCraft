@@ -4,30 +4,28 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.block.BlockState;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEntity> {
+public class TraparWaveHandler implements BlockEntityRenderer<TraparWaveBlock.TileEntity> {
 
     private Minecraft mc = Minecraft.getInstance();
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
-    public TraparWaveHandler(TileEntityRendererDispatcher p_i226006_1_) {
-        super(p_i226006_1_);
+    public TraparWaveHandler() {
     }
+
     @Override
-    public void render(TraparWaveBlock.TileEntity te, float partialTicks, MatrixStack matrixStackIn,
-                       IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    public void render(TraparWaveBlock.TileEntity te, float partialTicks, PoseStack matrixStackIn,
+                       MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
             return;
@@ -38,8 +36,8 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
         }
     }
 
-    private void renderBlock(Vector3i translation, MatrixStack matrixStack,
-                             IRenderTypeBuffer buffer, float scale) {
+    private void renderBlock(BlockPos translation, PoseStack matrixStack,
+                             MultiBufferSource buffer, float scale) {
         matrixStack.pushPose();
         matrixStack.translate(translation.getX(), translation.getY(), translation.getZ());
         matrixStack.scale(scale, scale, scale);
@@ -47,7 +45,7 @@ public class TraparWaveHandler extends TileEntityRenderer<TraparWaveBlock.TileEn
         // FIXME: The rendered blocks are weird (sees through water, etc)
 
         BlockState bs = BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState();
-        mc.getBlockRenderer().renderBlock(bs, matrixStack, buffer, Integer.MAX_VALUE, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+        mc.getBlockRenderer().renderSingleBlock(bs, matrixStack, buffer, Integer.MAX_VALUE, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
         matrixStack.popPose();
     }
 }

@@ -9,7 +9,10 @@ import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -42,12 +45,13 @@ public class BlocksInit {
 	);
 
 	public static void RegisterTextures() {
-		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
-		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
-		RenderTypeLookup.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
+		// TODO: Reimplement
+//		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
+//		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
+//		RenderTypeLookup.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
 	}
 
-	public static boolean never(BlockState p_235436_0_, IBlockReader p_235436_1_, BlockPos p_235436_2_) {
+	public static boolean never(BlockState p_235436_0_, BlockGetter p_235436_1_, BlockPos p_235436_2_) {
 		return false;
 	}
 

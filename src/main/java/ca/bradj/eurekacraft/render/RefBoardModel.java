@@ -4,6 +4,7 @@ package ca.bradj.eurekacraft.render;// Made with Blockbench 4.1.3
 
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -18,7 +19,7 @@ public class RefBoardModel extends AbstractBoardModel {
     );
 
     @Override
-    protected LayerDefinition build() {
+    protected ModelPart build() {
         CubeListBuilder VoxelShapes = CubeListBuilder.create();
         VoxelShapes.texOffs(0, 0).addBox("1", 0.0F, 0.0F, -4.0F, 15.0F, -1.0F, 8.0F);
         VoxelShapes.texOffs(0, 0).addBox(-2.0F, 0.0F, -5.0F, 2.0F, -1.0F, 10.0F);
@@ -37,7 +38,7 @@ public class RefBoardModel extends AbstractBoardModel {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
         partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.ZERO);
-        return LayerDefinition.create(meshdefinition, 0, 0);
+        return LayerDefinition.create(meshdefinition, 0, 0).bakeRoot();
     }
 
     @Override

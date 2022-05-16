@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.init.RecipesInit;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -13,7 +14,7 @@ public interface ISandingMachineRecipe extends Recipe<Container> {
 
     @Override
     default RecipeType<?> getType() {
-        return Registry.RECIPE_TYPE.getOptional(TYPE_ID).get();
+        return RecipesInit.SANDING_MACHINE;
     }
 
     @Override

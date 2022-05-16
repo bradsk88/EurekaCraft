@@ -11,8 +11,13 @@ import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
+import net.minecraft.core.Registry;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -49,11 +54,12 @@ public class EurekaCraft {
         ItemsInit.register(bus);
         AdvancementsInit.registerIconItems(bus);
         EntitiesInit.ENTITIES.register(bus);
-        FeaturesInit.PLACEMENTS.register(bus);
-        FeaturesInit.FEATURES.register(bus);
+        // TODO: Reimplement
+//        FeaturesInit.PLACEMENTS.register(bus);
+//        FeaturesInit.FEATURES.register(bus);
         ContainerTypesInit.TYPES.register(bus);
         RecipesInit.register(bus);
-        ModStructures.STRUCTURES.register(bus);
+//        ModStructures.STRUCTURES.register(bus);
         AdvancementsInit.register();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, EurekaConfig.SPEC, EurekaConfig.FILENAME);
@@ -61,7 +67,7 @@ public class EurekaCraft {
 
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(ModStructures::setupStructures);
-        event.enqueueWork(DeploymentCapability::register);
+//        event.enqueueWork(DeploymentCapability::register); TODO: Reimplement
         event.enqueueWork(EurekaCraftNetwork::init);
     }
 
@@ -70,22 +76,30 @@ public class EurekaCraft {
         event.enqueueWork(
                 ModelsInit::registerModels
         );
-        event.enqueueWork(
-                BoardItemRendering::initItemProperties
-        );
-        event.enqueueWork(
-                TraparStormRendering::init
-        );
+        // TODO: Reimplement
+//        event.enqueueWork(
+//                TraparStormRendering::init
+//        );
+    }
+
+    @SubscribeEvent
+    public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> evt) {
+        RecipesInit.registerTypes(evt);
     }
 
     @SubscribeEvent
     public void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-        event.<JudgeEntity>registerEntityRenderer (
-                EntitiesInit.JUDGE.get(), JudgeRenderer::new
-        );
-        event.<TraparWaveBlock.TileEntity>registerBlockEntityRenderer(
-                TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new
-        );
+        // TODO: Reimplement
+//        event.<JudgeEntity>registerEntityRenderer (
+//                EntitiesInit.JUDGE.get(), JudgeRenderer::new
+//        );
+//        event.<TraparWaveBlock.TileEntity>registerBlockEntityRenderer(
+//                TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new
+//        );
+    }
+
+    public void onAttributeCreate(final EntityAttributeCreationEvent event) {
+        BoardItemRendering.initItemProperties(event);
     }
 
     @SubscribeEvent

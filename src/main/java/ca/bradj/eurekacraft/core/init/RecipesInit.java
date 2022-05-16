@@ -6,9 +6,11 @@ import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.NewRegistryEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 public class RecipesInit {
@@ -30,6 +32,9 @@ public class RecipesInit {
 
     public static void register(IEventBus bus) {
         RECIPES.register(bus);
+    }
+
+    public static void registerTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
         Registry.register(Registry.RECIPE_TYPE, GlideBoardRecipe.TYPE_ID, GLIDE_BOARD);
         Registry.register(Registry.RECIPE_TYPE, SandingMachineRecipe.TYPE_ID, SANDING_MACHINE);
     }

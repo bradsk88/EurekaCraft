@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -24,8 +25,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -42,7 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class SandingMachineTileEntity extends BlockEntity implements MenuProvider, TickingBlockEntity {
+public class SandingMachineTileEntity extends BlockEntity implements MenuProvider {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "sanding_machine_tile_entity";
@@ -58,14 +57,9 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
-    public SandingMachineTileEntity(BlockEntityType<?> typeIn) {
-        super(typeIn);
+    public SandingMachineTileEntity(BlockPos p_155229_, BlockState p_155230_) {
+        super(TilesInit.SANDING_MACHINE.get(), p_155229_, p_155230_);
     }
-
-    public SandingMachineTileEntity() {
-        this(TilesInit.SANDING_MACHINE.get());
-    }
-
 
     @Override
     public Component getDisplayName() {
@@ -105,20 +99,21 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         return new ItemStackHandler(totalSlots);
     }
 
-    // Crafting
-    @Override
-    public void tick() {
-        if (level.isClientSide) {
-            return;
-        }
-
-        Optional<SandingMachineRecipe> activeRecipe = this.getActiveRecipe();
-        updateCookingStatus(activeRecipe);
-        if (this.sanding) {
-            logger.debug("Cook % " + this.sandPercent); // TODO: Show in UI
-            this.doCook(activeRecipe);
-        }
-    }
+    // TODO: Reimplement
+//    // Crafting
+//    @Override
+//    public void tick() {
+//        if (level.isClientSide) {
+//            return;
+//        }
+//
+//        Optional<SandingMachineRecipe> activeRecipe = this.getActiveRecipe();
+//        updateCookingStatus(activeRecipe);
+//        if (this.sanding) {
+//            logger.debug("Cook % " + this.sandPercent); // TODO: Show in UI
+//            this.doCook(activeRecipe);
+//        }
+//    }
 
     private void updateCookingStatus(Optional<SandingMachineRecipe> active) {
         if (active.isPresent()) {

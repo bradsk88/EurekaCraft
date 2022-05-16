@@ -1,28 +1,24 @@
 package ca.bradj.eurekacraft.features;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ISeedReader;
-import net.minecraft.world.gen.ChunkGenerator;
-import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.feature.NoOpFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 import java.util.Random;
 
-public class TraparWavesFeature extends Feature<NoFeatureConfig> {
+public class TraparWavesFeature extends NoOpFeature {
 
     public static final String FEATURE_ID = "trapar_waves_feature";
 
     public TraparWavesFeature() {
-        super(NoFeatureConfig.CODEC);
+        super(NoneFeatureConfiguration.CODEC);
     }
 
     @Override
-    public boolean place(
-            ISeedReader seedReader, ChunkGenerator chunkGenerator, Random random,
-            BlockPos blockPos, NoFeatureConfig featureConfig
-    ) {
+    public boolean place(NoneFeatureConfiguration cfg, WorldGenLevel seedReader, ChunkGenerator gen, Random random, BlockPos blockPos) {
         if (!seedReader.isEmptyBlock(blockPos)) {
             return false;
         }
@@ -36,7 +32,7 @@ public class TraparWavesFeature extends Feature<NoFeatureConfig> {
         return true;
     }
 
-    private void doPlace(ISeedReader seedReader, BlockPos blockPos) {
+    private void doPlace(WorldGenLevel seedReader, BlockPos blockPos) {
         if (!seedReader.isEmptyBlock(blockPos)) {
             return;
         }

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -78,9 +79,9 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
 
         @Override
         public SandingMachineRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            ItemStack output = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "result")).getDefaultInstance();
 
-            JsonArray ingredients = JSONUtils.getAsJsonArray(json, "ingredients");
+            JsonArray ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
 
             for (int i = 0; i < ingredients.size(); i++) {

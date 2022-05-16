@@ -1,6 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public class BrokenRefBoard extends RefBoardItem {
     public static final String ITEM_ID = "broken_ref_board";

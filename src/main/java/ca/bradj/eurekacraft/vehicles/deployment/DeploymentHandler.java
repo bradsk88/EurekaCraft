@@ -1,9 +1,9 @@
 package ca.bradj.eurekacraft.vehicles.deployment;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.Player;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

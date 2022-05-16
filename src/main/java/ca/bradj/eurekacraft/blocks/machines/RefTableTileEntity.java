@@ -2,11 +2,13 @@ package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
+import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -41,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class RefTableTileEntity extends BlockEntity implements MenuProvider, TickingBlockEntity {
+public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
@@ -55,13 +57,14 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider, Tic
     private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
-    public RefTableTileEntity(BlockEntityType<?> typeIn) {
-        super(typeIn);
+    public RefTableTileEntity(BlockPos p_155229_, BlockState p_155230_) {
+        super(TilesInit.REF_TABLE.get(), p_155229_, p_155230_);
     }
 
-    public RefTableTileEntity() {
-        this(TilesInit.REF_TABLE.get());
-    }
+
+//    public RefTableTileEntity() {
+//        this(TilesInit.REF_TABLE.get());
+//    }
 
 
     @Override
@@ -108,27 +111,30 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider, Tic
         };
     }
 
-    // Crafting
-    @Override
-    public void tick() {
-        if (level.isClientSide) {
-            return;
-        }
 
-//        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
-//        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
-//        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
-
-        if (fireRemaining > 0) {
-            this.fireRemaining--;
-        }
-
-        Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
-        updateCookingStatus(activeRecipe);
-        if (this.cooking) {
-            this.doCook(activeRecipe, level);
-        }
-    }
+    // TODO: Reimplement
+//
+//    // Crafting
+//    @Override
+//    public void tick() {
+//        if (level.isClientSide) {
+//            return;
+//        }
+//
+////        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
+////        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
+////        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
+//
+//        if (fireRemaining > 0) {
+//            this.fireRemaining--;
+//        }
+//
+//        Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
+//        updateCookingStatus(activeRecipe);
+//        if (this.cooking) {
+//            this.doCook(activeRecipe, level);
+//        }
+//    }
 
     private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
         if (active.isPresent()) {
@@ -311,7 +317,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider, Tic
 
         // Shapeless
         // TODO: Reduce duplication with above
-        inv = new Inventory(shapeless.size());
+        inv = new SimpleContainer(shapeless.size());
         for (int i = 0; i < shapeless.size(); i++) {
             ItemStack stackInSlot = shapeless.get(i);
             inv.setItem(i, stackInSlot);

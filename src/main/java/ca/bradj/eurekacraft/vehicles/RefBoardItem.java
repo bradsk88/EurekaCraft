@@ -70,7 +70,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
         ItemStack s = player.getItemInHand(hand);
 
         if (player.isOnGround()) {
-            return InteractionResult.pass(s);
+            return InteractionResultHolder.pass(s);
         }
 
         boolean serverSide = !world.isClientSide;
@@ -92,7 +92,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             }
         }
 
-        return InteractionResult.success(s);
+        return InteractionResultHolder.success(s);
     }
 
     // Server Side only

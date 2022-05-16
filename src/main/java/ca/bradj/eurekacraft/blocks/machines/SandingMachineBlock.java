@@ -13,6 +13,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class SandingMachineBlock extends Block {
+public class SandingMachineBlock extends Block implements EntityBlock {
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -37,20 +38,15 @@ public class SandingMachineBlock extends Block {
         super(
                 BlockBehaviour.Properties.
                         of(Material.WOOD).
-                        harvestLevel(-1).
+//                        harvestLevel(-1). TODO: Check
                         strength(3.5f)
         );
     }
 
+    @org.jetbrains.annotations.Nullable
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TilesInit.SANDING_MACHINE.get().create();
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+        return TilesInit.SANDING_MACHINE.get().create(p_153215_, p_153216_);
     }
 
     @Override

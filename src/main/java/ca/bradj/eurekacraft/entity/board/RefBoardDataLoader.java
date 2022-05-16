@@ -39,7 +39,8 @@ public class RefBoardDataLoader {
 
         EntityRefBoard.Data data = new EntityRefBoard.Data(player.getUUID(), board);
         data.setDirty();
-        world.getDataStorage().set(data);
+        // TODO: Reimplement
+//        world.getDataStorage().set(data);
     }
 
     @SubscribeEvent

@@ -157,10 +157,11 @@ public class StormSavedData extends SavedData {
         setDirty();
     }
 
-    @Override
-    public void load(CompoundTag nbt) {
-        this.storming = nbt.getBoolean("storming");
-    }
+    // TODO: Reimplement?
+//    @Override
+//    public void load(CompoundTag nbt) {
+//        this.storming = nbt.getBoolean("storming");
+//    }
 
     @Override
     public CompoundTag save(CompoundTag nbt) {

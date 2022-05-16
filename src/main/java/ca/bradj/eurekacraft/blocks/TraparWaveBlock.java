@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class TraparWaveBlock extends Block {
+public class TraparWaveBlock extends Block implements EntityBlock {
 
     public static final Properties PROPS = BlockBehaviour.Properties.
             copy(Blocks.AIR);
@@ -42,15 +43,12 @@ public class TraparWaveBlock extends Block {
         return RenderShape.INVISIBLE;
     }
 
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
+    // TODO: Provide a ticker?
 
     @Nullable
     @Override
-    public BlockEntity createTileEntity(BlockState state, BlockGetter world) {
-        return TilesInit.TRAPAR_WAVE.get().create();
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+        return TilesInit.TRAPAR_WAVE.get().create(p_153215_, p_153216_);
     }
 
     public static class TileEntity extends BlockEntity {
@@ -58,25 +56,23 @@ public class TraparWaveBlock extends Block {
         Logger logger = LogManager.getLogger(EurekaCraft.MODID);
         private TraparWaveShapes shape;
 
-        public TileEntity(BlockEntityType<?> typeIn) {
-            super(typeIn);
+        public TileEntity(BlockPos p_155229_, BlockState p_155230_) {
+            super(TilesInit.TRAPAR_WAVE.get(), p_155229_, p_155230_);
         }
 
-        public TileEntity() {
-            this(TilesInit.TRAPAR_WAVE.get());
-        }
 
-        @Override
-        public void tick() {
-            if (this.level.isClientSide()) {
-                return;
-            }
-            for (Player p : this.level.players()) {
-                if (this.shape.isInAffectedRange(p.blockPosition())) {
-                    EntityRefBoard.boostPlayer(this.level, p.getId());
-                }
-            }
-        }
+        // TODO: Reimplement
+//        @Override
+//        public void tick() {
+//            if (this.level.isClientSide()) {
+//                return;
+//            }
+//            for (Player p : this.level.players()) {
+//                if (this.shape.isInAffectedRange(p.blockPosition())) {
+//                    EntityRefBoard.boostPlayer(this.level, p.getId());
+//                }
+//            }
+//        }
 
         @Override
         public void onLoad() {
@@ -89,9 +85,5 @@ public class TraparWaveBlock extends Block {
             return this.shape;
         }
 
-        @Override
-        public BlockPos getPos() {
-            return null;
-        }
     }
 }

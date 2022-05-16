@@ -4,13 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
 public abstract class AbstractBoardModel extends EntityModel<Entity> {
-    private final LayerDefinition VoxelShapes;
+    private final ModelPart VoxelShapes;
     private final ResourceLocation texture;
 
     public AbstractBoardModel() {
@@ -38,7 +37,7 @@ public abstract class AbstractBoardModel extends EntityModel<Entity> {
         modelRenderer.zRot = z;
     }
 
-    protected abstract LayerDefinition build();
+    protected abstract ModelPart build();
 
 
     public RenderType getRenderType() {

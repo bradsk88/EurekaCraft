@@ -6,11 +6,12 @@ import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.crafting.RecipeManager;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeManager;
 
 import java.util.List;
 import java.util.Objects;
@@ -36,15 +37,21 @@ public class EurekaCraftJei implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         RecipeManager rm = Objects.requireNonNull(Minecraft.getInstance().level.getRecipeManager());
+        RecipeType<GlideBoardRecipe> glideBoardType = RecipeType.create(
+                EurekaCraft.MODID, GlideBoardRecipe.TYPE_ID.toString(), GlideBoardRecipe.class
+        );
+        RecipeType<SandingMachineRecipe> sandingMachineType = RecipeType.create(
+                EurekaCraft.MODID, SandingMachineRecipe.TYPE_ID.toString(), SandingMachineRecipe.class
+        );
         List<GlideBoardRecipe> allRecipes = rm.getAllRecipesFor(RecipesInit.GLIDE_BOARD).
                 stream().
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
-        registration.addRecipes(allRecipes, RefTableRecipeCategory.ID);
+        registration.addRecipes(glideBoardType, allRecipes);
         List<SandingMachineRecipe> smRecipes = rm.getAllRecipesFor(RecipesInit.SANDING_MACHINE).
                 stream().
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
-        registration.addRecipes(smRecipes, SandingMachineRecipeCategory.ID);
+        registration.addRecipes(sandingMachineType, smRecipes);
     }
 }

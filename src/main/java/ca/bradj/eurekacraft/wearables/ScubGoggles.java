@@ -1,18 +1,9 @@
 package ca.bradj.eurekacraft.wearables;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
-import ca.bradj.eurekacraft.render.wearables.ScubGoggleHelmetModel;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-
-import javax.annotation.Nullable;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterials;
 
 public class ScubGoggles extends ArmorItem {
 
@@ -20,22 +11,23 @@ public class ScubGoggles extends ArmorItem {
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
     public ScubGoggles() {
-        super(ArmorMaterial.LEATHER, EquipmentSlotType.HEAD, PROPS);
+        super(ArmorMaterials.LEATHER, EquipmentSlot.HEAD, PROPS);
     }
-
-    @OnlyIn(Dist.CLIENT)
-    @Nullable
-    @Override
-    public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
-        if (EquipmentSlotType.HEAD == armorSlot) {
-            return (A) new ScubGoggleHelmetModel(1f);
-        }
-        return _default;
-    }
-
-    @Nullable
-    @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return "eurekacraft:textures/models/armor/scub_goggles.png";
-    }
+    // TODO: Implement rendering
+//
+//    @OnlyIn(Dist.CLIENT)
+//    @Nullable
+//    @Override
+//    public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, A _default) {
+//        if (EquipmentSlotType.HEAD == armorSlot) {
+//            return (A) new ScubGoggleHelmetModel(1f);
+//        }
+//        return _default;
+//    }
+//
+//    @Nullable
+//    @Override
+//    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
+//        return "eurekacraft:textures/models/armor/scub_goggles.png";
+//    }
 }

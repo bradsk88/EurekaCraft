@@ -5,15 +5,11 @@ import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import net.minecraft.core.Direction;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,6 +71,9 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundTag>
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == null) {
+            return LazyOptional.empty();
+        }
         String t = cap.getName();
         if ("ca.bradj.eurekacraft.vehicles.deployment.IPlayerEntityBoardDeployed".equals(t)) {
             return boardOptional.cast();
@@ -87,13 +86,16 @@ public class PlayerDeployedBoard implements ICapabilitySerializable<CompoundTag>
         if (DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY == null) {
             return new CompoundTag();
         }
-        return (CompoundTag) DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.writeNBT(board, null);
+        // TODO: Reimplement
+//        return (CompoundTag) DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.writeNBT(board, null);
+        return new CompoundTag();
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         if (DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY != null) {
-            DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.readNBT(board, null, nbt);
+            // TODO: Reimplement
+//            DeploymentCapability.PLAYER_BOARD_DEPLOYED_CAPABILITY.readNBT(board, null, nbt);
         }
     }
 }

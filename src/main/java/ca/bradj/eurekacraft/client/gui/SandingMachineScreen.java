@@ -2,32 +2,32 @@ package ca.bradj.eurekacraft.client.gui;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
-public class SandingMachineScreen extends ContainerScreen<SandingMachineContainer> {
+public class SandingMachineScreen extends AbstractContainerScreen<SandingMachineContainer> {
 
     private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png"); // TODO: Specific UI
 
-    public SandingMachineScreen(SandingMachineContainer container, PlayerInventory playerInv, ITextComponent title) {
+    public SandingMachineScreen(SandingMachineContainer container, Inventory playerInv, TextComponent title) {
         super(container, playerInv, title);
     }
 
     @Override
-    public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
         super.renderBackground(stack);
         super.render(stack, mouseX, mouseY, partialTicks);
         super.renderTooltip(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(MatrixStack stack, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.color4f(1f, 1f, 1f, 1f);
-        this.minecraft.getTextureManager().bind(GUI);
+    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        this.minecraft.getTextureManager().bindForSetup(GUI);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         // Arrow

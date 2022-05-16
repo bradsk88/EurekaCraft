@@ -7,7 +7,9 @@ import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -149,19 +151,18 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
 
         @Override
         public GlideBoardRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            ItemStack output = ShapedRecipe.itemFromJson(JsonUtils.getAsJsonObject(json, "output"));
-            output = output.getItem().getDefaultInstance();
+            ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "output")).getDefaultInstance();
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
-                ItemStack secondaryOutput = ShapedRecipe.itemFromJson(j.getAsJsonObject("output"));
+                ItemStack secondaryOutput = ShapedRecipe.itemFromJson(j.getAsJsonObject("output")).getDefaultInstance();
                 double secondaryChance = j.get("chance").getAsDouble();
                 secondary = GlideBoardRecipe.Secondary.of(secondaryOutput, secondaryChance);
             } else {
                 secondary = GlideBoardRecipe.Secondary.none();
             }
 
-            JsonArray ingredients = JSONUtils.getAsJsonArray(json, "ingredients");
+            JsonArray ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
 
             for (int i = 0; i < ingredients.size(); i++) {

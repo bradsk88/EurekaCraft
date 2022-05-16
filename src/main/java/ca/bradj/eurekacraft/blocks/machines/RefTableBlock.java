@@ -14,8 +14,11 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -24,10 +27,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public class RefTableBlock extends HorizontalDirectionalBlock {
+public class RefTableBlock extends HorizontalDirectionalBlock implements EntityBlock {
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -47,6 +49,12 @@ public class RefTableBlock extends HorizontalDirectionalBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return TilesInit.REF_TABLE.get().create(pos, state);
     }
 
     @Override

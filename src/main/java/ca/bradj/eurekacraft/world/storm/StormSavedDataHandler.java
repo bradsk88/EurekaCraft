@@ -1,8 +1,6 @@
 package ca.bradj.eurekacraft.world.storm;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.server.ServerLevel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -17,14 +15,15 @@ public class StormSavedDataHandler {
 
     @SubscribeEvent
     public static void chunkLoaded(ChunkEvent.Load evt) {
-        if (evt.getWorld() == null) {
-            return;
-        }
-        if (evt.getWorld().isClientSide()) {
-            return;
-        }
-        ServerLevel sw = (ServerLevel) evt.getWorld();
-        StormSavedData.initChunk(sw.getSeed(), evt.getChunk().getPos());
+        // TODO: Reimplement
+//        if (evt.getWorld() == null) {
+//            return;
+//        }
+//        if (evt.getWorld().isClientSide()) {
+//            return;
+//        }
+//        ServerLevel sw = (ServerLevel) evt.getWorld();
+//        StormSavedData.initChunk(sw.getSeed(), evt.getChunk().getPos());
     }
 
     @SubscribeEvent
@@ -37,13 +36,14 @@ public class StormSavedDataHandler {
 
     @SubscribeEvent
     public static void worldTick(TickEvent.WorldTickEvent evt) {
-        if (evt.world.isClientSide()) {
-            return;
-        }
-        if (!evt.world.dimension().location().equals(DimensionType.OVERWORLD_LOCATION.location())) {
-            return;
-        }
-        StormSavedData.tick(evt.world);
+        // TODO: Reimplement
+//        if (evt.world.isClientSide()) {
+//            return;
+//        }
+//        if (!evt.world.dimension().location().equals(DimensionType.OVERWORLD_LOCATION.location())) {
+//            return;
+//        }
+//        StormSavedData.tick(evt.world);
     }
 
 

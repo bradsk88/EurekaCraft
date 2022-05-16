@@ -11,19 +11,17 @@ import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
-import net.minecraft.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -34,6 +32,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -222,8 +221,9 @@ public class EntityRefBoard extends Entity {
         super.onSyncedDataUpdated(dataParam);
     }
 
+    // TODO: Reimplement
     public Packet<?> getAddEntityPacket() {
-        return new SSpawnObjectPacket(this);
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -343,7 +343,7 @@ public class EntityRefBoard extends Entity {
             this.lastYRot = lookYRot;
             return lookYRot;
         }
-        float diff = MathHelper.degreesDifference(this.lastYRot, lookYRot);
+        float diff = Mth.degreesDifference(this.lastYRot, lookYRot);
 //        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
         if (diff > 5) {
             this.lastYRot += turnSpeed;
@@ -561,19 +561,20 @@ public class EntityRefBoard extends Entity {
             return data;
         }
 
-        @Override
-        public void load(CompoundTag worldNBT) {
-            if (this.board == null) {
-                throw new IllegalStateException("Cannot load from world into null board");
-            }
-            if (!worldNBT.contains("board_state")) {
-                logger.debug("Removed primed board for player because not present in world data: " + getId());
-                this.board.remove();
-                return;
-            }
-            CompoundTag nbt = worldNBT.getCompound("board_state");
-            this.board.deserializeNBT(nbt);
-        }
+        // TODO: Reimplement?
+//        @Override
+//        public void load(CompoundTag worldNBT) {
+//            if (this.board == null) {
+//                throw new IllegalStateException("Cannot load from world into null board");
+//            }
+//            if (!worldNBT.contains("board_state")) {
+//                logger.debug("Removed primed board for player because not present in world data: " + getId());
+//                this.board.remove();
+//                return;
+//            }
+//            CompoundTag nbt = worldNBT.getCompound("board_state");
+//            this.board.deserializeNBT(nbt);
+//        }
 
         @Override
         public CompoundTag save(CompoundTag worldNBT) {
