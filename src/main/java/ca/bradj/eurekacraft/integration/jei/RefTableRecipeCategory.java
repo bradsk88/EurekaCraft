@@ -5,7 +5,7 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
-import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe> {
+public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
     public final static ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "ref_table_recipe_category");
 
@@ -43,8 +43,8 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
     }
 
     @Override
-    public Class<? extends GlideBoardRecipe> getRecipeClass() {
-        return GlideBoardRecipe.class;
+    public Class<? extends RefTableRecipe> getRecipeClass() {
+        return RefTableRecipe.class;
     }
 
     @Override
@@ -63,7 +63,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
     }
 
     @Override
-    public void setIngredients(GlideBoardRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(RefTableRecipe recipe, IIngredients ingredients) {
         NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
         for (int j = 0; j < 8; j++) {
             if (j < recipe.getIngredients().size()) {
@@ -97,7 +97,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<GlideBoardRecipe>
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, GlideBoardRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, RefTableRecipe recipe, IIngredients ingredients) {
         int leftEdge = RefTableContainer.inventoryLeftX;
         int topEdge = RefTableContainer.topOfInputs;
         int boxSize = RefTableContainer.boxWidth;

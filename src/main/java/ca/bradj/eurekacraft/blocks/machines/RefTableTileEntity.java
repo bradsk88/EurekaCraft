@@ -2,10 +2,9 @@ package ca.bradj.eurekacraft.blocks.machines;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
-import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
-import ca.bradj.eurekacraft.data.recipes.GlideBoardRecipe;
+import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
@@ -29,7 +28,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -110,33 +108,39 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             }
         };
     }
-
-
-    // TODO: Reimplement
-//
-//    // Crafting
+// TODO: Need to implement these for sided behaviour?
 //    @Override
-//    public void tick() {
-//        if (level.isClientSide) {
-//            return;
-//        }
+//    public void handleUpdateTag(CompoundTag tag) {
+//        saveAdditional(tag);
+//    }
 //
-////        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
-////        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
-////        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
-//
-//        if (fireRemaining > 0) {
-//            this.fireRemaining--;
-//        }
-//
-//        Optional<GlideBoardRecipe> activeRecipe = this.getActiveRecipe();
-//        updateCookingStatus(activeRecipe);
-//        if (this.cooking) {
-//            this.doCook(activeRecipe, level);
-//        }
+//    @Override
+//    public CompoundTag getUpdateTag() {
+//        return saveAdditional(new CompoundTag());
 //    }
 
-    private void updateCookingStatus(Optional<GlideBoardRecipe> active) {
+    // Crafting
+    public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, RefTableTileEntity entity) {
+        if (level.isClientSide) {
+            throw new IllegalStateException("Ticker should not be instantiated on client side");
+        }
+
+//        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
+//        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
+//        logger.debug("item in output slot [" + outputSlot + "] " + this.itemHandler.getStackInSlot(outputSlot));
+
+        if (entity.fireRemaining > 0) {
+            entity.fireRemaining--;
+        }
+
+        Optional<RefTableRecipe> activeRecipe = entity.getActiveRecipe();
+        entity.updateCookingStatus(activeRecipe);
+        if (entity.cooking) {
+            entity.doCook(activeRecipe, level);
+        }
+    }
+
+    private void updateCookingStatus(Optional<RefTableRecipe> active) {
         if (active.isPresent()) {
 
             ItemStack outSlot = this.itemHandler.getStackInSlot(RefTableConsts.outputSlot);
@@ -188,7 +192,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
                 );
     }
 
-    private void doCook(Optional<GlideBoardRecipe> recipe, Level level) {
+    private void doCook(Optional<RefTableRecipe> recipe, Level level) {
         if (craftPercent < 100) {
             this.craftPercent++;
             this.makeCraftingNoise(recipe);
@@ -229,7 +233,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         });
     }
 
-    private void makeCraftingNoise(Optional<GlideBoardRecipe> recipe) {
+    private void makeCraftingNoise(Optional<RefTableRecipe> recipe) {
         assert this.level != null;
 
         if (this.noiseCooldown > 0) {
@@ -261,7 +265,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     }
 
     private void useExtraIngredient(
-            GlideBoardRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
+            RefTableRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
     ) {
         ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
         techStack.hurt(1, new Random(), null);
@@ -277,10 +281,10 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         }
     }
 
-    private Optional<GlideBoardRecipe> getActiveRecipe() {
-        Optional<GlideBoardRecipe> recipe = getActivePrimaryRecipe();
+    private Optional<RefTableRecipe> getActiveRecipe() {
+        Optional<RefTableRecipe> recipe = getActivePrimaryRecipe();
         if (recipe.isPresent()) {
-            GlideBoardRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
+            RefTableRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
             if (!extra.ingredient.isEmpty()) {
                 ItemStack techItem = this.itemHandler.getStackInSlot(RefTableConsts.techSlot);
                 if (!extra.ingredient.test(techItem)) {
@@ -291,7 +295,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         return recipe;
     }
 
-    private Optional<GlideBoardRecipe> getActivePrimaryRecipe() {
+    private Optional<RefTableRecipe> getActivePrimaryRecipe() {
         // Shaped
         Container inv = new SimpleContainer(RefTableConsts.inputSlots + 1);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
@@ -307,7 +311,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         shapeless.add(techItem);
 
         RecipeManager recipeManager = level.getRecipeManager();
-        Optional<GlideBoardRecipe> recipe = recipeManager.getRecipeFor(
+        Optional<RefTableRecipe> recipe = recipeManager.getRecipeFor(
                 RecipesInit.GLIDE_BOARD, inv, level
         );
 

@@ -9,21 +9,18 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.JsonUtils;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-// FIXME: Rename to RefTableRecipe
-public class GlideBoardRecipe implements IGlideBoardRecipe {
+public class RefTableRecipe implements IGlideBoardRecipe {
 
     private final ResourceLocation id;
     private final ItemStack output;
@@ -32,7 +29,7 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
     private final Secondary secondaryOutput;
     private ExtraInput extraIngredient;
 
-    public GlideBoardRecipe(
+    public RefTableRecipe(
             ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems,
             boolean cook, ExtraInput extraIngredient,
             Secondary secondary) {
@@ -147,19 +144,19 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         return RecipesInit.GLIDE_BOARD_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<GlideBoardRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<RefTableRecipe> {
 
         @Override
-        public GlideBoardRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+        public RefTableRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
             ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "output")).getDefaultInstance();
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
                 ItemStack secondaryOutput = ShapedRecipe.itemFromJson(j.getAsJsonObject("output")).getDefaultInstance();
                 double secondaryChance = j.get("chance").getAsDouble();
-                secondary = GlideBoardRecipe.Secondary.of(secondaryOutput, secondaryChance);
+                secondary = RefTableRecipe.Secondary.of(secondaryOutput, secondaryChance);
             } else {
-                secondary = GlideBoardRecipe.Secondary.none();
+                secondary = RefTableRecipe.Secondary.none();
             }
 
             JsonArray ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
@@ -182,12 +179,12 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             boolean cook = json.get("cook").getAsBoolean();
 
 
-            return new GlideBoardRecipe(recipeId, output, inputs, cook, extra, secondary);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Nullable
         @Override
-        public GlideBoardRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public RefTableRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             int rSize = buffer.readInt();
             NonNullList<Ingredient> inputs = NonNullList.withSize(rSize, Ingredient.EMPTY);
             for (int i = 0; i < inputs.size(); i++) {
@@ -205,11 +202,11 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
             double secondaryChance = buffer.readDouble();
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
 
-            return new GlideBoardRecipe(recipeId, output, inputs, cook, extra, secondary);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, GlideBoardRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, RefTableRecipe recipe) {
             buffer.writeInt(recipe.getIngredients().size());
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buffer);
@@ -223,10 +220,10 @@ public class GlideBoardRecipe implements IGlideBoardRecipe {
         }
     }
 
-    public static class Type implements RecipeType<GlideBoardRecipe> {
+    public static class Type implements RecipeType<RefTableRecipe> {
         @Override
         public String toString() {
-            return GlideBoardRecipe.TYPE_ID.toString();
+            return RefTableRecipe.TYPE_ID.toString();
         }
     }
 
