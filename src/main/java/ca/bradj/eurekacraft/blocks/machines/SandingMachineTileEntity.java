@@ -24,6 +24,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
@@ -33,6 +34,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -79,11 +81,25 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         super.load(nbt);
     }
 
+    private CompoundTag save(CompoundTag tag) {
+        tag.put("inv", itemHandler.serializeNBT());
+        tag.putInt("cooked", this.sandPercent);
+        return tag;
+    }
+
     @Override
-    public void saveAdditional(CompoundTag nbt) {
-        nbt.put("inv", itemHandler.serializeNBT());
-        nbt.putInt("cooked", this.sandPercent);
-        super.saveAdditional(nbt);
+    public void saveAdditional(@NotNull CompoundTag tag) {
+        super.saveAdditional(this.save(tag));
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.save(new CompoundTag());
+    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
     }
 
     @Nonnull
@@ -99,21 +115,17 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         return new ItemStackHandler(totalSlots);
     }
 
-    // TODO: Reimplement
-//    // Crafting
-//    @Override
-//    public void tick() {
-//        if (level.isClientSide) {
-//            return;
-//        }
-//
-//        Optional<SandingMachineRecipe> activeRecipe = this.getActiveRecipe();
-//        updateCookingStatus(activeRecipe);
-//        if (this.sanding) {
-//            logger.debug("Cook % " + this.sandPercent); // TODO: Show in UI
-//            this.doCook(activeRecipe);
-//        }
-//    }
+    public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, SandingMachineTileEntity entity) {
+        if (level.isClientSide) {
+            throw new IllegalStateException("Ticker should not be instantiated on client side");
+        }
+
+        Optional<SandingMachineRecipe> activeRecipe = entity.getActiveRecipe();
+        entity.updateCookingStatus(activeRecipe);
+        if (entity.sanding) {
+            entity.doCook(activeRecipe);
+        }
+    }
 
     private void updateCookingStatus(Optional<SandingMachineRecipe> active) {
         if (active.isPresent()) {

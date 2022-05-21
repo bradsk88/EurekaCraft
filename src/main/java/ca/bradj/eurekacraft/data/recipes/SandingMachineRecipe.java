@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-// FIXME: Rename to RefTableRecipe
 public class SandingMachineRecipe implements ISandingMachineRecipe {
 
     private final ResourceLocation id;
