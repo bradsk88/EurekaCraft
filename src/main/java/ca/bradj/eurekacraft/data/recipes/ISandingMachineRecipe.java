@@ -10,8 +10,6 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 public interface ISandingMachineRecipe extends Recipe<Container> {
 
-    ResourceLocation TYPE_ID = new ResourceLocation(EurekaCraft.MODID, "sanding_machine");
-
     @Override
     default RecipeType<?> getType() {
         return RecipesInit.SANDING_MACHINE;

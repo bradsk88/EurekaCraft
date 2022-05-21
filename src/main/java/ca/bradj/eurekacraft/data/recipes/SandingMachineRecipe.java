@@ -118,10 +118,10 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
     }
 
     public static class Type implements RecipeType<SandingMachineRecipe> {
-        @Override
-        public String toString() {
-            return SandingMachineRecipe.TYPE_ID.toString();
-        }
+
+        public static final Type INSTANCE = new Type();
+        public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "sanding_machine");
+
     }
 
 }

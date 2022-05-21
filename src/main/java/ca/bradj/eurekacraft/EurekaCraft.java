@@ -83,11 +83,6 @@ public class EurekaCraft {
     }
 
     @SubscribeEvent
-    public static void registerRecipeTypes(final RegistryEvent.Register<RecipeSerializer<?>> evt) {
-        RecipesInit.registerTypes(evt);
-    }
-
-    @SubscribeEvent
     public void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
         // TODO: Reimplement
 //        event.<JudgeEntity>registerEntityRenderer (

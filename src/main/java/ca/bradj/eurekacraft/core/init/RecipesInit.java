@@ -14,28 +14,28 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class RecipesInit {
 
-    private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(
+    private static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(
             ForgeRegistries.RECIPE_SERIALIZERS, EurekaCraft.MODID
     );
 
-    public static final RegistryObject<RefTableRecipe.Serializer> GLIDE_BOARD_SERIALIZER = RECIPES.register(
+    public static final RegistryObject<RefTableRecipe.Serializer> GLIDE_BOARD_SERIALIZER = SERIALIZERS.register(
             "glide_board", RefTableRecipe.Serializer::new
     );
-    public static RecipeType<RefTableRecipe> GLIDE_BOARD = new RefTableRecipe.Type();
+    public static RecipeType<RefTableRecipe> REF_TABLE = new RefTableRecipe.Type();
 
-    public static final RegistryObject<SandingMachineRecipe.Serializer> SANDING_MACHINE_SERIALIZER = RECIPES.register(
+    public static final RegistryObject<SandingMachineRecipe.Serializer> SANDING_MACHINE_SERIALIZER = SERIALIZERS.register(
             "sanding_machine", SandingMachineRecipe.Serializer::new
     );
     public static RecipeType<SandingMachineRecipe> SANDING_MACHINE = new SandingMachineRecipe.Type();
 
 
     public static void register(IEventBus bus) {
-        RECIPES.register(bus);
+        SERIALIZERS.register(bus);
     }
 
     public static void registerTypes(final RegistryEvent.Register<RecipeSerializer<?>> event) {
-        Registry.register(Registry.RECIPE_TYPE, RefTableRecipe.TYPE_ID, GLIDE_BOARD);
-        Registry.register(Registry.RECIPE_TYPE, SandingMachineRecipe.TYPE_ID, SANDING_MACHINE);
+        Registry.register(Registry.RECIPE_TYPE, RefTableRecipe.Type.ID, RefTableRecipe.Type.INSTANCE);
+        Registry.register(Registry.RECIPE_TYPE, SandingMachineRecipe.Type.ID, SANDING_MACHINE);
     }
 
 }

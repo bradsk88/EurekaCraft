@@ -23,8 +23,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
-    public final static ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "ref_table_recipe_category");
-
     public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
 
     private final IDrawable background;
@@ -39,7 +37,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
     @Override
     public ResourceLocation getUid() {
-        return ID;
+        return RefTableRecipe.Type.ID;
     }
 
     @Override

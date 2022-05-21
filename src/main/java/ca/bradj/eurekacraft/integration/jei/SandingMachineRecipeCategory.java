@@ -21,8 +21,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 
 public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMachineRecipe> {
 
-    public final static ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "sanding_machine_recipe_category");
-
     public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png");
 
     private final IDrawable background;
@@ -37,7 +35,7 @@ public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMach
 
     @Override
     public ResourceLocation getUid() {
-        return ID;
+        return SandingMachineRecipe.Type.ID;
     }
 
     @Override

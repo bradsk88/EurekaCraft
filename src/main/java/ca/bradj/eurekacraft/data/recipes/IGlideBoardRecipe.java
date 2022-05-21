@@ -2,7 +2,6 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.crafting.Recipe;
@@ -10,11 +9,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 
 public interface IGlideBoardRecipe extends Recipe<Container> {
 
-    ResourceLocation TYPE_ID = new ResourceLocation(EurekaCraft.MODID, "glide_board");
-
     @Override
     default RecipeType<?> getType() {
-        return RecipesInit.GLIDE_BOARD;
+        return RecipesInit.REF_TABLE;
     }
 
     @Override

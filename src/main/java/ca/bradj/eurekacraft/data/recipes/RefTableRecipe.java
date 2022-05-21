@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.data.recipes;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import com.google.gson.JsonArray;
@@ -221,10 +222,8 @@ public class RefTableRecipe implements IGlideBoardRecipe {
     }
 
     public static class Type implements RecipeType<RefTableRecipe> {
-        @Override
-        public String toString() {
-            return RefTableRecipe.TYPE_ID.toString();
-        }
+        public static final Type INSTANCE = new Type();
+        public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "glide_board");
     }
 
     public static class Secondary {

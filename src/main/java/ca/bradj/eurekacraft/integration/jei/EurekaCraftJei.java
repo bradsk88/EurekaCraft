@@ -38,12 +38,12 @@ public class EurekaCraftJei implements IModPlugin {
     public void registerRecipes(IRecipeRegistration registration) {
         RecipeManager rm = Objects.requireNonNull(Minecraft.getInstance().level.getRecipeManager());
         RecipeType<RefTableRecipe> glideBoardType = RecipeType.create(
-                EurekaCraft.MODID, RefTableRecipe.TYPE_ID.toString(), RefTableRecipe.class
+                EurekaCraft.MODID, RefTableRecipe.Type.ID.getPath(), RefTableRecipe.class
         );
         RecipeType<SandingMachineRecipe> sandingMachineType = RecipeType.create(
-                EurekaCraft.MODID, SandingMachineRecipe.TYPE_ID.toString(), SandingMachineRecipe.class
+                EurekaCraft.MODID, SandingMachineRecipe.Type.ID.getPath(), SandingMachineRecipe.class
         );
-        List<RefTableRecipe> allRecipes = rm.getAllRecipesFor(RecipesInit.GLIDE_BOARD).
+        List<RefTableRecipe> allRecipes = rm.getAllRecipesFor(RecipesInit.REF_TABLE).
                 stream().
                 filter(Objects::nonNull).
                 collect(Collectors.toList());

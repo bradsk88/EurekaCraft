@@ -27,7 +27,6 @@ import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -312,7 +311,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
         RecipeManager recipeManager = level.getRecipeManager();
         Optional<RefTableRecipe> recipe = recipeManager.getRecipeFor(
-                RecipesInit.GLIDE_BOARD, inv, level
+                RecipesInit.REF_TABLE, inv, level
         );
 
         if (recipe.isPresent()) {
@@ -328,7 +327,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         }
 
         recipe = recipeManager.getRecipeFor(
-                RecipesInit.GLIDE_BOARD, inv, level
+                RecipesInit.REF_TABLE, inv, level
         );
 
         return recipe;
