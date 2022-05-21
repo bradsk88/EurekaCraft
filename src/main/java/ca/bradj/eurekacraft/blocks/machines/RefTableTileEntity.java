@@ -58,12 +58,6 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         super(TilesInit.REF_TABLE.get(), p_155229_, p_155230_);
     }
 
-
-//    public RefTableTileEntity() {
-//        this(TilesInit.REF_TABLE.get());
-//    }
-
-
     @Override
     public Component getDisplayName() {
         return new TextComponent("container." + EurekaCraft.MODID + ".ref_table");
@@ -83,11 +77,15 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         super.load(nbt);
     }
 
+    private CompoundTag store(CompoundTag tag) {
+        tag.put("inv", itemHandler.serializeNBT());
+        tag.putInt("cooked", this.craftPercent);
+        return tag;
+    }
+
     @Override
     protected void saveAdditional(CompoundTag nbt) {
-        nbt.put("inv", itemHandler.serializeNBT());
-        nbt.putInt("cooked", this.craftPercent);
-        super.saveAdditional(nbt);
+        super.saveAdditional(this.store(nbt));
     }
 
     @Nonnull
@@ -107,16 +105,16 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             }
         };
     }
-// TODO: Need to implement these for sided behaviour?
-//    @Override
-//    public void handleUpdateTag(CompoundTag tag) {
-//        saveAdditional(tag);
-//    }
-//
-//    @Override
-//    public CompoundTag getUpdateTag() {
-//        return saveAdditional(new CompoundTag());
-//    }
+
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.store(new CompoundTag());
+    }
 
     // Crafting
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, RefTableTileEntity entity) {
