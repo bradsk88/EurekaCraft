@@ -8,10 +8,12 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
-import net.minecraft.client.renderer.RenderType;
+import ca.bradj.eurekacraft.world.trees.EurekaWoodBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -31,6 +33,19 @@ public class BlocksInit {
 	public static final RegistryObject<Block> BROKEN_REF_BOARD = BLOCKS.register(
 			BrokenRefBoardBlock.ITEM_ID, BrokenRefBoardBlock::new
 	);
+
+	public static final RegistryObject<Block> TRAPAR_LOG_BLOCK = BLOCKS.register(
+			"trapar_log", () -> new EurekaWoodBlock(
+					BlockBehaviour.Properties.copy(Blocks.OAK_LOG)
+			)
+	);
+
+	public static final RegistryObject<Block> TRAPAR_WOOD_BLOCK = BLOCKS.register(
+			"trapar_wood", () -> new EurekaWoodBlock(
+					BlockBehaviour.Properties.copy(Blocks.OAK_WOOD)
+			)
+	);
+
 	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
 			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
 	);

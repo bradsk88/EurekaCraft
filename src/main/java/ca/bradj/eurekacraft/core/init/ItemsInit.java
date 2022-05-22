@@ -51,6 +51,21 @@ public class ItemsInit {
 //					TraparWaveBlock.ITEM_PROPS
 //			)
 //	);
+	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
+			"trapar_wood", // TODO: Add const
+			() -> new BlockItem(
+					BlocksInit.TRAPAR_WOOD_BLOCK.get(),
+					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)
+			)
+	);
+	public static final RegistryObject<Item> TRAPAR_LOG_BLOCK = ITEMS.register(
+			"trapar_log", // TODO: Add const
+			() -> new BlockItem(
+					BlocksInit.TRAPAR_LOG_BLOCK.get(),
+					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)
+			)
+	);
+
 	public static final RegistryObject<Item> REF_TABLE_BLOCK = ITEMS.register(
 			RefTableBlock.ITEM_ID,
 			() -> new BlockItem(

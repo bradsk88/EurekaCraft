@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "eurekacraft:block/trapar_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "eurekacraft:block/trapar_wood"
+    },
+    "axis=z": {
+      "model": "eurekacraft:block/trapar_wood",
+      "x": 90
+    }
+  }
+}
