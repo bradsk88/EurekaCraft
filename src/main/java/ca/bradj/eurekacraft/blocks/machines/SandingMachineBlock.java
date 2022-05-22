@@ -37,8 +37,7 @@ public class SandingMachineBlock extends EntityBlock {
         super(
                 BlockBehaviour.Properties.
                         of(Material.WOOD).
-//                        harvestLevel(-1). TODO: Check
-                        strength(3.5f)
+                        strength(1f)
         );
     }
 

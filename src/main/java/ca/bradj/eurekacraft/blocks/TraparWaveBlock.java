@@ -3,21 +3,20 @@ package ca.bradj.eurekacraft.blocks;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.TilesInit;
-import ca.bradj.eurekacraft.render.TraparWaveShapes;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.render.TraparWaveShapes;
+import ca.bradj.eurekacraft.wrappers.EntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
-public class TraparWaveBlock extends Block implements EntityBlock {
+public class TraparWaveBlock extends EntityBlock {
 
     public static final Properties PROPS = BlockBehaviour.Properties.
             copy(Blocks.AIR);
@@ -51,6 +50,14 @@ public class TraparWaveBlock extends Block implements EntityBlock {
         return TilesInit.TRAPAR_WAVE.get().create(p_153215_, p_153216_);
     }
 
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState bs, BlockEntityType<T> type) {
+        return level.isClientSide ? null : createTickerHelper(
+                type, TilesInit.TRAPAR_WAVE.get(), TileEntity::tick
+        );
+    }
+
     public static class TileEntity extends BlockEntity {
         public static final String ID = "trapar_wave_tile_entity";
         Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -59,20 +66,6 @@ public class TraparWaveBlock extends Block implements EntityBlock {
         public TileEntity(BlockPos p_155229_, BlockState p_155230_) {
             super(TilesInit.TRAPAR_WAVE.get(), p_155229_, p_155230_);
         }
-
-
-        // TODO: Reimplement
-//        @Override
-//        public void tick() {
-//            if (this.level.isClientSide()) {
-//                return;
-//            }
-//            for (Player p : this.level.players()) {
-//                if (this.shape.isInAffectedRange(p.blockPosition())) {
-//                    EntityRefBoard.boostPlayer(this.level, p.getId());
-//                }
-//            }
-//        }
 
         @Override
         public void onLoad() {
@@ -85,5 +78,15 @@ public class TraparWaveBlock extends Block implements EntityBlock {
             return this.shape;
         }
 
+        public static void tick(Level level, BlockPos blockPos, BlockState blockState, TileEntity self) {
+            if (level.isClientSide()) {
+                return;
+            }
+            for (Entity p : level.players()) {
+                if (self.shape.isInAffectedRange(p.blockPosition())) {
+                    EntityRefBoard.boostPlayer(level, p.getId());
+                }
+            }
+        }
     }
 }

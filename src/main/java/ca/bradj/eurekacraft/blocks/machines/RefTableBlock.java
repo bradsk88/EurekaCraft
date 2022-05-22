@@ -43,7 +43,7 @@ public class RefTableBlock extends EntityBlock {
                 BlockBehaviour.Properties.
                         of(Material.WOOD).
                         noOcclusion().
-                        strength(3.5f)
+                        strength(1f)
         );
     }
 
