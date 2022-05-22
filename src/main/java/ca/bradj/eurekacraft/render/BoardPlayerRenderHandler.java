@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -23,21 +25,20 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
-        PlayerDeployedBoard.get(event.getPlayer()).ifPresent(
-                (BoardType bt) -> renderPlayerWithBoard(event, bt)
+        PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
+            (BoardType bt) -> renderPlayerWithBoard(event, bt)
         );
     }
 
     private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, BoardType bt) {
-        PoseStack matrixStack = event.getPoseStack();
-        matrixStack.pushPose();
-
         if (BoardType.NONE.equals(bt)) {
             return;
         }
 
+        logger.debug("Rendering " + bt);
         AbstractBoardModel model = ModelsInit.getModel(bt);
 
+        PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
         LivingEntity living = event.getEntityLiving();
@@ -52,14 +53,6 @@ public class BoardPlayerRenderHandler {
                 matrixStack, ivertexbuilder, event.getPackedLight(),
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
-
-        // TODO: Force crouch pose? Maybe legs apart?
     }
-
-    @SubscribeEvent
-    public static void playerRenderPost(RenderPlayerEvent.Post event) {
-        event.getPoseStack().popPose(); // TODO: Move to Pre?
-    }
-
 }
 

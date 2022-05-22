@@ -1,12 +1,14 @@
 package ca.bradj.eurekacraft.vehicles.deployment;
 
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 
 public class DeploymentCapability {
     // TODO: Reimplement
 //
 //    @CapabilityInject(IPlayerEntityBoardDeployed.class)
-    public static Capability<IPlayerEntityBoardDeployed> PLAYER_BOARD_DEPLOYED_CAPABILITY = null;
+    public static Capability<IPlayerEntityBoardDeployed> PLAYER_BOARD_DEPLOYED_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
 //
 //    public static void register() {
 //        CapabilityManager.INSTANCE.injectCapabilities(IPlayerEntityBoardDeployed.class, new Storage(), DefaultPlayerBoardDeployed::new);

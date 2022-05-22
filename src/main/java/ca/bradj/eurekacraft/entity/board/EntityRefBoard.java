@@ -10,13 +10,18 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -30,6 +35,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.network.NetworkHooks;
@@ -173,9 +179,9 @@ public class EntityRefBoard extends Entity {
         return glider;
     }
 
-    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, BoardType id) {
+    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, BoardType bt) {
         level.addFreshEntity(board);
-        PlayerDeployedBoard.set(player, id);
+        PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, true);
 
         if (deployedBoards.containsKey(player.getUUID())) {
             deployedBoards.get(player.getUUID()).remove(RemovalReason.DISCARDED);
@@ -193,7 +199,7 @@ public class EntityRefBoard extends Entity {
         if (this.playerOrNull == null) {
             return;
         }
-        PlayerDeployedBoard.remove(this.playerOrNull);
+        PlayerDeployedBoardProvider.removeBoardFor(this.playerOrNull);
         if (!this.level.isClientSide()) {
             deployedBoards.remove(this.playerOrNull.getUUID());
         }
@@ -221,7 +227,6 @@ public class EntityRefBoard extends Entity {
         super.onSyncedDataUpdated(dataParam);
     }
 
-    // TODO: Reimplement
     public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -550,31 +555,42 @@ public class EntityRefBoard extends Entity {
             return String.format("%s_%s_%s", EurekaCraft.MODID, "board_saved_data", playerUUID.toString());
         }
 
-        public Data(UUID playerUUID, @Nullable EntityRefBoard board) {
-            super();
-            this.board = board;
-        }
-
         public static SavedData NoBoardFor(UUID uuid) {
             Data data = new Data(uuid, null);
             data.setDirty(true);
             return data;
         }
 
-        // TODO: Reimplement?
-//        @Override
-//        public void load(CompoundTag worldNBT) {
-//            if (this.board == null) {
-//                throw new IllegalStateException("Cannot load from world into null board");
-//            }
-//            if (!worldNBT.contains("board_state")) {
-//                logger.debug("Removed primed board for player because not present in world data: " + getId());
-//                this.board.remove();
-//                return;
-//            }
-//            CompoundTag nbt = worldNBT.getCompound("board_state");
-//            this.board.deserializeNBT(nbt);
-//        }
+        public static Data get(Level level, UUID playerUUID, @Nullable EntityRefBoard board) {
+            if (level.isClientSide) {
+                throw new RuntimeException("EntityRefBoard.Data should only be used on server side");
+            }
+            DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
+            return storage.computeIfAbsent(
+                    (CompoundTag tag) -> new Data(playerUUID, board, tag),
+                    () -> new Data(playerUUID, board),
+                    "board_saved_data" // TODO: does this ID matter?
+            );
+        }
+
+        public Data(UUID playerUUID, @Nullable EntityRefBoard board) {
+            super();
+            this.board = board;
+        }
+
+        public Data(UUID playerUUID, @Nullable EntityRefBoard board, CompoundTag worldNBT) {
+            this(playerUUID, board);
+            if (this. board == null) {
+                throw new IllegalStateException("Cannot load from world into null board");
+            }
+            if (!worldNBT.contains("board_state")) {
+                logger.debug("Removed primed board for player because not present in world data: " + playerUUID);
+                this.board.remove(RemovalReason.DISCARDED);
+                return;
+            }
+            CompoundTag nbt = worldNBT.getCompound("board_state");
+            this.board.deserializeNBT(nbt);
+        }
 
         @Override
         public CompoundTag save(CompoundTag worldNBT) {
@@ -584,6 +600,23 @@ public class EntityRefBoard extends Entity {
             }
             worldNBT.put("board_state", this.board.serializeNBT());
             return worldNBT;
+        }
+    }
+
+    public static class Renderer extends EntityRenderer<EntityRefBoard> {
+
+        public Renderer(EntityRendererProvider.Context ctx) {
+            super(ctx);
+        }
+
+        @Override
+        public ResourceLocation getTextureLocation(EntityRefBoard p_114482_) {
+            return null;
+        }
+
+        @Override
+        public boolean shouldRender(EntityRefBoard p_114491_, Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {
+            return false;
         }
     }
 

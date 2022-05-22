@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -99,7 +100,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
     private static void despawnGlider(Player player, Level world, EntityRefBoard glider) {
         glider.kill();
         spawnedGlidersMap.remove(player);
-        PlayerDeployedBoard.remove(player);
+        PlayerDeployedBoardProvider.removeBoardFor(player);
     }
 
     public boolean isDamagedBoard() {

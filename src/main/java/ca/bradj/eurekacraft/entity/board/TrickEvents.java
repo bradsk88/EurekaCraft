@@ -14,6 +14,11 @@ public class TrickEvents {
 
     @SubscribeEvent
     public static void FirstRideJudgeSpawn(AdvancementEvent event) {
+        if (true) {
+            // TODO: Reimplement
+            return;
+        }
+
         if (event.getPlayer().level.isClientSide()) {
             return;
         }

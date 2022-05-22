@@ -8,9 +8,13 @@ import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
+import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.render.RefBoardModel;
 import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -76,6 +80,9 @@ public class EurekaCraft {
         event.enqueueWork(
                 ModelsInit::registerModels
         );
+        event.enqueueWork(() -> {
+            EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
+        });
         // TODO: Reimplement
 //        event.enqueueWork(
 //                TraparStormRendering::init

@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class SandingMachineScreen extends AbstractContainerScreen<SandingMachineContainer> {
 
-    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png"); // TODO: Specific UI
+    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png");
 
     public SandingMachineScreen(SandingMachineContainer container, Inventory playerInv, Component title) {
         super(container, playerInv, title);

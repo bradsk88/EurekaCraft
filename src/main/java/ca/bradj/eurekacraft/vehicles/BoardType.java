@@ -23,4 +23,8 @@ public class BoardType extends ResourceLocation {
 
         return this.namespace.equals(bt.namespace) && this.path.equals(bt.path);
     }
+
+    public String toNBT() {
+        return this.path;
+    }
 }
