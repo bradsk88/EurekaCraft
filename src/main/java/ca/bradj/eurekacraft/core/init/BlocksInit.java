@@ -8,11 +8,17 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
+import ca.bradj.eurekacraft.world.gen.features.trees.TraparTreeGrower;
 import ca.bradj.eurekacraft.world.trees.EurekaWoodBlock;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.DeferredRegister;
@@ -46,6 +52,34 @@ public class BlocksInit {
 			)
 	);
 
+	public static final RegistryObject<Block> TRAPAR_LEAVES_BLOCK = BLOCKS.register(
+			"trapar_leaves", () -> new LeavesBlock(
+					BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES)
+			) {
+				@Override
+				public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+					return true;
+				}
+
+				@Override
+				public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+					return 60;
+				}
+
+				@Override
+				public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+					return 30;
+				}
+			}
+	);
+
+	public static final RegistryObject<Block> TRAPAR_SAPLING = BLOCKS.register(
+			"trapar_sapling", () -> new SaplingBlock(
+					new TraparTreeGrower(),
+					BlockBehaviour.Properties.copy(Blocks.OAK_SAPLING)
+			)
+	);
+
 	public static final RegistryObject<Block> TRAPAR_WAVE_BLOCK = BLOCKS.register(
 			TraparWaveBlock.ITEM_ID, TraparWaveBlock::new
 	);
@@ -60,10 +94,11 @@ public class BlocksInit {
 	);
 
 	public static void RegisterTextures() {
-		// TODO: Reimplement
-//		RenderTypeLookup.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
-//		RenderTypeLookup.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
-//		RenderTypeLookup.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(TRAPAR_LEAVES_BLOCK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(TRAPAR_SAPLING.get(), RenderType.cutout());
 	}
 
 	public static boolean never(BlockState p_235436_0_, BlockGetter p_235436_1_, BlockPos p_235436_2_) {

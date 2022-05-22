@@ -65,6 +65,13 @@ public class ItemsInit {
 					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)
 			)
 	);
+	public static final RegistryObject<Item> TRAPAR_SAPLING_BLOCK = ITEMS.register(
+			"trapar_sapling", // TODO: Add const
+			() -> new BlockItem(
+					BlocksInit.TRAPAR_SAPLING.get(),
+					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)
+			)
+	);
 
 	public static final RegistryObject<Item> REF_TABLE_BLOCK = ITEMS.register(
 			RefTableBlock.ITEM_ID,

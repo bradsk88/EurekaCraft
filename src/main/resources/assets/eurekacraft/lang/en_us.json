@@ -30,6 +30,8 @@
 	"block.eurekacraft.sanding_machine_block": "Sanding Machine",
 	"block.eurekacraft.trapar_log": "Fresh-Smelling Log",
 	"block.eurekacraft.trapar_wood": "Fresh-Smelling Wood",
+	"block.eurekacraft.trapar_leaves": "Fresh-Smelling Tree Leaves",
+	"block.eurekacraft.trapar_sapling": "Fresh-Smelling Tree Sapling",
 	"container.eurekacraft.ref_table": "Ref Table",
 	"container.eurekacraft.sanding_machine": "Sanding Machine",
 	"message.tricks.judge_appeared": "A judge has appeared to reward you for your latest trick. Speak to them to receive your reward.",
