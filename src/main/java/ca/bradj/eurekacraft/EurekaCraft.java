@@ -59,7 +59,6 @@ public class EurekaCraft {
 
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(ModStructures::setupStructures);
-//        event.enqueueWork(DeploymentCapability::register); TODO: Reimplement
         event.enqueueWork(EurekaCraftNetwork::init);
     }
 

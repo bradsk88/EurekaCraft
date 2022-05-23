@@ -327,7 +327,7 @@ public class EntityRefBoard extends Entity {
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
-        liftOrFall = increaseBoostFromWaves(liftOrFall, liftFactor); // TODO: Apply lift factor for board
+        liftOrFall = increaseBoostFromWaves(liftOrFall, liftFactor);
 
         if (boosted) {
             // Apply lift
@@ -472,7 +472,7 @@ public class EntityRefBoard extends Entity {
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
         if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
-            baseLift = 0.005 * blockInFront.getValue(TraparWaveChildBlock.BOOST); // TODO: apply board lift factor
+            baseLift = 0.005 * blockInFront.getValue(TraparWaveChildBlock.BOOST);
             baseLift = baseLift * liftFactor;
         }
         return baseLift;
