@@ -35,7 +35,6 @@ public class BoardPlayerRenderHandler {
             return;
         }
 
-        logger.debug("Rendering " + bt);
         AbstractBoardModel model = ModelsInit.getModel(bt);
 
         PoseStack matrixStack = event.getPoseStack();
