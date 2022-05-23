@@ -1,26 +1,14 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.blocks.TraparWaveBlock;
 import ca.bradj.eurekacraft.client.BoardItemRendering;
-import ca.bradj.eurekacraft.client.TraparStormRendering;
-import ca.bradj.eurekacraft.client.entity_rendering.JudgeRenderer;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
-import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
-import ca.bradj.eurekacraft.render.RefBoardModel;
-import ca.bradj.eurekacraft.render.TraparWaveHandler;
-import ca.bradj.eurekacraft.vehicles.deployment.DeploymentCapability;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.core.Registry;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -40,7 +28,7 @@ public class EurekaCraft {
     public static final String MODID = "eurekacraft";
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public EurekaCraft() {
         // Register the setup method for modloading

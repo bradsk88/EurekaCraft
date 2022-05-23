@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.advancements.BoardTrickTrigger;
+import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
@@ -288,6 +289,8 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
+        liftOrFall = increaseBoostFromWaves(liftOrFall); // TODO: Apply lift factor for board
+
         boolean applyDamagedEffect = false;
         if (damaged && random.nextBoolean() && random.nextBoolean()) {
             applyDamagedEffect = true;
@@ -430,6 +433,19 @@ public class EntityRefBoard extends Entity {
                 this.level.destroyBlock(inFront, true);
             }
         }
+    }
+
+    private double increaseBoostFromWaves(double boost) {
+
+        double baseLift = Math.max(0, boost);
+
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
+        if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
+            baseLift = 0.5; // TODO: apply board lift factor
+        }
+        return baseLift;
     }
 
     private double reduceSpeedIfCrashed(double flightSpeed) {

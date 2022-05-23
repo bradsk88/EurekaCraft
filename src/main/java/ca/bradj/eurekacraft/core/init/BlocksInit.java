@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
+import ca.bradj.eurekacraft.crop.TraparLeavesBlock;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import ca.bradj.eurekacraft.world.gen.features.trees.TraparTreeGrower;
 import ca.bradj.eurekacraft.world.trees.EurekaWoodBlock;
@@ -53,24 +54,7 @@ public class BlocksInit {
 	);
 
 	public static final RegistryObject<Block> TRAPAR_LEAVES_BLOCK = BLOCKS.register(
-			"trapar_leaves", () -> new LeavesBlock(
-					BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES)
-			) {
-				@Override
-				public boolean isFlammable(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-					return true;
-				}
-
-				@Override
-				public int getFlammability(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-					return 60;
-				}
-
-				@Override
-				public int getFireSpreadSpeed(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
-					return 30;
-				}
-			}
+			"trapar_leaves", TraparLeavesBlock::new
 	);
 
 	public static final RegistryObject<Block> TRAPAR_SAPLING = BLOCKS.register(
