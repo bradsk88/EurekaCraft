@@ -10,7 +10,6 @@ import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -245,15 +244,64 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
+        if (this.boardStats == null) {
+            this.kill();
+            return;
+        }
+
         if (!this.isAlive()) {
             return;
         }
 
         this.tickOf100 = Math.floorMod(this.tickOf100 + 1, 100);
+        this.doHardPhysics();
 
         if (canFly || canSurf(minSurfSpeed)) {
             flyOrSurf();
         }
+    }
+
+    private void doHardPhysics() {
+        boolean applyDamagedEffect = false;
+        if (damaged && random.nextBoolean() && random.nextBoolean()) {
+            applyDamagedEffect = true;
+        }
+
+        double turnSpeed = boardStats.agility() * 10;
+
+        float lookYRot = this.playerOrNull.getViewYRot(1.0F);
+        initializeRotation(lookYRot);
+        int turnDir = calculateTurnDir(lookYRot);
+        float nextYRot = calculateYRot(turnDir, (float) turnSpeed);
+
+        this.lastDirection = convertYRotToDirection(nextYRot, applyDamagedEffect);
+
+        if (turnDir != 0 && this.lastSpeed > (maxFlySpeed * 0.5)) {
+            this.lastSpeed = Math.max(runSpeed, this.lastSpeed * 0.9);
+        }
+    }
+
+    private void initializeRotation(float lookYRot) {
+        if (this.lastYRot > 0 && this.lastYRot <= INITIAL_YROT) {
+            // Initialize lastRot to look direction. This should only run once in the entity's life.
+            this.lastYRot = lookYRot;
+        }
+    }
+
+    private int calculateTurnDir(float lookYRot) {
+        if (playerOrNull instanceof JudgeEntity) {
+            return 0;
+        }
+
+        float diff = Mth.degreesDifference(this.lastYRot, lookYRot);
+//        logger.debug("lookrot " + lookYRot + " lastYRot " + lastYRot + " diff " + diff);
+        if (diff < -5) {
+            return -1;
+        }
+        if (diff > 5) {
+            return 1;
+        }
+        return 0;
     }
 
     private void flyOrSurf() {
@@ -265,7 +313,6 @@ public class EntityRefBoard extends Entity {
 
         double boardWeight = boardStats.weight();
         double boardSpeed = boardStats.speed();
-        double turnSpeed = boardStats.agility() * 10;
         double liftFactor = boardStats.lift();
         double surf = boardStats.surf();
 
@@ -280,6 +327,8 @@ public class EntityRefBoard extends Entity {
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
+        liftOrFall = increaseBoostFromWaves(liftOrFall); // TODO: Apply lift factor for board
+
         if (boosted) {
             // Apply lift
             // TODO: Get "lift factor" from block
@@ -289,21 +338,12 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        liftOrFall = increaseBoostFromWaves(liftOrFall); // TODO: Apply lift factor for board
-
-        boolean applyDamagedEffect = false;
-        if (damaged && random.nextBoolean() && random.nextBoolean()) {
-            applyDamagedEffect = true;
-        }
-
-        if (this.playerOrNull.isShiftKeyDown() || applyDamagedEffect) {
+        if (this.playerOrNull.isShiftKeyDown()) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
             flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
-            turnSpeed = 0.5 * turnSpeed;
         }
 
-        float nextYRot = calculateYRot((float) turnSpeed);
-        Vec3 nextDir = calculateDirection(nextYRot, applyDamagedEffect);
+
 
         if (canSurf(flightSpeed)) {
             liftOrFall = surfLift;
@@ -316,17 +356,18 @@ public class EntityRefBoard extends Entity {
                 return;
             }
         }
-
+//
         flightSpeed = reduceSpeedIfCrashed(flightSpeed);
         destroyBlocks();
-        storeForNextTick(liftOrFall, flightSpeed, nextDir);
+        storeForNextTick(liftOrFall, flightSpeed, this.lastDirection);
 
-        Vec3 go = nextDir.multiply(flightSpeed, 1.0, flightSpeed);
+        Vec3 go = this.lastDirection.multiply(flightSpeed, 1.0, flightSpeed);
 //        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
 
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
+        this.playerOrNull.setYBodyRot(this.lastYRot);
         this.moveTo(this.playerOrNull.position());
     }
 
@@ -340,28 +381,16 @@ public class EntityRefBoard extends Entity {
         }
     }
 
-    private float calculateYRot(float turnSpeed) { // TODO: Damaged effect
-        float lookYRot = this.playerOrNull.getViewYRot(1.0F);
-        if (playerOrNull instanceof JudgeEntity) {
-            this.lastYRot = lookYRot;
-            return lookYRot;
-        }
-
-        if (this.lastYRot > 0 && this.lastYRot <= INITIAL_YROT) {
-            this.lastYRot = lookYRot;
-            return lookYRot;
-        }
-        float diff = Mth.degreesDifference(this.lastYRot, lookYRot);
-//        logger.debug("lookrot " + lookYRot + " lastrot " + lastYRot + "lastYRot " + lastYRot + " diff " + diff);
-        if (diff > 5) {
+    private float calculateYRot(int turnDir, float turnSpeed) {
+        if (turnDir > 0) {
             this.lastYRot += turnSpeed;
-        } else if (diff < -5 ) {
+        } else if (turnDir < 0) {
             this.lastYRot -= turnSpeed;
         }
         return this.lastYRot;
     }
 
-    private Vec3 calculateDirection(float nextYRot, boolean applyDamagedEffect) {
+    private Vec3 convertYRotToDirection(float nextYRot, boolean applyDamagedEffect) {
         nextYRot = nextYRot + 90;
         double x = Math.cos(Math.PI * (nextYRot / 180));
         double z = Math.sin(Math.PI * (nextYRot / 180));
@@ -443,7 +472,7 @@ public class EntityRefBoard extends Entity {
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
         if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
-            baseLift = 0.5; // TODO: apply board lift factor
+            baseLift = 0.005 * blockInFront.getValue(TraparWaveChildBlock.BOOST); // TODO: apply board lift factor
         }
         return baseLift;
     }

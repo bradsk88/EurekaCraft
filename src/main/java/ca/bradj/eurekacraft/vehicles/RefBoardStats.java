@@ -36,7 +36,7 @@ public class RefBoardStats {
     static {
         BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25);
         HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25);
-        GlideBoard = new RefBoardStats("glide", 0.25, 0.5, MAX_AGILITY, MIN_LIFT).
+        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, MAX_AGILITY, MIN_LIFT).
                 withLandResistance(0.80).
                 WithSurf(0.80);
         SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, MIN_LIFT).
