@@ -21,7 +21,7 @@ public class RefBoardModel extends AbstractBoardModel {
     @Override
     protected ModelPart build() {
         CubeListBuilder VoxelShapes = CubeListBuilder.create();
-        VoxelShapes.texOffs(0, 0).addBox("1", 0.0F, 0.0F, -4.0F, 15.0F, -1.0F, 8.0F);
+        VoxelShapes.texOffs(0, 0).addBox(0.0F, 0.0F, -4.0F, 15.0F, -1.0F, 8.0F);
         VoxelShapes.texOffs(0, 0).addBox(-2.0F, 0.0F, -5.0F, 2.0F, -1.0F, 10.0F);
         VoxelShapes.texOffs(0, 0).addBox(-8.0F, 0.0F, -6.0F, 6.0F, -1.0F, 12.0F);
         VoxelShapes.texOffs(0, 0).addBox(-10.0F, 0.0F, -5.0F, 2.0F, -1.0F, 10.0F);
@@ -37,7 +37,7 @@ public class RefBoardModel extends AbstractBoardModel {
 
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
-        partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.ZERO);
+        partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.rotation( (float) Math.PI, 0, 0));
         return LayerDefinition.create(meshdefinition, 0, 0).bakeRoot();
     }
 

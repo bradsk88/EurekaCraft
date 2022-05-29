@@ -1,32 +1,41 @@
 package ca.bradj.eurekacraft.crop;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Random;
 
 public class TraparLeavesBlock extends LeavesBlock {
 
+    public static final Logger LOGGER = LogManager.getLogger();
+
     public TraparLeavesBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES));
     }
 
-    @Override
-    public void tick(BlockState p_54426_, ServerLevel p_54427_, BlockPos p_54428_, Random p_54429_) {
-        super.tick(p_54426_, p_54427_, p_54428_, p_54429_);
+    public boolean isRandomlyTicking(BlockState p_54449_) {
+        return true;
     }
 
     @Override
     public void randomTick(BlockState p_54451_, ServerLevel level, BlockPos pos, Random r) {
-        Boolean persist = p_54451_.getValue(PERSISTENT);
         Integer distanceToLog = p_54451_.getValue(DISTANCE);
-        if (!persist && distanceToLog == 7) {
-            level.setBlock(pos, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(), 4);
+        if (distanceToLog >= 7) {
+            int mustBeThreeToReplaceAllBlocks = 3;
+            level.setBlock(
+                    pos, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(),
+                    mustBeThreeToReplaceAllBlocks
+            );
         }
     }
 

@@ -19,7 +19,7 @@ public class RefBoardStats {
     public static final double MAX_SPEED = 1.0;
     public static final double MIN_SPEED = 0.1;
     private static final double MAX_AGILITY = 1.0;
-    public static final double MIN_LIFT = 0.0;
+    public static final double NO_LIFT = 0.0;
     public static final double MIN_POSITIVE_LIFT = 0.1;
     private static final double MAX_LIFT = 1.0;
     private static final double MAX_SURF = 1.0;
@@ -36,14 +36,14 @@ public class RefBoardStats {
     static {
         BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25);
         HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25);
-        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, MAX_AGILITY, MIN_LIFT).
+        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, 0.10, NO_LIFT).
                 withLandResistance(0.80).
                 WithSurf(0.80);
-        SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, MIN_LIFT).
+        SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, NO_LIFT).
                 WithSurf(MAX_SURF);
-        StandardBoard = new RefBoardStats("standard", 0.75, 0.5, 0.5, 0.5);
-        SpeedBoard = new RefBoardStats("speed", 0.5, MAX_SPEED, 0.5, 0.5);
-        EliteBoard = new RefBoardStats("elite", 0.25, 0.75, MAX_AGILITY, MAX_LIFT);
+        StandardBoard = new RefBoardStats("standard", 0.75, 0.5, 0.25, 0.5);
+        SpeedBoard = new RefBoardStats("speed", 0.5, MAX_SPEED, 0.10, 0.5);
+        EliteBoard = new RefBoardStats("elite", 0.25, 0.75, 0.8, MAX_LIFT);
     }
 
     private double boardWeight;

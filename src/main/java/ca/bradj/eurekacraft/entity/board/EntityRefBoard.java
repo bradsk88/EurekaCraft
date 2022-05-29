@@ -267,7 +267,7 @@ public class EntityRefBoard extends Entity {
             applyDamagedEffect = true;
         }
 
-        double turnSpeed = boardStats.agility() * 10;
+        double turnSpeed = boardStats.agility() * 15; // 15 is effectively "turn on a dime"
 
         float lookYRot = this.playerOrNull.getViewYRot(1.0F);
         initializeRotation(lookYRot);
@@ -295,10 +295,10 @@ public class EntityRefBoard extends Entity {
 
         float diff = Mth.degreesDifference(this.lastYRot, lookYRot);
 //        logger.debug("lookrot " + lookYRot + " lastYRot " + lastYRot + " diff " + diff);
-        if (diff < -5) {
+        if (diff < -7.5) {
             return -1;
         }
-        if (diff > 5) {
+        if (diff > 7.5) {
             return 1;
         }
         return 0;
@@ -326,8 +326,6 @@ public class EntityRefBoard extends Entity {
 
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
-
-        liftOrFall = increaseBoostFromWaves(liftOrFall, liftFactor);
 
         if (boosted) {
             // Apply lift
@@ -464,20 +462,6 @@ public class EntityRefBoard extends Entity {
         }
     }
 
-    private double increaseBoostFromWaves(double boost, double liftFactor) {
-
-        double baseLift = Math.max(0, boost);
-
-        Direction faceDir = this.playerOrNull.getDirection();
-        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
-        BlockState blockInFront = this.level.getBlockState(inFront);
-        if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
-            baseLift = 0.005 * blockInFront.getValue(TraparWaveChildBlock.BOOST);
-            baseLift = baseLift * liftFactor;
-        }
-        return baseLift;
-    }
-
     private double reduceSpeedIfCrashed(double flightSpeed) {
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
@@ -505,6 +489,13 @@ public class EntityRefBoard extends Entity {
     private boolean consumeBoost() {
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+        } else {
+            Direction faceDir = this.playerOrNull.getDirection();
+            BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+            BlockState blockInFront = this.level.getBlockState(inFront);
+            if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
+                boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            }
         }
 
         boolean boosted = false;

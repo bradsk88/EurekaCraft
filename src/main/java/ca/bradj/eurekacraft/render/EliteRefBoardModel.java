@@ -37,7 +37,7 @@ public class EliteRefBoardModel extends AbstractBoardModel {
 
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
-        partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.ZERO);
+        partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.rotation((float) Math.PI, 0, 0));
         return LayerDefinition.create(meshdefinition, 0, 0).bakeRoot();
     }
 
