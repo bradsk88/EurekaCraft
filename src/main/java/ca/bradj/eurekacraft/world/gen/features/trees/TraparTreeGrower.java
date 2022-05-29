@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.world.gen.features.trees;
 
+import ca.bradj.eurekacraft.world.gen.features.ConfiguredFeatures;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;

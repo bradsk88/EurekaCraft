@@ -24,6 +24,9 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
+/**
+ * @deprecated Use TraparWaveChildBlock
+ */
 public class TraparWaveBlock extends EntityBlock {
 
     public static final Properties PROPS = BlockBehaviour.Properties.
