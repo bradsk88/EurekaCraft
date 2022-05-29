@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.blocks;
 
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,4 +31,8 @@ public class TraparWaveChildBlock extends Block {
         super.createBlockStateDefinition(state);
     }
 
+    @Override
+    public boolean skipRendering(BlockState p_60532_, BlockState p_60533_, Direction p_60534_) {
+        return true;
+    }
 }

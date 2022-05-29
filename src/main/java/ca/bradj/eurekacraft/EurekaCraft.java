@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -70,6 +71,7 @@ public class EurekaCraft {
         event.enqueueWork(() -> {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
+        BlockEntityRenderers.register();
         event.enqueueWork(BoardItemRendering::initItemProperties);
 
         // TODO: Reimplement
