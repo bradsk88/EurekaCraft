@@ -70,6 +70,8 @@ public class EurekaCraft {
         event.enqueueWork(() -> {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
+        event.enqueueWork(BoardItemRendering::initItemProperties);
+
         // TODO: Reimplement
 //        event.enqueueWork(
 //                TraparStormRendering::init
@@ -85,10 +87,6 @@ public class EurekaCraft {
 //        event.<TraparWaveBlock.TileEntity>registerBlockEntityRenderer(
 //                TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new
 //        );
-    }
-
-    public void onAttributeCreate(final EntityAttributeCreationEvent event) {
-        BoardItemRendering.initItemProperties(event);
     }
 
     @SubscribeEvent
