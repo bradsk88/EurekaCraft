@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
+import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
@@ -44,13 +45,13 @@ public class ItemsInit {
 					ResinBlock.ITEM_PROPS
 			)
 	);
-//	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
-//			TraparWaveBlock.ITEM_ID,
-//			() -> new BlockItem(
-//					BlocksInit.TRAPAR_WAVE_BLOCK.get(),
-//					TraparWaveBlock.ITEM_PROPS
-//			)
-//	);
+	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
+			TraparWaveChildBlock.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
+					ResinBlock.ITEM_PROPS
+			)
+	);
 	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
 			"trapar_wood", // TODO: Add const
 			() -> new BlockItem(

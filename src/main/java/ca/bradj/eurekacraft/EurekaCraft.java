@@ -1,10 +1,12 @@
 package ca.bradj.eurekacraft;
 
+import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -71,7 +73,6 @@ public class EurekaCraft {
         event.enqueueWork(() -> {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
-        BlockEntityRenderers.register();
         event.enqueueWork(BoardItemRendering::initItemProperties);
 
         // TODO: Reimplement
@@ -86,8 +87,8 @@ public class EurekaCraft {
 //        event.<JudgeEntity>registerEntityRenderer (
 //                EntitiesInit.JUDGE.get(), JudgeRenderer::new
 //        );
-//        event.<TraparWaveBlock.TileEntity>registerBlockEntityRenderer(
-//                TilesInit.TRAPAR_WAVE.get(), TraparWaveHandler::new
+//        event.registerBlockEntityRenderer(
+//                TilesInit.TRAPAR_WAVE.get(), (ctx) -> new TraparWaveHandler()
 //        );
     }
 

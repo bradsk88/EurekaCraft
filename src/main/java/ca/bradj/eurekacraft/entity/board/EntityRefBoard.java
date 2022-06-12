@@ -60,7 +60,7 @@ public class EntityRefBoard extends Entity {
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
     private static Block[] PASSABLE_BLOCKS = {
             Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS, Blocks.WATER,
-            BlocksInit.TRAPAR_WAVE_BLOCK.get(), BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
+            BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
     };
     // Prefer PASSABLE_BLOCKS when possible
     private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{

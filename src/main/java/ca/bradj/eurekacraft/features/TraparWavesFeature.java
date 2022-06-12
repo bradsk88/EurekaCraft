@@ -41,7 +41,7 @@ public class TraparWavesFeature extends NoOpFeature {
             return;
         }
 
-        seedReader.setBlock(blockPos, BlocksInit.TRAPAR_WAVE_BLOCK.get().defaultBlockState(), 1);
+        seedReader.setBlock(blockPos, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(), 1);
     }
 
 }
