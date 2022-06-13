@@ -43,7 +43,7 @@ public class TraparWaveChildBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos bp, BlockState bs) {
-        return new TraparWaveChildBlock.TileEntity(bp, bs);
+        return TilesInit.TRAPAR_WAVE.get().create(bp, bs);
     }
 
     @Override

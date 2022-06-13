@@ -1,18 +1,14 @@
 package ca.bradj.eurekacraft;
 
-import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
-import ca.bradj.eurekacraft.render.TraparWaveHandler;
 import ca.bradj.eurekacraft.world.structure.ModStructures;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -51,7 +47,7 @@ public class EurekaCraft {
         EntitiesInit.ENTITIES.register(bus);
         // TODO: Reimplement
 //        FeaturesInit.PLACEMENTS.register(bus);
-//        FeaturesInit.FEATURES.register(bus);
+        FeaturesInit.FEATURES.register(bus);
         ContainerTypesInit.TYPES.register(bus);
         RecipesInit.register(bus);
 //        ModStructures.STRUCTURES.register(bus);
@@ -86,9 +82,6 @@ public class EurekaCraft {
         // TODO: Reimplement
 //        event.<JudgeEntity>registerEntityRenderer (
 //                EntitiesInit.JUDGE.get(), JudgeRenderer::new
-//        );
-//        event.registerBlockEntityRenderer(
-//                TilesInit.TRAPAR_WAVE.get(), (ctx) -> new TraparWaveHandler()
 //        );
     }
 

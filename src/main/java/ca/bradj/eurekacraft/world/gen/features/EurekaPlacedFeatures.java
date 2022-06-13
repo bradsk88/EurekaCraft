@@ -11,5 +11,4 @@ public class EurekaPlacedFeatures {
             "trapar_waves_placed", ConfiguredFeatures.TRAPAR_WAVES,
             EurekaPlacements.wavesPlacement()
     );
-
 }

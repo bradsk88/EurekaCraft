@@ -1,28 +1,20 @@
 package ca.bradj.eurekacraft.world.gen.features;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.FeaturesInit;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
-import net.minecraft.data.worldgen.features.OreFeatures;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.ConstantInt;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.OreConfiguration;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSize;
 import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.structure.templatesystem.BlockMatchTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
-import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
-
-import java.util.List;
 
 public class ConfiguredFeatures {
 
@@ -40,17 +32,8 @@ public class ConfiguredFeatures {
             PlacementUtils.filteredByBlockSurvival(BlocksInit.TRAPAR_SAPLING.get())
     );
 
-    private static RuleTest AIR_REPLACEABLES = new BlockMatchTest(Blocks.AIR);
-
-    public static final List<OreConfiguration.TargetBlockState> OVERWORLD_TRAPAR_WAVES = List.of(
-            OreConfiguration.target(AIR_REPLACEABLES, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState())
-    );
-
-    public static final Holder<ConfiguredFeature<OreConfiguration, ?>> TRAPAR_WAVES = FeatureUtils.register(
-            "trapar_wave", Feature.ORE, new OreConfiguration(
-                    OVERWORLD_TRAPAR_WAVES,
-                    16 // Max blocks per glob
-            )
+    public static final Holder<ConfiguredFeature<NoneFeatureConfiguration, ?>> TRAPAR_WAVES = FeatureUtils.register(
+            "trapar_wave", FeaturesInit.GROUND_WAVES_FEATURE.get(), NoneFeatureConfiguration.INSTANCE
     );
 
 }

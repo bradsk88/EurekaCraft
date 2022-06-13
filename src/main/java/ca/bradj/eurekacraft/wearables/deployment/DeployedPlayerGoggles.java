@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.wearables.deployment;
 
-import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +19,6 @@ public class DeployedPlayerGoggles {
                 break;
             }
         }
-        EurekaCraft.LOGGER.debug("hasGoggles" + hasGoggles);
         return hasGoggles;
     }
 }
