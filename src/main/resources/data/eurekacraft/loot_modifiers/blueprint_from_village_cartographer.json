@@ -1,0 +1,11 @@
+{
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/village/village_plains_house"
+    }
+  ],
+  "addition": "eurekacraft:blueprint",
+  "chance": 0.5,
+  "type": "eurekacraft:blueprint_from_village_cartographer"
+}
