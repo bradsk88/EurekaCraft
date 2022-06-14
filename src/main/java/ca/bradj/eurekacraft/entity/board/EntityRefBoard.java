@@ -60,14 +60,14 @@ public class EntityRefBoard extends Entity {
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
     private static Block[] PASSABLE_BLOCKS = {
             Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS, Blocks.WATER,
-            BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
+            BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(), Blocks.SNOW
     };
     // Prefer PASSABLE_BLOCKS when possible
     private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{
             FlowerBlock.class, TallGrassBlock.class,
     };
     private static final Class<?>[] DESTROYABLE_BLOCK_CLASSES = new Class[]{
-            FlowerBlock.class, TallGrassBlock.class, VineBlock.class,
+            FlowerBlock.class, TallGrassBlock.class, VineBlock.class, SnowLayerBlock.class
     };
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
