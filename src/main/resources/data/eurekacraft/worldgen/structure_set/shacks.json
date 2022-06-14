@@ -1,0 +1,18 @@
+{
+  "structures": [
+    {
+      "structure": "eurekacraft:empty_shack",
+      "weight": 1
+    },
+    {
+      "structure": "eurekacraft:tall_shack",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "salt": 5403754,
+    "spacing": 16,
+    "separation": 6,
+    "type": "minecraft:random_spread"
+  }
+}

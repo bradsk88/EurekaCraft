@@ -5,7 +5,6 @@ import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
-import ca.bradj.eurekacraft.world.structure.ModStructures;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -57,7 +56,6 @@ public class EurekaCraft {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(ModStructures::setupStructures);
         event.enqueueWork(EurekaCraftNetwork::init);
     }
 

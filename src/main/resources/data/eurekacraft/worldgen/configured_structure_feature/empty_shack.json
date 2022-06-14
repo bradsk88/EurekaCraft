@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:village",
+  "config": {
+    "start_pool": "eurekacraft:empty_shack/start_pool",
+    "size": 1
+  },
+  "biomes": "#eurekacraft:has_structure/shack_biomes",
+  "adapt_noise": true,
+  "spawn_overrides": {}
+}
