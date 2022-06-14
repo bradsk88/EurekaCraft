@@ -3,26 +3,23 @@ package ca.bradj.eurekacraft.blocks;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class TraparWaveChildBlock extends Block implements EntityBlock {
 
-    public static final Properties PROPS = Properties.
-            copy(Blocks.AIR).
-            noOcclusion().
-            lightLevel((BlockState bs) -> 10).strength(-1);
-//            randomTicks();
+    public static final Properties PROPS = BlockBehaviour.Properties.of(Material.AIR).noOcclusion().noCollission();
 
     public static final String ITEM_ID = "trapar_wave_child_block";
 
@@ -32,6 +29,11 @@ public class TraparWaveChildBlock extends Block implements EntityBlock {
     public TraparWaveChildBlock() {
         super(PROPS);
         this.registerDefaultState(this.getStateDefinition().any().setValue(BOOST, 100));
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
+        return Shapes.empty();
     }
 
     @Override

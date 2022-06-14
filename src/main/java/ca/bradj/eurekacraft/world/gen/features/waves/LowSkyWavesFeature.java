@@ -2,18 +2,16 @@ package ca.bradj.eurekacraft.world.gen.features.waves;
 
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 import java.util.Random;
 
-public class GroundWavesFeature extends Feature<NoneFeatureConfiguration> {
-    public GroundWavesFeature() {
+public class LowSkyWavesFeature extends Feature<NoneFeatureConfiguration> {
+    public LowSkyWavesFeature() {
         super(NoneFeatureConfiguration.CODEC);
     }
 
@@ -22,8 +20,8 @@ public class GroundWavesFeature extends Feature<NoneFeatureConfiguration> {
 
     public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> p_159473_) {
         BlockPos blockpos = p_159473_.origin();
-        WorldGenLevel worldgenlevel = p_159473_.level();
         Random random = p_159473_.random();
+        WorldGenLevel worldgenlevel = p_159473_.level();
         if (blockpos.getY() < worldgenlevel.getMinBuildHeight() + 5) {
             return false;
         } else {
@@ -39,14 +37,8 @@ public class GroundWavesFeature extends Feature<NoneFeatureConfiguration> {
         }
     }
 
-    private boolean mayPlaceOn(LevelAccessor p_65264_, BlockPos p_65265_, Random p_65266_) {
-        BlockPos blockpos = p_65265_.below();
-        BlockState blockstate = p_65264_.getBlockState(blockpos);
-        return blockstate.isFaceSturdy(p_65264_, blockpos, Direction.UP);
-    }
-
     private void tryPlaceBlock(LevelAccessor p_65268_, BlockPos p_65269_, Random p_65270_) {
-        if (p_65268_.isEmptyBlock(p_65269_) && this.mayPlaceOn(p_65268_, p_65269_, p_65270_)) {
+        if (p_65268_.isEmptyBlock(p_65269_)) {
             p_65268_.setBlock(p_65269_, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(), 4);
             for (int i = 1; i < yGrow; i++) {
                 if (p_65268_.isEmptyBlock(p_65269_)) {

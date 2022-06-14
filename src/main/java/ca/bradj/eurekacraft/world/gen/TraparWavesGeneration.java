@@ -13,13 +13,7 @@ public class TraparWavesGeneration {
         List<Holder<PlacedFeature>> base = event.getGeneration().getFeatures(
                 GenerationStep.Decoration.TOP_LAYER_MODIFICATION
         );
-        base.add(EurekaPlacedFeatures.TRAPAR_WAVES_PLACED);
-
-        // TODO: Reimplement
-//        List<Supplier<ConfiguredFeature<?, ?>>> base = event.getGeneration().getFeatures(GenerationStage.Decoration.RAW_GENERATION);
-//        ConfiguredPlacement<FeatureSpreadConfig> cfg = FeaturesInit.TRAPAR_WAVES_PLACEMENT.get().configured(
-//                new FeatureSpreadConfig(10)
-//        );
-//        base.add(() -> FeaturesInit.TRAPAR_WAVES.get().configured(NoFeatureConfig.INSTANCE).decorated(cfg));
+        base.add(EurekaPlacedFeatures.TRAPAR_WAVES_GROUND_PLACED);
+        base.add(EurekaPlacedFeatures.TRAPAR_WAVES_MED_PLACED);
     }
 }

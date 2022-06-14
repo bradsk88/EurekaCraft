@@ -4,7 +4,6 @@ import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.FeaturesInit;
 import net.minecraft.core.Holder;
 import net.minecraft.data.worldgen.features.FeatureUtils;
-import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -14,7 +13,6 @@ import net.minecraft.world.level.levelgen.feature.featuresize.TwoLayersFeatureSi
 import net.minecraft.world.level.levelgen.feature.foliageplacers.BlobFoliagePlacer;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.StraightTrunkPlacer;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public class ConfiguredFeatures {
 
@@ -27,13 +25,12 @@ public class ConfiguredFeatures {
                     new TwoLayersFeatureSize(1, 0, 2)
             ).build());
 
-    public static final Holder<PlacedFeature> TRAPAR_CHECKED = PlacementUtils.register(
-            "trapar_checked", TRAPAR_TREE,
-            PlacementUtils.filteredByBlockSurvival(BlocksInit.TRAPAR_SAPLING.get())
+    public static final Holder<ConfiguredFeature<NoneFeatureConfiguration, ?>> TRAPAR_WAVES_GROUND = FeatureUtils.register(
+            "trapar_waves_ground", FeaturesInit.GROUND_WAVES_FEATURE.get(), NoneFeatureConfiguration.INSTANCE
     );
 
-    public static final Holder<ConfiguredFeature<NoneFeatureConfiguration, ?>> TRAPAR_WAVES = FeatureUtils.register(
-            "trapar_wave", FeaturesInit.GROUND_WAVES_FEATURE.get(), NoneFeatureConfiguration.INSTANCE
+    public static final Holder<ConfiguredFeature<NoneFeatureConfiguration, ?>> TRAPAR_WAVES_MED = FeatureUtils.register(
+            "trapar_waves_med", FeaturesInit.MED_WAVES_FEATURE.get(), NoneFeatureConfiguration.INSTANCE
     );
 
 }
