@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Random;
 
 public class BlueprintsAdditionModifier extends LootModifier {
 
@@ -44,15 +45,18 @@ public class BlueprintsAdditionModifier extends LootModifier {
     }
 
     private boolean shouldAdd(LootContext context) {
-        boolean roll1 = context.getRandom().nextFloat() < this.chance;
+        Random random = context.getRandom();
+        float rolled1 = random.nextFloat();
+        float rolled2 = random.nextFloat();
+        boolean passed1 = rolled1 < this.chance;
+        boolean passed2 = rolled2 < this.chance;
         float luck = context.getLuck();
         boolean isLucky = luck > 0.5;
         if (isLucky) {
-            return roll1;
+            return passed1 || passed2;
         }
 
-        boolean roll2 = context.getRandom().nextFloat() < this.chance;
-        return roll1 && roll2;
+        return passed1;
     }
 
     public static class Serializer extends GlobalLootModifierSerializer<BlueprintsAdditionModifier> {

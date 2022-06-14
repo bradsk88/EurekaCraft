@@ -6,6 +6,6 @@
     }
   ],
   "addition": "eurekacraft:blueprint",
-  "chance": 0.25,
+  "chance": 0.40,
   "type": "eurekacraft:blueprint_from_village_plains_chest"
 }
