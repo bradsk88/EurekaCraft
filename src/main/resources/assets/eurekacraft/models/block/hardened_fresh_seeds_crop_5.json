@@ -1,0 +1,6 @@
+{
+	"parent": "block/crop",
+	"textures": {
+		"crop": "eurekacraft:blocks/hardened_fresh_seeds_crop_5"
+	}
+}

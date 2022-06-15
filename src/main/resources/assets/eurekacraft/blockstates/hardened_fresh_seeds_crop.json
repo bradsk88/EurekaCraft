@@ -1,0 +1,10 @@
+{
+	"variants": {
+		"age=0": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_0" },
+		"age=1": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_1" },
+		"age=2": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_2" },
+		"age=3": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_3" },
+		"age=4": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_4" },
+		"age=5": {"model": "eurekacraft:block/hardened_fresh_seeds_crop_5" }
+	}
+}

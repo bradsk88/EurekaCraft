@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeedsCrop;
+import ca.bradj.eurekacraft.crop.HardenedFreshSeedsCrop;
 import ca.bradj.eurekacraft.crop.TraparLeavesBlock;
 import ca.bradj.eurekacraft.materials.BrokenRefBoardBlock;
 import ca.bradj.eurekacraft.world.gen.features.trees.TraparTreeGrower;
@@ -31,6 +32,9 @@ public class BlocksInit {
 	public static final RegistryObject<Block> FRESH_SEEDS_CROP = BLOCKS.register(
 			FreshSeedsCrop.BLOCK_ID, FreshSeedsCrop::new
 	);
+	public static final RegistryObject<Block> FRESH_SEEDS_CROP_HARDENED = BLOCKS.register(
+			HardenedFreshSeedsCrop.BLOCK_ID, HardenedFreshSeedsCrop::new
+	);
 	public static final RegistryObject<Block> RESIN = BLOCKS.register(
 			ResinBlock.ITEM_ID, ResinBlock::new
 	);
@@ -55,7 +59,7 @@ public class BlocksInit {
 	);
 
 	public static final RegistryObject<Block> TRAPAR_SAPLING = BLOCKS.register(
-			"trapar_sapling", () -> new SaplingBlock(
+			"fresh_sapling", () -> new SaplingBlock(
 					new TraparTreeGrower(),
 					BlockBehaviour.Properties.copy(Blocks.OAK_SAPLING)
 			)
@@ -73,6 +77,8 @@ public class BlocksInit {
 
 	public static void RegisterTextures() {
 		ItemBlockRenderTypes.setRenderLayer(FRESH_SEEDS_CROP.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(FRESH_SEEDS_CROP_HARDENED.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(TRAPAR_SAPLING.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(TRAPAR_LEAVES_BLOCK.get(), RenderType.cutout());

@@ -45,13 +45,6 @@ public class ItemsInit {
 					ResinBlock.ITEM_PROPS
 			)
 	);
-	public static final RegistryObject<Item> TRAPAR_WAVE_BLOCK = ITEMS.register(
-			TraparWaveChildBlock.ITEM_ID,
-			() -> new BlockItem(
-					BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(),
-					ResinBlock.ITEM_PROPS
-			)
-	);
 	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
 			"trapar_wood", // TODO: Add const
 			() -> new BlockItem(
@@ -67,7 +60,7 @@ public class ItemsInit {
 			)
 	);
 	public static final RegistryObject<Item> TRAPAR_SAPLING_BLOCK = ITEMS.register(
-			"trapar_sapling", // TODO: Add const
+			"fresh_sapling", // TODO: Add const
 			() -> new BlockItem(
 					BlocksInit.TRAPAR_SAPLING.get(),
 					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)

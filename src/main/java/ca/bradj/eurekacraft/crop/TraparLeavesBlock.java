@@ -1,11 +1,12 @@
 package ca.bradj.eurekacraft.crop;
 
-import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import net.minecraft.SharedConstants;
+import ca.bradj.eurekacraft.core.init.ItemsInit;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -36,6 +37,14 @@ public class TraparLeavesBlock extends LeavesBlock {
                     pos, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(),
                     mustBeThreeToReplaceAllBlocks
             );
+
+            ItemStack awardStack = new ItemStack(ItemsInit.TRAPAR_SAPLING_BLOCK::get, 1);
+            ItemEntity dropEntity = new ItemEntity(
+                    level, pos.getX(), pos.getY(), pos.getZ(), awardStack
+            );
+            if (r.nextInt(EurekaConfig.fresh_sapling_drop_rarity.get()) == 0) {
+                level.addFreshEntity(dropEntity);
+            }
         }
     }
 
