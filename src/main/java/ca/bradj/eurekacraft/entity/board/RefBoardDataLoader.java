@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,7 +57,9 @@ public class RefBoardDataLoader {
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
         if (board.isAlive()) {
-            EntityRefBoard.spawn(event.getPlayer(), world, board, StandardRefBoard.ID); // TODO: Store board type on ref board data
+            // TODO: Store board type and color on ref board data
+            PlayerDeployedBoard.ColoredBoard cb = new PlayerDeployedBoard.ColoredBoard(StandardRefBoard.ID, 1, 1, 1);
+            EntityRefBoard.spawn(event.getPlayer(), world, board, cb);
         }
     }
 

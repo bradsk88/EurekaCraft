@@ -12,7 +12,11 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
-public class RefBoardModel extends AbstractBoardModel {
+public class RefBoardModel extends AbstractBoardModel<RefBoardModel> {
+
+    public RefBoardModel() {
+        super(1, 1, 1);
+    }
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
             EurekaCraft.MODID, "textures/render/ref_board.png"
@@ -44,6 +48,16 @@ public class RefBoardModel extends AbstractBoardModel {
     @Override
     protected ResourceLocation getTexture() {
         return TEXTURE;
+    }
+
+    @Override
+    public RefBoardModel withColor(float r, float g, float b) {
+        RefBoardModel refBoardModel = new RefBoardModel();
+        refBoardModel.r = r;
+        refBoardModel.g = g;
+        refBoardModel.b = b;
+
+        return refBoardModel;
     }
 }
 

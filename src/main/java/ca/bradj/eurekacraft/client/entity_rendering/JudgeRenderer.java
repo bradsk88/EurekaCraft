@@ -52,7 +52,7 @@ public abstract class JudgeRenderer extends MobRenderer<JudgeEntity, VillagerMod
             return;
         }
 
-        AbstractBoardModel model = ModelsInit.getModel(bt);
+        AbstractBoardModel<?> model = ModelsInit.getModel(bt, 1, 1, 1); // TODO: Board color?
 
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 

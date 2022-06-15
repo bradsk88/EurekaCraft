@@ -9,7 +9,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
-public class BrokenRefBoardModel extends AbstractBoardModel {
+public class BrokenRefBoardModel extends AbstractBoardModel<BrokenRefBoardModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
             EurekaCraft.MODID, "textures/render/dark_oak_planks.png"
@@ -40,5 +40,10 @@ public class BrokenRefBoardModel extends AbstractBoardModel {
     @Override
     protected ResourceLocation getTexture() {
         return TEXTURE;
+    }
+
+    @Override
+    public BrokenRefBoardModel withColor(float r, float g, float b) {
+        return this; // TODO: Color?
     }
 }

@@ -7,7 +7,6 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.*;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
@@ -29,11 +28,11 @@ public class PlayerDeployedBoardProvider implements ICapabilitySerializable<Comp
     private PlayerDeployedBoard playerBoard = null;
     private final LazyOptional<PlayerDeployedBoard> opt = LazyOptional.of(this::getOrInitializeBoard);
 
-    public static Optional<BoardType> getBoardTypeFor(@Nonnull ICapabilityProvider player) {
+    public static Optional<PlayerDeployedBoard.ColoredBoard> getBoardTypeFor(@Nonnull ICapabilityProvider player) {
         return player.getCapability(PLAYER_BOARD).map((PlayerDeployedBoard::getBoardType));
     }
 
-    public static void setBoardTypeFor(@Nonnull Entity p, BoardType bt, boolean publishChanges) {
+    public static void setBoardTypeFor(@Nonnull Entity p, PlayerDeployedBoard.ColoredBoard bt, boolean publishChanges) {
         p.getCapability(PLAYER_BOARD).ifPresent(b -> {
             boolean wasChanged = b.setBoardType(bt);
             if (wasChanged && publishChanges) {
@@ -47,7 +46,7 @@ public class PlayerDeployedBoardProvider implements ICapabilitySerializable<Comp
     }
 
     public static void removeBoardFor(@Nonnull Entity player) {
-        setBoardTypeFor(player, BoardType.NONE, true);
+        setBoardTypeFor(player, PlayerDeployedBoard.ColoredBoard.NONE, true);
     }
 
     public void invalidate() {

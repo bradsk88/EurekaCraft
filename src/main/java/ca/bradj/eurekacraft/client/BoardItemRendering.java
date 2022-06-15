@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -65,7 +66,7 @@ public class BoardItemRendering {
             if (!(entity instanceof Player)) {
                 return 0.0F;
             }
-            Optional<BoardType> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
+            Optional<PlayerDeployedBoard.ColoredBoard> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
             if (!boardType.isPresent()) {
                 return 0.0F;
             }

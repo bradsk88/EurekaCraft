@@ -8,13 +8,21 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public abstract class AbstractBoardModel extends EntityModel<Entity> {
+public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extends EntityModel<Entity> {
     private final ModelPart VoxelShapes;
     private final ResourceLocation texture;
+    protected float r;
+    protected float g;
+    protected float b;
 
-    public AbstractBoardModel() {
+    protected AbstractBoardModel() {
+        this(1, 1, 1);
+    }
+
+    public AbstractBoardModel(float r, float g, float b) {
         this.VoxelShapes = this.build();
         this.texture = this.getTexture();
+        this.r = r; this.g = g; this.b = b;
     }
 
     @Override
@@ -24,7 +32,10 @@ public abstract class AbstractBoardModel extends EntityModel<Entity> {
 
     @Override
     public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
-        VoxelShapes.render(matrixStack, buffer, packedLight, packedOverlay);
+        VoxelShapes.render(
+                matrixStack, buffer, packedLight, packedOverlay,
+                red * this.r, green * this.g, blue * this.b, alpha
+        );
     }
 
     public ModelPart getModelRenderer() {
@@ -45,4 +56,6 @@ public abstract class AbstractBoardModel extends EntityModel<Entity> {
     }
 
     protected abstract ResourceLocation getTexture();
+
+    public abstract M withColor(float r, float g, float b);
 }

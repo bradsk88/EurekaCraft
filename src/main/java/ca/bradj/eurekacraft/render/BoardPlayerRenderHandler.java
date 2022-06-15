@@ -26,16 +26,16 @@ public class BoardPlayerRenderHandler {
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
         PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
-            (BoardType bt) -> renderPlayerWithBoard(event, bt)
+            (PlayerDeployedBoard.ColoredBoard bt) -> renderPlayerWithBoard(event, bt)
         );
     }
 
-    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, BoardType bt) {
-        if (BoardType.NONE.equals(bt)) {
+    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, PlayerDeployedBoard.ColoredBoard bt) {
+        if (PlayerDeployedBoard.ColoredBoard.NONE.equals(bt)) {
             return;
         }
 
-        AbstractBoardModel model = ModelsInit.getModel(bt);
+        AbstractBoardModel model = ModelsInit.getModel(bt.boardType, bt.r, bt.g, bt.b);
 
         PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
@@ -50,7 +50,7 @@ public class BoardPlayerRenderHandler {
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
                 matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+                OverlayTexture.WHITE_OVERLAY_V, 0.0F, 1.0F, 1.0F, 1.0F
         );
     }
 }

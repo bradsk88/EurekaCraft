@@ -23,8 +23,10 @@ public class ModelsInit {
         BOARD_MODELS.put(RefBoardCoreItem.ID, new RefBoardCoreModel());
     }
 
-    public static AbstractBoardModel getModel(ResourceLocation id) {
-        return BOARD_MODELS.getOrDefault(id, BOARD_MODELS.get(StandardRefBoard.ID));
+    public static AbstractBoardModel getModel(
+            ResourceLocation id, float r, float g, float b
+    ) {
+        return BOARD_MODELS.getOrDefault(id, BOARD_MODELS.get(StandardRefBoard.ID)).withColor(r, g, b);
     }
 
 }

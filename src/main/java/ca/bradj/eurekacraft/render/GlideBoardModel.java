@@ -9,11 +9,15 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
-public class GlideBoardModel extends AbstractBoardModel {
+public class GlideBoardModel extends AbstractBoardModel<GlideBoardModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
             EurekaCraft.MODID, "textures/render/oak_planks_quad.png"
     );
+
+    public GlideBoardModel() {
+        super(1, 1, 1);
+    }
 
     @Override
     protected ModelPart build() {
@@ -41,5 +45,10 @@ public class GlideBoardModel extends AbstractBoardModel {
     @Override
     protected ResourceLocation getTexture() {
         return TEXTURE;
+    }
+
+    @Override
+    public GlideBoardModel withColor(float r, float g, float b) {
+        return this; // TODO: Colorable?
     }
 }
