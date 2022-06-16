@@ -32,13 +32,20 @@ public class DeployedBoardMessage {
         // TODO: encode color
         buffer.writeUtf(msg.boardType.boardType.getPath(), BOARD_ID_MAX_LENGTH);
         buffer.writeInt(msg.playerId);
+        buffer.writeFloat(msg.boardType.r);
+        buffer.writeFloat(msg.boardType.g);
+        buffer.writeFloat(msg.boardType.b);
     }
 
     public static DeployedBoardMessage decode(FriendlyByteBuf buffer) {
-        String bt = buffer.readUtf(BOARD_ID_MAX_LENGTH);
+        String bts = buffer.readUtf(BOARD_ID_MAX_LENGTH);
+        BoardType bt = BoardType.fromNBT(bts);
         int playerId = buffer.readInt();
+        float r = buffer.readFloat();
+        float g = buffer.readFloat();
+        float b = buffer.readFloat();
         // TODO: Decode color
-        return new DeployedBoardMessage(playerId, new PlayerDeployedBoard.ColoredBoard(BoardType.fromNBT(bt), 1, 1, 1));
+        return new DeployedBoardMessage(playerId, new PlayerDeployedBoard.ColoredBoard(bt, r, g, b));
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {

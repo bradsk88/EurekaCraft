@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +30,7 @@ public class BoardPlayerRenderHandler {
     }
 
     private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, PlayerDeployedBoard.ColoredBoard bt) {
-        if (PlayerDeployedBoard.ColoredBoard.NONE.equals(bt)) {
+        if (BoardType.NONE.equals(bt.boardType)) {
             return;
         }
 
@@ -50,7 +49,7 @@ public class BoardPlayerRenderHandler {
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
                 matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.WHITE_OVERLAY_V, 0.0F, 1.0F, 1.0F, 1.0F
+                OverlayTexture.WHITE_OVERLAY_V, 1.0F, 1.0F, 1.0F, 1.0F
         );
     }
 }
