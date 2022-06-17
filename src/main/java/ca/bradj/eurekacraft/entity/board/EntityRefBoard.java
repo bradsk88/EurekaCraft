@@ -165,7 +165,9 @@ public class EntityRefBoard extends Entity {
         boostedPlayers.put(id, BOOST_TICKS);
     }
 
-    public static EntityRefBoard spawnFromInventory(Entity player, ServerLevel level, ItemStack boardItem, BoardType bt) {
+    public static EntityRefBoard spawnFromInventory(
+            Entity player, ServerLevel level, ItemStack boardItem, PlayerDeployedBoard.ColoredBoard board
+    ) {
         if (level.isClientSide()) {
             return null;
         }
@@ -175,16 +177,10 @@ public class EntityRefBoard extends Entity {
             return null;
         }
 
-        // TODO: Get color from item NBT
-        Random rand = new Random();
-        float r = rand.nextFloat();
-        float g = rand.nextFloat();
-        float b = rand.nextFloat();
-
         EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
         Vec3 position = player.position();
         glider.setPos(position.x, position.y, position.z);
-        spawn(player, level, glider, new PlayerDeployedBoard.ColoredBoard(bt, r, g, b));
+        spawn(player, level, glider, board);
         return glider;
     }
 

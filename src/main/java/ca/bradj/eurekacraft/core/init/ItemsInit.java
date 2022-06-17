@@ -2,12 +2,12 @@ package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
-import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.crop.FreshSmellingLeaves;
 import ca.bradj.eurekacraft.materials.*;
+import ca.bradj.eurekacraft.materials.paint.PaintItem;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
 import net.minecraft.world.item.BlockItem;
@@ -174,6 +174,70 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> SCUB_GOGGLES = ITEMS.register(
 			ScubGoggles.ITEM_ID, ScubGoggles::new
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_BLACK = ITEMS.register(
+			PaintItem.BLACK_ITEM_ID, PaintItem::black
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_BLUE = ITEMS.register(
+			PaintItem.BLUE_ITEM_ID, PaintItem::blue
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_BROWN = ITEMS.register(
+			PaintItem.BROWN_ITEM_ID, PaintItem::brown
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_CYAN = ITEMS.register(
+			PaintItem.CYAN_ITEM_ID, PaintItem::cyan
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_GRAY = ITEMS.register(
+			PaintItem.GRAY_ITEM_ID, PaintItem::gray
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_GREEN = ITEMS.register(
+			PaintItem.GREEN_ITEM_ID, PaintItem::green
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_LIGHT_BLUE = ITEMS.register(
+			PaintItem.LIGHT_BLUE_ITEM_ID, PaintItem::lightblue
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_LIGHT_GRAY = ITEMS.register(
+			PaintItem.LIGHT_GRAY_ITEM_ID, PaintItem::lightgray
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_LIME = ITEMS.register(
+			PaintItem.LIME_ITEM_ID, PaintItem::lime
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_MAGENTA = ITEMS.register(
+			PaintItem.MAGENTA_ITEM_ID, PaintItem::magenta
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_ORANGE = ITEMS.register(
+			PaintItem.ORANGE_ITEM_ID, PaintItem::orange
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_PINK = ITEMS.register(
+			PaintItem.PINK_ITEM_ID, PaintItem::pink
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_PURPLE = ITEMS.register(
+			PaintItem.PURPLE_ITEM_ID, PaintItem::purple
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_RED = ITEMS.register(
+			PaintItem.RED_ITEM_ID, PaintItem::red
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_WHITE = ITEMS.register(
+			PaintItem.WHITE_ITEM_ID, PaintItem::white
+	);
+
+	public static final RegistryObject<Item> PAINT_BUCKET_YELLOW = ITEMS.register(
+			PaintItem.YELLOW_ITEM_ID, PaintItem::yellow
 	);
 
 	public static void register(IEventBus bus) {

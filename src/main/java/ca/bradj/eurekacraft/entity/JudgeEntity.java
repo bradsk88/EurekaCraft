@@ -9,6 +9,7 @@ import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.IPlayerEntityBoardDeployed;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -383,7 +384,7 @@ public class JudgeEntity extends PathfinderMob {
                     this.self,
                     (ServerLevel) this.self.level,
                     ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
-                    EliteRefBoard.ID
+                    PlayerDeployedBoard.ColoredBoard.plain(EliteRefBoard.ID) // TODO: Painted?
             );
         }
     }
@@ -512,7 +513,7 @@ public class JudgeEntity extends PathfinderMob {
                 (ServerLevel) this.level,
                 new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
                 }),
-                EliteRefBoard.ID
+                PlayerDeployedBoard.ColoredBoard.plain(EliteRefBoard.ID) // TODO: Painted?
         );
     }
 

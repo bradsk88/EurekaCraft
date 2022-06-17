@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "eurekacraft:paint_bucket_black",
+    "eurekacraft:paint_bucket_blue",
+    "eurekacraft:paint_bucket_brown",
+    "eurekacraft:paint_bucket_cyan",
+    "eurekacraft:paint_bucket_gray",
+    "eurekacraft:paint_bucket_green",
+    "eurekacraft:paint_bucket_light_blue",
+    "eurekacraft:paint_bucket_light_gray",
+    "eurekacraft:paint_bucket_lime",
+    "eurekacraft:paint_bucket_magenta",
+    "eurekacraft:paint_bucket_orange",
+    "eurekacraft:paint_bucket_pink",
+    "eurekacraft:paint_bucket_purple",
+    "eurekacraft:paint_bucket_red",
+    "eurekacraft:paint_bucket_white",
+    "eurekacraft:paint_bucket_yellow"
+  ]
+}

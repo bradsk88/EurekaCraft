@@ -34,7 +34,7 @@ public class BoardPlayerRenderHandler {
             return;
         }
 
-        AbstractBoardModel model = ModelsInit.getModel(bt.boardType, bt.r, bt.g, bt.b);
+        AbstractBoardModel<?> model = ModelsInit.getModel(bt.boardType, bt.r, bt.g, bt.b);
 
         PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
@@ -49,7 +49,7 @@ public class BoardPlayerRenderHandler {
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
                 matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.WHITE_OVERLAY_V, 1.0F, 1.0F, 1.0F, 1.0F
+                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
     }
 }

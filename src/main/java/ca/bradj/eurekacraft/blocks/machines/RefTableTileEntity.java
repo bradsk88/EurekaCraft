@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
+import ca.bradj.eurekacraft.interfaces.IPaintable;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
@@ -275,6 +276,10 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
         if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
             ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(inputs, techStack, craftedOutput, level.getRandom());
+        }
+
+        if (iRecipe.getResultItem().getItem() instanceof IPaintable) {
+            ((IPaintable) iRecipe.getResultItem().getItem()).applyPaint(inputs, techStack, craftedOutput);
         }
     }
 

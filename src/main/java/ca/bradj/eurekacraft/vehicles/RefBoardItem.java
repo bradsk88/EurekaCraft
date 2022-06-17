@@ -24,12 +24,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public abstract class RefBoardItem extends Item implements ITechAffected, IBoardStatsGetterProvider {
+public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IBoardStatsGetterProvider {
 
     private static final String NBT_KEY_STATS = "stats";
 
@@ -38,14 +39,14 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats baseStats;
-    private final BoardType id;
+    private PlayerDeployedBoard.ColoredBoard board;
     private final StatsGetter statsGetter;
     protected boolean canFly = true;
 
     protected RefBoardItem(RefBoardStats stats, BoardType boardId) {
         super(PROPS);
         this.baseStats = stats;
-        this.id = boardId;
+        this.board = PlayerDeployedBoard.ColoredBoard.plain(boardId);
         this.statsGetter = new StatsGetter(stats);
     }
 
@@ -84,7 +85,9 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
                 despawnGlider(player, world, glider);
             } else {
                 ItemStack boardItem = player.getItemInHand(hand);
-                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(player, (ServerLevel) player.level, boardItem, this.id);
+                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(
+                        player, (ServerLevel) player.level, boardItem, this.board
+                );
                 if (spawned == null) {
                     spawnedGlidersMap.remove(player);
                 } else {
@@ -109,10 +112,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
 
     public boolean canFly() {
         return this.canFly;
-    }
-
-    public ResourceLocation getID() {
-        return this.id;
     }
 
     public static class ItemIDs {
@@ -165,7 +164,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
             return;
         }
         Item targetBoard = targetStack.getItem();
-        if (!(targetBoard instanceof  RefBoardItem)) {
+        if (!(targetBoard instanceof RefBoardItem)) {
             return;
         }
         Item techItem = techStack.getItem();
@@ -186,6 +185,15 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IBoard
         }
         CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
         return RefBoardStats.deserializeNBT(nbt);
+    }
+
+    @Override
+    public void applyPaint(Collection<ItemStack> inputs, ItemStack paint, ItemStack target) {
+        if (paint.getItem() instanceof IColorSource) {
+            Color color = ((IColorSource) paint.getItem()).getColor();
+            EurekaCraft.LOGGER.debug("Painted board " + color);
+            this.board = this.board.withColor(color);
+        }
     }
 
     @Override

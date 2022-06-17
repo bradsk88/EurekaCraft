@@ -4,6 +4,8 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+
 public class PlayerDeployedBoard {
 
     private ColoredBoard board = new ColoredBoard(BoardType.NONE, 1, 1, 1);
@@ -45,6 +47,26 @@ public class PlayerDeployedBoard {
             this.b = b;
         }
 
+        public static ColoredBoard plain(BoardType bt) {
+            return new ColoredBoard(bt, 1, 1, 1);
+        }
+
         public static ColoredBoard NONE = new ColoredBoard(BoardType.NONE, 1, 1,1);
+
+        public ColoredBoard withColor(Color color) {
+            return new ColoredBoard(
+                    this.boardType, color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f
+            );
+        }
+
+        @Override
+        public String toString() {
+            return "ColoredBoard{" +
+                    "boardType=" + boardType +
+                    ", r=" + r +
+                    ", g=" + g +
+                    ", b=" + b +
+                    '}';
+        }
     }
 }

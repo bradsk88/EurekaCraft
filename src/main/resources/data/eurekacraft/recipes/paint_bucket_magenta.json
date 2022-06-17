@@ -1,0 +1,31 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "minecraft:magenta_dye"
+    },
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "minecraft:magenta_dye"
+    },
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "minecraft:magenta_dye"
+    }
+  ],
+  "cook": true,
+  "extra": {
+    "item": "minecraft:bucket",
+    "consume": true
+  },
+  "output": {
+    "item": "eurekacraft:paint_bucket_magenta"
+  }
+}
