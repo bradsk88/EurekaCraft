@@ -12,6 +12,8 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.*;
+
 public class EliteRefBoardModel extends AbstractBoardModel<EliteRefBoardModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -19,7 +21,7 @@ public class EliteRefBoardModel extends AbstractBoardModel<EliteRefBoardModel> {
     );
 
     public EliteRefBoardModel() {
-        super(1, 1, 1);
+        super(Color.WHITE);
     }
 
     @Override
@@ -51,12 +53,8 @@ public class EliteRefBoardModel extends AbstractBoardModel<EliteRefBoardModel> {
     }
 
     @Override
-    public EliteRefBoardModel withColor(float r, float g, float b) {
-        EliteRefBoardModel eliteRefBoardModel = new EliteRefBoardModel();
-        eliteRefBoardModel.r = r;
-        eliteRefBoardModel.g = g;
-        eliteRefBoardModel.b = b;
-        return eliteRefBoardModel;
+    public EliteRefBoardModel withColor(Color color) {
+        return this; // TODO: Paintable
     }
 }
 

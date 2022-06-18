@@ -8,6 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.awt.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -20,7 +21,7 @@ public class DeployedBoardMessage {
 
     public DeployedBoardMessage() {
         this.playerId = -1;
-        this.boardType = new PlayerDeployedBoard.ColoredBoard(BoardType.NONE, 1, 1,1 );
+        this.boardType = PlayerDeployedBoard.ColoredBoard.NONE;
     }
 
     public DeployedBoardMessage(int playerId, PlayerDeployedBoard.ColoredBoard boardType) {
@@ -29,12 +30,12 @@ public class DeployedBoardMessage {
     }
 
     public static void encode(DeployedBoardMessage msg, FriendlyByteBuf buffer) {
-        // TODO: encode color
         buffer.writeUtf(msg.boardType.boardType.getPath(), BOARD_ID_MAX_LENGTH);
         buffer.writeInt(msg.playerId);
-        buffer.writeFloat(msg.boardType.r);
-        buffer.writeFloat(msg.boardType.g);
-        buffer.writeFloat(msg.boardType.b);
+        Color c = msg.boardType.getColor();
+        buffer.writeFloat(c.getRed()/255f);
+        buffer.writeFloat(c.getGreen()/255f);
+        buffer.writeFloat(c.getBlue()/255f);
     }
 
     public static DeployedBoardMessage decode(FriendlyByteBuf buffer) {
@@ -44,8 +45,7 @@ public class DeployedBoardMessage {
         float r = buffer.readFloat();
         float g = buffer.readFloat();
         float b = buffer.readFloat();
-        // TODO: Decode color
-        return new DeployedBoardMessage(playerId, new PlayerDeployedBoard.ColoredBoard(bt, r, g, b));
+        return new DeployedBoardMessage(playerId, new PlayerDeployedBoard.ColoredBoard(bt, new Color(r, g, b)));
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {

@@ -8,6 +8,7 @@ import ca.bradj.eurekacraft.vehicles.GlideBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +25,9 @@ public class ModelsInit {
     }
 
     public static AbstractBoardModel getModel(
-            ResourceLocation id, float r, float g, float b
+            ResourceLocation id, Color color
     ) {
-        return BOARD_MODELS.getOrDefault(id, BOARD_MODELS.get(StandardRefBoard.ID)).withColor(r, g, b);
+        return BOARD_MODELS.getOrDefault(id, BOARD_MODELS.get(StandardRefBoard.ID)).withColor(color);
     }
 
 }

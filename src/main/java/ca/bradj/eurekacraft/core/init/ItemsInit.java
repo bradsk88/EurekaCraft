@@ -86,7 +86,7 @@ public class ItemsInit {
 			RefBoardItem.ItemIDs.GLIDE_BOARD, GlideBoard::new
 	);
 
-	public static final RegistryObject<StandardRefBoard> STANDARD_BOARD = ITEMS.register(
+	public static final RegistryObject<StandardRefBoard> STANDARD_REF_BOARD = ITEMS.register(
 			RefBoardItem.ItemIDs.REF_BOARD, StandardRefBoard::new
 	);
 
@@ -176,7 +176,7 @@ public class ItemsInit {
 			ScubGoggles.ITEM_ID, ScubGoggles::new
 	);
 
-	public static final RegistryObject<Item> PAINT_BUCKET_BLACK = ITEMS.register(
+	public static final RegistryObject<PaintItem> PAINT_BUCKET_BLACK = ITEMS.register(
 			PaintItem.BLACK_ITEM_ID, PaintItem::black
 	);
 

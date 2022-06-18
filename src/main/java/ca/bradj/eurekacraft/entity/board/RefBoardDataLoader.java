@@ -58,7 +58,7 @@ public class RefBoardDataLoader {
         );
         if (board.isAlive()) {
             // TODO: Store board type and color on ref board data
-            PlayerDeployedBoard.ColoredBoard cb = new PlayerDeployedBoard.ColoredBoard(StandardRefBoard.ID, 1, 1, 1);
+            PlayerDeployedBoard.ColoredBoard cb = PlayerDeployedBoard.ColoredBoard.plain(StandardRefBoard.ID);
             EntityRefBoard.spawn(event.getPlayer(), world, board, cb);
         }
     }

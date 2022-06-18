@@ -8,21 +8,21 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
+import java.awt.*;
+
 public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extends EntityModel<Entity> {
     private final ModelPart VoxelShapes;
     private final ResourceLocation texture;
-    protected float r;
-    protected float g;
-    protected float b;
+    protected final Color color;
 
     protected AbstractBoardModel() {
-        this(1, 1, 1);
+        this(Color.WHITE);
     }
 
-    public AbstractBoardModel(float r, float g, float b) {
+    public AbstractBoardModel(Color color) {
         this.VoxelShapes = this.build();
         this.texture = this.getTexture();
-        this.r = r; this.g = g; this.b = b;
+        this.color = color;
     }
 
     @Override
@@ -32,9 +32,12 @@ public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extend
 
     @Override
     public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+        float r = this.color.getRed() / 255f;
+        float g = this.color.getGreen() / 255f;
+        float b = this.color.getBlue() / 255f;
         VoxelShapes.render(
                 matrixStack, buffer, packedLight, packedOverlay,
-                red * this.r, green * this.g, blue * this.b, alpha
+                red * r, green * g, blue * b, alpha
         );
     }
 
@@ -57,5 +60,5 @@ public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extend
 
     protected abstract ResourceLocation getTexture();
 
-    public abstract M withColor(float r, float g, float b);
+    public abstract M withColor(Color color);
 }

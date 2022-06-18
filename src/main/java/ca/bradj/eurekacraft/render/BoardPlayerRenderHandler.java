@@ -34,7 +34,7 @@ public class BoardPlayerRenderHandler {
             return;
         }
 
-        AbstractBoardModel<?> model = ModelsInit.getModel(bt.boardType, bt.r, bt.g, bt.b);
+        AbstractBoardModel<?> model = ModelsInit.getModel(bt.boardType, bt.getColor());
 
         PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));

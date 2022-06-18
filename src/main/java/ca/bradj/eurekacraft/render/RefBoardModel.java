@@ -12,10 +12,16 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.*;
+
 public class RefBoardModel extends AbstractBoardModel<RefBoardModel> {
 
     public RefBoardModel() {
-        super(1, 1, 1);
+        this(Color.WHITE);
+    }
+
+    public RefBoardModel(Color color) {
+        super(color);
     }
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -51,13 +57,8 @@ public class RefBoardModel extends AbstractBoardModel<RefBoardModel> {
     }
 
     @Override
-    public RefBoardModel withColor(float r, float g, float b) {
-        RefBoardModel refBoardModel = new RefBoardModel();
-        refBoardModel.r = r;
-        refBoardModel.g = g;
-        refBoardModel.b = b;
-
-        return refBoardModel;
+    public RefBoardModel withColor(Color color) {
+        return new RefBoardModel(color);
     }
 }
 

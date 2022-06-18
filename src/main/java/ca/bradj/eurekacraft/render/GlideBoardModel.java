@@ -9,6 +9,8 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.*;
+
 public class GlideBoardModel extends AbstractBoardModel<GlideBoardModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -16,7 +18,7 @@ public class GlideBoardModel extends AbstractBoardModel<GlideBoardModel> {
     );
 
     public GlideBoardModel() {
-        super(1, 1, 1);
+        super(Color.WHITE);
     }
 
     @Override
@@ -48,7 +50,7 @@ public class GlideBoardModel extends AbstractBoardModel<GlideBoardModel> {
     }
 
     @Override
-    public GlideBoardModel withColor(float r, float g, float b) {
+    public GlideBoardModel withColor(Color color) {
         return this; // TODO: Colorable?
     }
 }

@@ -10,12 +10,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.model.VillagerModel;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+
+import java.awt.*;
 
 public abstract class JudgeRenderer extends MobRenderer<JudgeEntity, VillagerModel<JudgeEntity>> {
     public static final ResourceLocation TEXTURE =
@@ -52,7 +52,7 @@ public abstract class JudgeRenderer extends MobRenderer<JudgeEntity, VillagerMod
             return;
         }
 
-        AbstractBoardModel<?> model = ModelsInit.getModel(bt, 1, 1, 1); // TODO: Board color?
+        AbstractBoardModel<?> model = ModelsInit.getModel(bt, Color.WHITE); // TODO: Board color?
 
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 

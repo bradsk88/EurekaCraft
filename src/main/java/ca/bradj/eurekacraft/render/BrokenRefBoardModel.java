@@ -9,6 +9,8 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.resources.ResourceLocation;
 
+import java.awt.*;
+
 public class BrokenRefBoardModel extends AbstractBoardModel<BrokenRefBoardModel> {
 
     private static final ResourceLocation TEXTURE = new ResourceLocation(
@@ -43,7 +45,7 @@ public class BrokenRefBoardModel extends AbstractBoardModel<BrokenRefBoardModel>
     }
 
     @Override
-    public BrokenRefBoardModel withColor(float r, float g, float b) {
+    public BrokenRefBoardModel withColor(Color color) {
         return this; // TODO: Color?
     }
 }
