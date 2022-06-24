@@ -2,24 +2,33 @@ package ca.bradj.eurekacraft.client;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.render.RefBoardItemModel;
+import ca.bradj.eurekacraft.render.refboard.RefBoardColoredModel;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
+import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -33,6 +42,30 @@ public class BoardItemRendering {
                 return 0;
             }
         }, ItemsInit.STANDARD_REF_BOARD.get());
+    }
+
+    public static StandardRefBoard refBoard;
+
+    @SubscribeEvent
+    public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
+        refBoard = new StandardRefBoard();
+        refBoard.setRegistryName("ref_board_registry_name");
+        itemRegisterEvent.getRegistry().register(refBoard);
+    }
+
+    @SubscribeEvent
+    public static void registerItemModel(ModelBakeEvent evt) {
+        EurekaCraft.LOGGER.debug("Registering item model");
+        ModelResourceLocation itemModelResourceLocation = RefBoardColoredModel.modelResourceLocation;
+        BakedModel existingModel = evt.getModelRegistry().get(itemModelResourceLocation);
+        if (existingModel == null) {
+            EurekaCraft.LOGGER.warn("Did not find the expected vanilla baked model in registry: " + itemModelResourceLocation);
+        } else if (existingModel instanceof RefBoardColoredModel) {
+            EurekaCraft.LOGGER.warn("Tried to replace ChessboardModel twice");
+        } else {
+            RefBoardColoredModel customModel = new RefBoardColoredModel(existingModel, Color.RED);
+            evt.getModelRegistry().put(itemModelResourceLocation, customModel);
+        }
     }
 
     public static void initItemProperties() {

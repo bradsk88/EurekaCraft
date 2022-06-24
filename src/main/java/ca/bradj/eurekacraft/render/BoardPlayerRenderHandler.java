@@ -51,6 +51,13 @@ public class BoardPlayerRenderHandler {
                 matrixStack, ivertexbuilder, event.getPackedLight(),
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
+
+        WheelModel wModel = new WheelModel();
+        wModel.getModelRenderer().yRot = newYRot;
+        wModel.renderToBuffer(
+                matrixStack, ivertexbuilder, event.getPackedLight(),
+                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+        );
     }
 }
 
