@@ -1,31 +1,41 @@
 package ca.bradj.eurekacraft.render.refboard;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.ForgeHooksClient;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class RefBoardColoredModel implements BakedModel {
 
     public static final ModelResourceLocation modelResourceLocation
-            = new ModelResourceLocation("eurekacraft:ref_board_registry_name", "inventory");
+            = new ModelResourceLocation("eurekacraft:ref_board", "inventory");
 
-    private final BakedModel parentModel;
-    private final Color color;
+    private List<BakedQuad> quads;
 
     public RefBoardColoredModel(
-            BakedModel parent, Color color
+            BakedModel parent
     ) {
-        this.parentModel = parent;
-        this.color = color;
+        this.quads = enableTinting(parent);
+    }
+
+    private List<BakedQuad> enableTinting(
+            BakedModel parentModel
+    ) {
+        return parentModel.getQuads(null, null, null).stream().
+                map(v -> new BakedQuad(v.getVertices(), 0, v.getDirection(), v.getSprite(), v.isShade())).
+                collect(Collectors.toList());
     }
 
     @Override
@@ -33,24 +43,11 @@ public class RefBoardColoredModel implements BakedModel {
             @Nullable BlockState state,
             @Nullable Direction dir, Random rand
     ) {
-        return colorize(parentModel, color, state, dir, rand);
+        if (dir != null) {
+            return List.of();
+        }
+        return this.quads;
     }
-
-    private List<BakedQuad> colorize(
-            BakedModel parentModel, Color color,
-            BlockState state, Direction dir, Random rand
-    ) {
-        return parentModel.getQuads(state, dir, rand);
-    }
-
-//    private BakedQuad colorizeQuad(Direction dir, Color color, BakedQuad q) {
-//        boolean shade = true;
-//        int[] coloredVertexData = q.getVertices().
-//        int [] vertexDataAll = Ints.concat(vertexData1, vertexData2, vertexData3, vertexData4);
-//        int itemRenderLayer = 0; // TODO: Might need to change if layering parts
-//        return new BakedQuad(vertexDataAll, itemRenderLayer, dir, q.getSprite(), shade);
-//        return null;
-//    }
 
     @Override
     public boolean useAmbientOcclusion() {
@@ -79,6 +76,8 @@ public class RefBoardColoredModel implements BakedModel {
 
     @Override
     public ItemOverrides getOverrides() {
-        return null;
+        // TODO: Use this to add wheels
+        // https://github.com/TheGreyGhost/MinecraftByExample/tree/working-1-16-4/src/main/java/minecraftbyexample/mbe15_item_dynamic_item_model
+        return ItemOverrides.EMPTY;
     }
 }

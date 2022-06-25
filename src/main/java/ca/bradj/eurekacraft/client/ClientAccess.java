@@ -9,7 +9,7 @@ public class ClientAccess {
     public static boolean updatePlayerDeployedBoard(int playerId, PlayerDeployedBoard.ColoredBoard bt) {
         Minecraft.getInstance().level.players().stream().
                 filter((p) -> p.getId() == playerId).
-                forEach(p -> PlayerDeployedBoardProvider.setBoardTypeFor(p, bt, false));
+                forEach(p -> PlayerDeployedBoardProvider.setBoardTypeFor(p, bt.boardType, bt.color, false));
         return true;
     }
 

@@ -7,10 +7,10 @@ import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
+import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -44,9 +44,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 // TODO: Destroy ref board on player disconnect
@@ -166,7 +166,7 @@ public class EntityRefBoard extends Entity {
     }
 
     public static EntityRefBoard spawnFromInventory(
-            Entity player, ServerLevel level, ItemStack boardItem, PlayerDeployedBoard.ColoredBoard board
+            Entity player, ServerLevel level, ItemStack boardItem, BoardType board
     ) {
         if (level.isClientSide()) {
             return null;
@@ -177,16 +177,18 @@ public class EntityRefBoard extends Entity {
             return null;
         }
 
+        Color c = BoardColor.FromStack(boardItem);
+
         EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
         Vec3 position = player.position();
         glider.setPos(position.x, position.y, position.z);
-        spawn(player, level, glider, board);
+        spawn(player, level, glider, board, c);
         return glider;
     }
 
-    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, PlayerDeployedBoard.ColoredBoard bt) {
+    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, BoardType bt, Color c) {
         level.addFreshEntity(board);
-        PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, true);
+        PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, c, true);
 
         if (deployedBoards.containsKey(player.getUUID())) {
             deployedBoards.get(player.getUUID()).remove(RemovalReason.DISCARDED);

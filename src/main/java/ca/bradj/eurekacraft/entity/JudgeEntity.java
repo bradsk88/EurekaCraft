@@ -384,7 +384,7 @@ public class JudgeEntity extends PathfinderMob {
                     this.self,
                     (ServerLevel) this.self.level,
                     ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
-                    PlayerDeployedBoard.ColoredBoard.plain(EliteRefBoard.ID) // TODO: Painted?
+                    EliteRefBoard.ID
             );
         }
     }
@@ -513,7 +513,7 @@ public class JudgeEntity extends PathfinderMob {
                 (ServerLevel) this.level,
                 new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
                 }),
-                PlayerDeployedBoard.ColoredBoard.plain(EliteRefBoard.ID) // TODO: Painted?
+                EliteRefBoard.ID // TODO: Painted?
         );
     }
 

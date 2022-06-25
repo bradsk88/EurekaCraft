@@ -1,8 +1,8 @@
 package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,6 +13,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.awt.*;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
 public class RefBoardDataLoader {
@@ -58,8 +60,8 @@ public class RefBoardDataLoader {
         );
         if (board.isAlive()) {
             // TODO: Store board type and color on ref board data
-            PlayerDeployedBoard.ColoredBoard cb = PlayerDeployedBoard.ColoredBoard.plain(StandardRefBoard.ID);
-            EntityRefBoard.spawn(event.getPlayer(), world, board, cb);
+            BoardType bt = StandardRefBoard.ID;
+            EntityRefBoard.spawn(event.getPlayer(), world, board, bt, Color.WHITE);
         }
     }
 

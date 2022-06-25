@@ -54,11 +54,6 @@ public class PlayerDeployedBoard {
 
         public static ColoredBoard NONE = ColoredBoard.plain(BoardType.NONE);
 
-        public ColoredBoard withColor(Color color) {
-            return new ColoredBoard(
-                    this.boardType, color
-            );
-        }
 
         public Color getColor() {
             return this.color;

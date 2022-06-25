@@ -39,14 +39,14 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     private final RefBoardStats baseStats;
-    private PlayerDeployedBoard.ColoredBoard board;
+    private BoardType board;
     private final StatsGetter statsGetter;
     protected boolean canFly = true;
 
     protected RefBoardItem(RefBoardStats stats, BoardType boardId) {
         super(PROPS);
         this.baseStats = stats;
-        this.board = PlayerDeployedBoard.ColoredBoard.plain(boardId);
+        this.board = boardId;
         this.statsGetter = new StatsGetter(stats);
     }
 
@@ -192,7 +192,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         if (paint.getItem() instanceof IColorSource) {
             Color color = ((IColorSource) paint.getItem()).getColor();
             EurekaCraft.LOGGER.debug("Painted board " + color);
-            this.board = this.board.withColor(color);
+            BoardColor.AddToStack(target, color);
         }
     }
 

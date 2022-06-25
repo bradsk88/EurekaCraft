@@ -2,8 +2,8 @@ package ca.bradj.eurekacraft.client;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ItemsInit;
-import ca.bradj.eurekacraft.render.RefBoardItemModel;
 import ca.bradj.eurekacraft.render.refboard.RefBoardColoredModel;
+import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
@@ -18,12 +18,10 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
@@ -39,19 +37,13 @@ public class BoardItemRendering {
         event.getItemColors().register(new ItemColor() {
             @Override
             public int getColor(ItemStack p_92672_, int p_92673_) {
-                return 0;
+                Color c = BoardColor.FromStack(p_92672_);
+                return c.getRGB();
             }
         }, ItemsInit.STANDARD_REF_BOARD.get());
     }
 
     public static StandardRefBoard refBoard;
-
-    @SubscribeEvent
-    public static void onItemsRegistration(final RegistryEvent.Register<Item> itemRegisterEvent) {
-        refBoard = new StandardRefBoard();
-        refBoard.setRegistryName("ref_board_registry_name");
-        itemRegisterEvent.getRegistry().register(refBoard);
-    }
 
     @SubscribeEvent
     public static void registerItemModel(ModelBakeEvent evt) {
@@ -63,7 +55,7 @@ public class BoardItemRendering {
         } else if (existingModel instanceof RefBoardColoredModel) {
             EurekaCraft.LOGGER.warn("Tried to replace ChessboardModel twice");
         } else {
-            RefBoardColoredModel customModel = new RefBoardColoredModel(existingModel, Color.RED);
+            RefBoardColoredModel customModel = new RefBoardColoredModel(existingModel);
             evt.getModelRegistry().put(itemModelResourceLocation, customModel);
         }
     }

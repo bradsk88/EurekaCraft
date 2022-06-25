@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.Optional;
 
 public class PlayerDeployedBoardProvider implements ICapabilitySerializable<CompoundTag> {
@@ -32,21 +33,22 @@ public class PlayerDeployedBoardProvider implements ICapabilitySerializable<Comp
         return player.getCapability(PLAYER_BOARD).map((PlayerDeployedBoard::getBoardType));
     }
 
-    public static void setBoardTypeFor(@Nonnull Entity p, PlayerDeployedBoard.ColoredBoard bt, boolean publishChanges) {
+    public static void setBoardTypeFor(@Nonnull Entity p, BoardType bt, Color c, boolean publishChanges) {
         p.getCapability(PLAYER_BOARD).ifPresent(b -> {
-            boolean wasChanged = b.setBoardType(bt);
+            PlayerDeployedBoard.ColoredBoard board = new PlayerDeployedBoard.ColoredBoard(bt, c);
+            boolean wasChanged = b.setBoardType(board);
             if (wasChanged && publishChanges) {
-                logger.debug("Sending board type change packet: " + bt);
+                logger.debug("Sending board type change packet: " + board);
                 EurekaCraftNetwork.CHANNEL.send(
                         PacketDistributor.ALL.noArg(), // TODO: Consider limiting reach
-                        new DeployedBoardMessage(p.getId(), bt)
+                        new DeployedBoardMessage(p.getId(), board)
                 );
             }
         });
     }
 
     public static void removeBoardFor(@Nonnull Entity player) {
-        setBoardTypeFor(player, PlayerDeployedBoard.ColoredBoard.NONE, true);
+        setBoardTypeFor(player, BoardType.NONE, Color.WHITE, true);
     }
 
     public void invalidate() {
