@@ -1,16 +1,13 @@
 package ca.bradj.eurekacraft.render.refboard;
 
-import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.ForgeHooksClient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -21,6 +18,8 @@ public class RefBoardColoredModel implements BakedModel {
 
     public static final ModelResourceLocation modelResourceLocation
             = new ModelResourceLocation("eurekacraft:ref_board", "inventory");
+    private final ItemTransforms transforms;
+    private final ItemOverrides overrides;
 
     private List<BakedQuad> quads;
 
@@ -28,6 +27,8 @@ public class RefBoardColoredModel implements BakedModel {
             BakedModel parent
     ) {
         this.quads = enableTinting(parent);
+        this.transforms = parent.getTransforms();
+        this.overrides = parent.getOverrides();
     }
 
     private List<BakedQuad> enableTinting(
@@ -56,7 +57,7 @@ public class RefBoardColoredModel implements BakedModel {
 
     @Override
     public boolean isGui3d() {
-        return false;
+        return true;
     }
 
     @Override
@@ -78,6 +79,11 @@ public class RefBoardColoredModel implements BakedModel {
     public ItemOverrides getOverrides() {
         // TODO: Use this to add wheels
         // https://github.com/TheGreyGhost/MinecraftByExample/tree/working-1-16-4/src/main/java/minecraftbyexample/mbe15_item_dynamic_item_model
-        return ItemOverrides.EMPTY;
+        return overrides;
+    }
+
+    @Override
+    public ItemTransforms getTransforms() {
+        return transforms;
     }
 }

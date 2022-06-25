@@ -2,7 +2,7 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 1,
+      "rolls": 10,
       "entries": [
         {
           "type": "minecraft:item",
@@ -13,12 +13,7 @@
               "chance": 0.25
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:scub_goggles",
@@ -28,12 +23,7 @@
               "chance": 0.05
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:broken_ref_board",
@@ -43,12 +33,7 @@
               "chance": 0.25
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:reflection_film_dust",
@@ -58,12 +43,7 @@
               "chance": 0.125
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:fresh_seeds",
@@ -73,12 +53,7 @@
               "chance": 0.125
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:reflection_film_dust",
@@ -88,12 +63,7 @@
               "chance": 0.5
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:flint_sanding_disc",
@@ -103,12 +73,7 @@
               "chance": 0.125
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:precision_wood",
@@ -118,12 +83,7 @@
               "chance": 0.25
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:glide_board",
@@ -133,12 +93,7 @@
               "chance": 0.05
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "eurekacraft:ref_board_core",
@@ -148,12 +103,7 @@
               "chance": 0.125
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:bread",
@@ -167,12 +117,7 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:flint",
@@ -186,12 +131,7 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:paper",
@@ -205,12 +145,7 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:clay_ball",
@@ -224,12 +159,7 @@
               }
             }
           ]
-        }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
+        },
         {
           "type": "minecraft:item",
           "name": "minecraft:oak_slab",
