@@ -43,6 +43,12 @@ public class BoardPlayerRenderHandler {
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
 
+        // TODO: Make acceleration / braking rotation work
+//        switch(PlayerBoardControlProvider.getControl(event.getPlayer())) {
+//            case BRAKE -> matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-30));
+//            case ACCELERATE -> matrixStack.mulPose(Vector3f.ZP.rotationDegrees(30));
+//        }
+
         float newYRot = (float) Math.toRadians(-living.yBodyRot);
 
         VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());

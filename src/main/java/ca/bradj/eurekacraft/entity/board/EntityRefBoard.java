@@ -11,6 +11,8 @@ import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import ca.bradj.eurekacraft.vehicles.control.Control;
+import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -246,9 +248,18 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        if (this.playerOrNull == null || this.playerOrNull.isOnGround()) {
+
+        if (this.playerOrNull == null) {
             this.kill();
             return;
+        }
+
+        Control c = PlayerBoardControlProvider.getControl(playerOrNull);
+        if (this.playerOrNull.isOnGround()) {
+            if (!Control.BRAKE.equals(c)) {
+                kill();
+                return;
+            }
         }
 
         if (this.boardStats == null) {
@@ -264,7 +275,7 @@ public class EntityRefBoard extends Entity {
         this.doHardPhysics();
 
         if (canFly || canSurf(minSurfSpeed)) {
-            flyOrSurf();
+            flyOrSurf(c);
         }
     }
 
@@ -311,7 +322,7 @@ public class EntityRefBoard extends Entity {
         return 0;
     }
 
-    private void flyOrSurf() {
+    private void flyOrSurf(Control c) {
         boolean boosted = this.consumeBoost();
         if (this.playerOrNull instanceof JudgeEntity && !damaged) {
             // TODO: Remove. Judge should set off trapar bombs
@@ -345,7 +356,7 @@ public class EntityRefBoard extends Entity {
 
         if (this.playerOrNull.isShiftKeyDown()) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
-            flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
+            c = Control.ACCELERATE;
         }
 
 
@@ -353,7 +364,7 @@ public class EntityRefBoard extends Entity {
         if (canSurf(flightSpeed)) {
             liftOrFall = surfLift;
 
-            flightSpeed = Math.max(0, this.lastSpeed / defaultWaterDecel);
+            flightSpeed = Math.max(0, flightSpeed / defaultWaterDecel);
             animateSurf();
         } else if (playerOrNull.isInWater()) {
             if (!(playerOrNull instanceof JudgeEntity)) { // TODO: More generic check
@@ -361,7 +372,16 @@ public class EntityRefBoard extends Entity {
                 return;
             }
         }
-//
+
+        switch (c) {
+            // TODO: Based on wheel
+            case ACCELERATE -> flightSpeed = Math.min(flightSpeed + defaultLandAccel, defaultMaxSpeed);
+            case BRAKE -> flightSpeed = Math.max(0, flightSpeed / defaultWaterDecel);
+            case NONE -> {
+            }
+            default -> throw new IllegalArgumentException("Unexpected control value: " + c);
+        }
+
         flightSpeed = reduceSpeedIfCrashed(flightSpeed);
         destroyBlocks();
         storeForNextTick(liftOrFall, flightSpeed, this.lastDirection);

@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.network;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.network.msg.BoardControlMessage;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +32,11 @@ public class EurekaCraftNetwork {
                 encoder(TraparStormMessage::encode).
                 decoder(TraparStormMessage::decode).
                 consumer(TraparStormMessage::handle).
+                add();
+        registerMessage(BoardControlMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(BoardControlMessage::encode).
+                decoder(BoardControlMessage::decode).
+                consumer(BoardControlMessage::handle).
                 add();
     }
 

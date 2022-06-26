@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.client.BoardItemRendering;
+import ca.bradj.eurekacraft.client.KeyInit;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
@@ -68,6 +69,8 @@ public class EurekaCraft {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
         event.enqueueWork(BoardItemRendering::initItemProperties);
+
+        KeyInit.init();
 
         // TODO: Reimplement
 //        event.enqueueWork(

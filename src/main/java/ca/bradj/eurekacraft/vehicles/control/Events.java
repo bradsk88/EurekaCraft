@@ -1,4 +1,4 @@
-package ca.bradj.eurekacraft.vehicles.deployment;
+package ca.bradj.eurekacraft.vehicles.control;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.resources.ResourceLocation;
@@ -12,13 +12,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
-public class DeploymentHandler {
+public class Events {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     @SubscribeEvent()
     public static void registerCaps(RegisterCapabilitiesEvent evt) {
-        evt.register(PlayerDeployedBoard.class);
+        evt.register(Control.class);
     }
 
     @SubscribeEvent()
@@ -26,12 +26,11 @@ public class DeploymentHandler {
         if (!(evt.getObject() instanceof Player)) {
             return;
         }
-        if (!evt.getObject().getCapability(PlayerDeployedBoardProvider.PLAYER_BOARD).isPresent()) {
-            PlayerDeployedBoardProvider cap = new PlayerDeployedBoardProvider();
-            evt.addCapability(new ResourceLocation(EurekaCraft.MODID, "board_deployed"), cap);
+        if (!evt.getObject().getCapability(PlayerBoardControlProvider.PLAYER_BOARD_CONTROL).isPresent()) {
+            PlayerBoardControlProvider cap = new PlayerBoardControlProvider();
+            evt.addCapability(new ResourceLocation(EurekaCraft.MODID, "board_control"), cap);
             evt.addListener(cap::invalidate);
         }
 
     }
-
 }
