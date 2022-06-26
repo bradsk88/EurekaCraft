@@ -44,9 +44,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
         if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-            tooltip.add(new TextComponent("Speed: ???")); // TODO: Translate
-            tooltip.add(new TextComponent("Agility: ???")); // TODO: Translate
-            tooltip.add(new TextComponent("Lift: ???")); // TODO: Translate
+            tooltip.add(new TextComponent("Stats Unknown")); // TODO: Translate
         } else {
             RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
             tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate

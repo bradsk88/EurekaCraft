@@ -1,7 +1,7 @@
 {
 	"parent": "eurekacraft:item/ref_board",
 	"textures": {
-		"0": "minecraft:block/oak_planks"
+		"layer0": "minecraft:block/oak_planks"
 	},
 	"overrides": [
 		{
