@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -10,6 +11,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,11 +46,19 @@ public class BoardPlayerRenderHandler {
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
 
+        Vec3 rv = living.getForward().normalize();
         // TODO: Make acceleration / braking rotation work
-//        switch(PlayerBoardControlProvider.getControl(event.getPlayer())) {
-//            case BRAKE -> matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-30));
-//            case ACCELERATE -> matrixStack.mulPose(Vector3f.ZP.rotationDegrees(30));
-//        }
+        final int tipAmt = 10;
+        switch(PlayerBoardControlProvider.getControl(event.getPlayer())) {
+            case BRAKE -> {
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (-tipAmt * rv.x)));
+                matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (-tipAmt * rv.z)));
+            }
+            case ACCELERATE -> {
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (tipAmt * rv.x)));
+                matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (tipAmt * rv.z)));
+            }
+        }
 
         float newYRot = (float) Math.toRadians(-living.yBodyRot);
 

@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.render;
 
+import ca.bradj.eurekacraft.vehicles.control.Control;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
@@ -31,7 +32,10 @@ public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extend
     }
 
     @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+    public void renderToBuffer(
+            PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay,
+            float red, float green, float blue, float alpha
+    ){
         float r = this.color.getRed() / 255f;
         float g = this.color.getGreen() / 255f;
         float b = this.color.getBlue() / 255f;
@@ -45,10 +49,10 @@ public abstract class AbstractBoardModel<M extends AbstractBoardModel<M>> extend
         return VoxelShapes;
     }
 
-    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
+    public void setRotationAngle(float x, float y, float z) {
+        VoxelShapes.xRot = x;
+        VoxelShapes.yRot = y;
+        VoxelShapes.zRot = z;
     }
 
     protected abstract ModelPart build();
