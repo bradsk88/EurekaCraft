@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.client;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.render.refboard.RefBoardColoredModel;
 import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;

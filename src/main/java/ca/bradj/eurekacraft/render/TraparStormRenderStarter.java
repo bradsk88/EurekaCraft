@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;

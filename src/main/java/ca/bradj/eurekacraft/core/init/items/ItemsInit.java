@@ -1,9 +1,11 @@
-package ca.bradj.eurekacraft.core.init;
+package ca.bradj.eurekacraft.core.init.items;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
+import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.crop.FreshSeeds;
 import ca.bradj.eurekacraft.crop.FreshSmellingLeaves;
 import ca.bradj.eurekacraft.materials.*;
@@ -18,9 +20,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ItemsInit {
+	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EurekaCraft.MODID);
 
-	
-	public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EurekaCraft.MODID);
+	static {
+		WheelItemsInit.register(ITEMS);
+	}
 
 	public static final RegistryObject<Item> FRESH_SEEDS_ITEM = ITEMS.register(
 			FreshSeeds.ITEM_ID, FreshSeeds::new

@@ -4,6 +4,8 @@ import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.client.KeyInit;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import net.minecraft.client.renderer.entity.EntityRenderers;

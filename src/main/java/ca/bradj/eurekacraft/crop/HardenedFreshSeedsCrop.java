@@ -1,9 +1,8 @@
 package ca.bradj.eurekacraft.crop;
 
-import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;

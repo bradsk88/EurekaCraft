@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.core.init;
 
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 

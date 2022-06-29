@@ -47,7 +47,6 @@ public class BoardPlayerRenderHandler {
         living.yHeadRot = living.yBodyRot + 90;
 
         Vec3 rv = living.getForward().normalize();
-        // TODO: Make acceleration / braking rotation work
         final int tipAmt = 10;
         switch(PlayerBoardControlProvider.getControl(event.getPlayer())) {
             case BRAKE -> {

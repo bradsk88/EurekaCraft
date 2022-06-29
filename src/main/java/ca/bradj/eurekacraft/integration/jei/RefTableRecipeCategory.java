@@ -4,7 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.constants.VanillaTypes;

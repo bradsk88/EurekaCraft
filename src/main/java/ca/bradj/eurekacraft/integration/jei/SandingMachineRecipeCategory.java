@@ -3,7 +3,7 @@ package ca.bradj.eurekacraft.integration.jei;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
-import ca.bradj.eurekacraft.core.init.ItemsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import mezz.jei.api.constants.VanillaTypes;

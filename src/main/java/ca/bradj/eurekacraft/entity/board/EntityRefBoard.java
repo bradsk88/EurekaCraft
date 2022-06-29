@@ -349,6 +349,9 @@ public class EntityRefBoard extends Entity {
             // Apply lift
             // TODO: Get "lift factor" from block
             double blockLift = 0.5;
+            if (Control.BRAKE.equals(c)) {
+                blockLift = 0.75;
+            }
             liftOrFall = blockLift * liftFactor;
         } else {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
