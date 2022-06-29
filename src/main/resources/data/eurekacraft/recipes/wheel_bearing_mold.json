@@ -1,0 +1,25 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "item": "eurekacraft:resinous_dust"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:blueprint",
+    "consume": false
+  },
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:wheel_bearing_mold"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "tag": "minecraft:planks"
+    },
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "eurekacraft:resin"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:wheel_bearing",
+    "consume": true
+  },
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:oak_wood_wheel"
+  },
+  "cookingTime": 20
+}

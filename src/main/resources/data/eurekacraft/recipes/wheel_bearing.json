@@ -1,0 +1,25 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:wheel_bearing_mold",
+    "consume": true
+  },
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:wheel_bearing"
+  }
+}

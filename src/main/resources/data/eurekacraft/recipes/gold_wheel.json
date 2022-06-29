@@ -1,0 +1,32 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "eurekacraft:resin"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:wheel_bearing",
+    "consume": true
+  },
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:gold_wheel"
+  },
+  "cookingTime": 20
+}
