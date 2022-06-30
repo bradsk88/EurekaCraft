@@ -2,15 +2,24 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "item": "eurekacraft:precision_wood"
+      "item": "minecraft:iron_ingot"
     },
     {
-      "item": "eurekacraft:precision_wood"
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
+    },
+    {
+      "item": "minecraft:iron_ingot"
     }
   ],
-  "cook": "false",
+  "extra": {
+    "item": "eurekacraft:blueprint",
+    "consume": true
+  },
+  "cook": "true",
   "output": {
-    "item": "eurekacraft:precision_wood_stick",
-    "TODO": "TODO: output more than one"
+    "item": "eurekacraft:socket_wrench"
   }
 }

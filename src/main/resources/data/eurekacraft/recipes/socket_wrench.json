@@ -1,0 +1,16 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:precision_wood"
+    },
+    {
+      "item": "eurekacraft:precision_wood"
+    }
+  ],
+  "cook": "false",
+  "output": {
+    "item": "eurekacraft:precision_wood_stick",
+    "TODO": "TODO: output more than one"
+  }
+}

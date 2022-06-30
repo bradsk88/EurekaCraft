@@ -9,6 +9,7 @@ public class WheelItemsInit {
 
     public static RegistryObject<Item> WHEEL_BEARING_ITEM;
     public static RegistryObject<Item> WHEEL_BEARING_MOLD_ITEM;
+    public static RegistryObject<Item> SOCKET_WRENCH;
     public static RegistryObject<Item> OAK_WOOD_WHEEL_ITEM;
     public static RegistryObject<Item> STONE_WHEEL_ITEM;
     public static RegistryObject<Item> IRON_WHEEL_ITEM;
@@ -18,6 +19,7 @@ public class WheelItemsInit {
     public static void register(DeferredRegister<Item> items) {
         WHEEL_BEARING_ITEM = items.register(WheelBearingItem.ITEM_ID, WheelBearingItem::new);
         WHEEL_BEARING_ITEM = items.register(WheelBearingMoldItem.ITEM_ID, WheelBearingMoldItem::new);
+        SOCKET_WRENCH = items.register(SocketWrenchItem.ITEM_ID, SocketWrenchItem::new);
         OAK_WOOD_WHEEL_ITEM = items.register(OakWheelItem.ITEM_ID, OakWheelItem::new);
         STONE_WHEEL_ITEM = items.register(StoneWheelItem.ITEM_ID, StoneWheelItem::new);
         IRON_WHEEL_ITEM = items.register(IronWheelItem.ITEM_ID, IronWheelItem::new);
