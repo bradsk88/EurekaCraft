@@ -360,7 +360,7 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        float accelFactor = 1f + (0.1f * (wheelStats.acceleration)/100f);
+        float accelFactor = 1f + (0.05f * (wheelStats.acceleration)/100f);
         float brakeFactor = 1f - (0.1f * (wheelStats.braking/100f));
 
         if (this.playerOrNull.isShiftKeyDown()) {
