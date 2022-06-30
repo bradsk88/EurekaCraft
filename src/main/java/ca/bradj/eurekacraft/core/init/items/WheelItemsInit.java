@@ -18,7 +18,7 @@ public class WheelItemsInit {
 
     public static void register(DeferredRegister<Item> items) {
         WHEEL_BEARING_ITEM = items.register(WheelBearingItem.ITEM_ID, WheelBearingItem::new);
-        WHEEL_BEARING_ITEM = items.register(WheelBearingMoldItem.ITEM_ID, WheelBearingMoldItem::new);
+        WHEEL_BEARING_MOLD_ITEM = items.register(WheelBearingMoldItem.ITEM_ID, WheelBearingMoldItem::new);
         SOCKET_WRENCH = items.register(SocketWrenchItem.ITEM_ID, SocketWrenchItem::new);
         OAK_WOOD_WHEEL_ITEM = items.register(OakWheelItem.ITEM_ID, OakWheelItem::new);
         STONE_WHEEL_ITEM = items.register(StoneWheelItem.ITEM_ID, StoneWheelItem::new);

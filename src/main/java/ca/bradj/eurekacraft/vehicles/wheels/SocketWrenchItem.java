@@ -6,6 +6,6 @@ public class SocketWrenchItem extends EurekaCraftItem {
     public static final String ITEM_ID = "socket_wrench";
 
     public SocketWrenchItem() {
-        super(BASE_PROPS().stacksTo(1));
+        super(ITEM_ID, BASE_PROPS().stacksTo(1));
     }
 }

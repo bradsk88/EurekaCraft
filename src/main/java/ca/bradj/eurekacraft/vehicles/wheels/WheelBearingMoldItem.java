@@ -4,4 +4,9 @@ import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
 
 public class WheelBearingMoldItem extends EurekaCraftItem {
     public static final String ITEM_ID = "wheel_bearing_mold";
+
+    public WheelBearingMoldItem() {
+        super(ITEM_ID);
+    }
+
 }

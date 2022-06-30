@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "eurekacraft:oak_wood_wheel",
+    "eurekacraft:stone_wheel",
+    "eurekacraft:iron_wheel",
+    "eurekacraft:gold_wheel",
+    "eurekacraft:diamond_wheel"
+  ]
+}

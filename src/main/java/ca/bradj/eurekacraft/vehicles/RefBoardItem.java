@@ -4,16 +4,15 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
+import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,12 +24,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
-public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IBoardStatsGetterProvider {
+public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable, IBoardStatsGetterProvider {
 
     private static final String NBT_KEY_STATS = "stats";
 
@@ -132,6 +129,14 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+
+        Optional<Item> wheel = BoardWheels.FromStack(stack);
+        if (wheel.isEmpty()) {
+            tooltip.add(new TextComponent("Wheel: None")); // TODO: Translate
+        } else {
+            TranslatableComponent wheelName = new TranslatableComponent(wheel.get().getDescriptionId());
+            tooltip.add(new TextComponent("Wheel: " + wheelName.getString()));
+        }
     }
 
     @Override
@@ -194,6 +199,50 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             EurekaCraft.LOGGER.debug("Painted board " + color);
             BoardColor.AddToStack(target, color);
         }
+    }
+
+    @Override
+    public Optional<ItemStack> applyWrench(Collection<ItemStack> inputs, ItemStack target) {
+        ItemStack board = null;
+        ItemStack wheel = null;
+
+        for (ItemStack is : inputs) {
+            if (wheel != null && board != null) {
+                break;
+            }
+            if (BoardWheels.isWheel(is.getItem())) {
+                wheel = is;
+                continue;
+            }
+            if (is.getItem() instanceof RefBoardItem) {
+                board = is;
+            }
+        }
+
+        if (board == null) {
+            throw new IllegalStateException("No RefBoard found in inputs of RefBoard wrench recipe");
+        }
+        if (board.getItem() != target.getItem()) {
+            throw new IllegalStateException("Output item does not match input RefBoard");
+        }
+
+        if (wheel == null) {
+            // Remove wheel
+            Optional<Item> boardWheel = BoardWheels.FromStack(board);
+            if (boardWheel.isEmpty()) {
+                // TODO: Can we prevent the recipe from being accepted?
+                EurekaCraft.LOGGER.warn("Could not remove wheel because RefBoard had no wheel");
+                return Optional.empty();
+            }
+            BoardWheels.RemoveFromStack(board);
+            EurekaCraft.LOGGER.debug("Removed wheel " + boardWheel.get() + " from stack");
+            return Optional.of(new ItemStack(boardWheel.get()));
+        }
+
+        EurekaCraftItem wheelItem = (EurekaCraftItem) wheel.getItem();
+
+        BoardWheels.AddToStack(target, wheelItem);
+        return Optional.empty();
     }
 
     @Override

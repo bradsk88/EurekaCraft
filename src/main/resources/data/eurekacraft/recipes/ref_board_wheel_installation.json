@@ -1,0 +1,18 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:ref_board"
+    },{
+      "tag": "eurekacraft:wheels"
+    }
+  ],
+  "extra": {
+    "item": "eurekacraft:socket_wrench",
+    "consume": false
+  },
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:ref_board"
+  }
+}
