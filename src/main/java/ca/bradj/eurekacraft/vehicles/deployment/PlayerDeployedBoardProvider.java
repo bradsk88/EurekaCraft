@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -29,13 +30,16 @@ public class PlayerDeployedBoardProvider implements ICapabilitySerializable<Comp
     private PlayerDeployedBoard playerBoard = null;
     private final LazyOptional<PlayerDeployedBoard> opt = LazyOptional.of(this::getOrInitializeBoard);
 
-    public static Optional<PlayerDeployedBoard.ColoredBoard> getBoardTypeFor(@Nonnull ICapabilityProvider player) {
+    public static Optional<PlayerDeployedBoard.DeployedBoard> getBoardTypeFor(@Nonnull ICapabilityProvider player) {
         return player.getCapability(PLAYER_BOARD).map((PlayerDeployedBoard::getBoardType));
     }
 
-    public static void setBoardTypeFor(@Nonnull Entity p, BoardType bt, Color c, boolean publishChanges) {
+    public static void setBoardTypeFor(
+            @Nonnull Entity p, BoardType bt, Color c,
+            Optional<? extends IWheel> wheelItem, boolean publishChanges
+    ) {
         p.getCapability(PLAYER_BOARD).ifPresent(b -> {
-            PlayerDeployedBoard.ColoredBoard board = new PlayerDeployedBoard.ColoredBoard(bt, c);
+            PlayerDeployedBoard.DeployedBoard board = new PlayerDeployedBoard.DeployedBoard(bt, c, wheelItem);
             boolean wasChanged = b.setBoardType(board);
             if (wasChanged && publishChanges) {
                 logger.debug("Sending board type change packet: " + board);
@@ -48,7 +52,7 @@ public class PlayerDeployedBoardProvider implements ICapabilitySerializable<Comp
     }
 
     public static void removeBoardFor(@Nonnull Entity player) {
-        setBoardTypeFor(player, BoardType.NONE, Color.WHITE, true);
+        setBoardTypeFor(player, BoardType.NONE, Color.WHITE, Optional.empty(), true);
     }
 
     public void invalidate() {

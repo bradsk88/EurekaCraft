@@ -1,6 +1,8 @@
 package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
+import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
@@ -25,8 +27,8 @@ public class WheelModel extends EntityModel<Entity> {
     private final ModelPart VoxelShapes;
     protected final Color color;
 
-    public WheelModel() {
-        this(Color.RED);
+    public WheelModel(IWheel wheel) {
+        this(BoardWheels.GetColor(wheel));
     }
 
     public WheelModel(Color color) {

@@ -14,6 +14,9 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
+import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
+import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
+import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -50,6 +53,7 @@ import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 // TODO: Destroy ref board on player disconnect
@@ -183,17 +187,21 @@ public class EntityRefBoard extends Entity {
         }
 
         Color c = BoardColor.FromStack(boardItem);
+        Optional<Wheel> wheel = BoardWheels.FromStack(boardItem);
 
         EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
         Vec3 position = player.position();
         glider.setPos(position.x, position.y, position.z);
-        spawn(player, level, glider, board, c);
+        spawn(player, level, glider, board, c, wheel.map(v -> v));
         return glider;
     }
 
-    static void spawn(Entity player, ServerLevel level, EntityRefBoard board, BoardType bt, Color c) {
+    static void spawn(
+            Entity player, ServerLevel level, EntityRefBoard board,
+            BoardType bt, Color c, Optional<? extends IWheel> wheelItem
+    ) {
         level.addFreshEntity(board);
-        PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, c, true);
+        PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, c, wheelItem, true);
 
         if (deployedBoards.containsKey(player.getUUID())) {
             deployedBoards.get(player.getUUID()).remove(RemovalReason.DISCARDED);
@@ -207,7 +215,7 @@ public class EntityRefBoard extends Entity {
 
     @Override
     public void kill() {
-          super.kill();
+        super.kill();
         if (this.playerOrNull == null) {
             return;
         }
@@ -360,8 +368,8 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        float accelFactor = 1f + (0.05f * (wheelStats.acceleration)/100f);
-        float brakeFactor = 1f - (0.1f * (wheelStats.braking/100f));
+        float accelFactor = 1f + (0.05f * (wheelStats.acceleration) / 100f);
+        float brakeFactor = 1f - (0.1f * (wheelStats.braking / 100f));
 
         if (this.playerOrNull.isShiftKeyDown()) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
@@ -381,7 +389,6 @@ public class EntityRefBoard extends Entity {
         }
 
         switch (c) {
-            // TODO: Based on wheel
             case ACCELERATE -> flightSpeed = Math.min(flightSpeed * accelFactor, defaultMaxSpeed);
             case BRAKE -> flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
             case NONE -> {
@@ -651,7 +658,7 @@ public class EntityRefBoard extends Entity {
 
         public Data(UUID playerUUID, @Nullable EntityRefBoard board, CompoundTag worldNBT) {
             this(playerUUID, board);
-            if (this. board == null) {
+            if (this.board == null) {
                 throw new IllegalStateException("Cannot load from world into null board");
             }
             if (!worldNBT.contains("board_state")) {

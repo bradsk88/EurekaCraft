@@ -1,21 +1,24 @@
 package ca.bradj.eurekacraft.vehicles.deployment;
 
+import ca.bradj.eurekacraft.interfaces.IIDHaver;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
+import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.Optional;
 
 public class PlayerDeployedBoard {
 
-    private ColoredBoard board = ColoredBoard.plain(BoardType.NONE);
+    private DeployedBoard board = DeployedBoard.plain(BoardType.NONE);
 
-    public @NotNull ColoredBoard getBoardType() {
+    public @NotNull PlayerDeployedBoard.DeployedBoard getBoardType() {
         return this.board;
     }
 
-    public boolean setBoardType(ColoredBoard board) {
+    public boolean setBoardType(DeployedBoard board) {
         if (this.board.boardType == board.boardType) {
             return false;
         }
@@ -23,9 +26,17 @@ public class PlayerDeployedBoard {
         return true;
     }
 
-    // TODO: Serialize color
     public void saveNBT(CompoundTag tag) {
         tag.putString("board", this.board.boardType.toNBT());
+        CompoundTag color = new CompoundTag();
+        float[] colors = this.board.getColor().getRGBColorComponents(null);
+        color.putFloat("r", colors[0]);
+        color.putFloat("g", colors[1]);
+        color.putFloat("b", colors[2]);
+        tag.put("color", color);
+        this.board.wheel.ifPresent(eurekaCraftItem -> tag.putString(
+                "wheel", eurekaCraftItem.getItemId())
+        );
     }
 
     public void loadNBT(CompoundTag tag) {
@@ -34,26 +45,34 @@ public class PlayerDeployedBoard {
         float r = color.getFloat("r");
         float g = color.getFloat("g");
         float b = color.getFloat("b");
-        this.board = new ColoredBoard(
-                BoardType.fromNBT(boardString), new Color(r, g, b)
+        String wheel = tag.getString("wheel");
+        this.board = new DeployedBoard(
+                BoardType.fromNBT(boardString),
+                new Color(r, g, b),
+                BoardWheels.getItem(wheel).map(v -> v)
         );
     }
 
-    public static class ColoredBoard {
+    public static class DeployedBoard {
         public final BoardType boardType;
         public final Color color;
+        public final Optional<? extends IWheel> wheel;
 
-        public ColoredBoard(BoardType boardType, Color color) {
+        public DeployedBoard(
+                BoardType boardType,
+                Color color,
+                Optional<? extends IWheel> wheel
+        ) {
             this.boardType = boardType;
             this.color = color;
+            this.wheel = wheel;
         }
 
-        public static ColoredBoard plain(BoardType bt) {
-            return new ColoredBoard(bt, Color.WHITE);
+        public static DeployedBoard plain(BoardType bt) {
+            return new DeployedBoard(bt, Color.WHITE, Optional.empty());
         }
 
-        public static ColoredBoard NONE = ColoredBoard.plain(BoardType.NONE);
-
+        public static DeployedBoard NONE = DeployedBoard.plain(BoardType.NONE);
 
         public Color getColor() {
             return this.color;
@@ -61,9 +80,10 @@ public class PlayerDeployedBoard {
 
         @Override
         public String toString() {
-            return "ColoredBoard{" +
+            return "DeployedBoard{" +
                     "boardType=" + boardType +
                     ", color=" + color +
+                    ", wheel=" + wheel.map(IIDHaver::getItemId).orElse("None") +
                     '}';
         }
     }

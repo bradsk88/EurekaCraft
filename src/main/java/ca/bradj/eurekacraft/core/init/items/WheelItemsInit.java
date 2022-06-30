@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.core.init.items;
 
+import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
 import ca.bradj.eurekacraft.vehicles.wheels.*;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;
@@ -7,14 +8,14 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class WheelItemsInit {
 
-    public static RegistryObject<Item> WHEEL_BEARING_ITEM;
-    public static RegistryObject<Item> WHEEL_BEARING_MOLD_ITEM;
-    public static RegistryObject<Item> SOCKET_WRENCH;
-    public static RegistryObject<Item> OAK_WOOD_WHEEL_ITEM;
-    public static RegistryObject<Item> STONE_WHEEL_ITEM;
-    public static RegistryObject<Item> IRON_WHEEL_ITEM;
-    public static RegistryObject<Item> GOLD_WHEEL_ITEM;
-    public static RegistryObject<Item> DIAMOND_WHEEL_ITEM;
+    public static RegistryObject<EurekaCraftItem> WHEEL_BEARING_ITEM;
+    public static RegistryObject<EurekaCraftItem> WHEEL_BEARING_MOLD_ITEM;
+    public static RegistryObject<EurekaCraftItem> SOCKET_WRENCH;
+    public static RegistryObject<Wheel> OAK_WOOD_WHEEL_ITEM;
+    public static RegistryObject<Wheel> STONE_WHEEL_ITEM;
+    public static RegistryObject<Wheel> IRON_WHEEL_ITEM;
+    public static RegistryObject<Wheel> GOLD_WHEEL_ITEM;
+    public static RegistryObject<Wheel> DIAMOND_WHEEL_ITEM;
 
     public static void register(DeferredRegister<Item> items) {
         WHEEL_BEARING_ITEM = items.register(WheelBearingItem.ITEM_ID, WheelBearingItem::new);

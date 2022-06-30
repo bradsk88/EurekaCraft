@@ -24,7 +24,7 @@ public final class KeyEvents {
         }
 
         PlayerDeployedBoardProvider.getBoardTypeFor(player).ifPresentOrElse(
-                (PlayerDeployedBoard.ColoredBoard bt) -> {
+                (PlayerDeployedBoard.DeployedBoard bt) -> {
                     if (BoardType.NONE.equals(bt.boardType)) {
                         PlayerBoardControlProvider.setControl(player, Control.NONE);
                         return;

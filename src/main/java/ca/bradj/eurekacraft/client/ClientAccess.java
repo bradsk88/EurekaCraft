@@ -8,10 +8,10 @@ import net.minecraft.client.Minecraft;
 
 public class ClientAccess {
 
-    public static boolean updatePlayerDeployedBoard(int playerId, PlayerDeployedBoard.ColoredBoard bt) {
+    public static boolean updatePlayerDeployedBoard(int playerId, PlayerDeployedBoard.DeployedBoard bt) {
         Minecraft.getInstance().level.players().stream().
                 filter((p) -> p.getId() == playerId).
-                forEach(p -> PlayerDeployedBoardProvider.setBoardTypeFor(p, bt.boardType, bt.color, false));
+                forEach(p -> PlayerDeployedBoardProvider.setBoardTypeFor(p, bt.boardType, bt.color, bt.wheel, false));
         return true;
     }
 

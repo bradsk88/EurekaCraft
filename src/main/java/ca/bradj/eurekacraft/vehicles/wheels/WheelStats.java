@@ -33,11 +33,11 @@ public class WheelStats {
     }
 
     public static WheelStats GetStatsFromNBT(ItemStack item) {
-        Optional<Item> wheel = BoardWheels.FromStack(item);
+        Optional<Wheel> wheel = BoardWheels.FromStack(item);
         if (wheel.isEmpty()) {
             return NONE;
         }
-        EurekaCraftItem wheelItem = (EurekaCraftItem) wheel.get();
+        EurekaCraftItem wheelItem = wheel.get();
         return STATS.get(wheelItem.getItemId());
     }
 }

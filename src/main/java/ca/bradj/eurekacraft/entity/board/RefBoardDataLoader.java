@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.util.Optional;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
 public class RefBoardDataLoader {
@@ -59,9 +60,9 @@ public class RefBoardDataLoader {
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
         if (board.isAlive()) {
-            // TODO: Store board type and color on ref board data
+            // TODO: Store board type, color, etc. on ref board data
             BoardType bt = StandardRefBoard.ID;
-            EntityRefBoard.spawn(event.getPlayer(), world, board, bt, Color.WHITE);
+            EntityRefBoard.spawn(event.getPlayer(), world, board, bt, Color.WHITE, Optional.empty());
         }
     }
 

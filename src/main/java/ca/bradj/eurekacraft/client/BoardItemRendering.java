@@ -110,7 +110,7 @@ public class BoardItemRendering {
             if (!(entity instanceof Player)) {
                 return 0.0F;
             }
-            Optional<PlayerDeployedBoard.ColoredBoard> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
+            Optional<PlayerDeployedBoard.DeployedBoard> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
             if (!boardType.isPresent()) {
                 return 0.0F;
             }
@@ -134,7 +134,7 @@ public class BoardItemRendering {
             if (!(entity instanceof Player)) {
                 return 0;
             }
-            Optional<PlayerDeployedBoard.ColoredBoard> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
+            Optional<PlayerDeployedBoard.DeployedBoard> boardType = PlayerDeployedBoardProvider.getBoardTypeFor(entity);
             if (!boardType.isPresent()) {
                 return 0;
             }

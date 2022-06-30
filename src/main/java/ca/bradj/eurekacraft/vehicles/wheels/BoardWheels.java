@@ -6,13 +6,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class BoardWheels {
 
-    private static Map<String, Item> ITEMS = new HashMap<>();
+    private static Map<String, Wheel> ITEMS = new HashMap<>();
 
     static {
         ITEMS.put(OakWheelItem.ITEM_ID, WheelItemsInit.OAK_WOOD_WHEEL_ITEM.get());
@@ -39,7 +40,7 @@ public class BoardWheels {
         s.getTag().remove(NBT_KEY);
     }
 
-    public static Optional<Item> FromStack(ItemStack s) {
+    public static Optional<Wheel> FromStack(ItemStack s) {
         CompoundTag tag = s.getTag();
         if (tag == null) {
             return Optional.empty();
@@ -48,7 +49,7 @@ public class BoardWheels {
         return BoardWheels.deserializeNBT(wheelItem);
     }
 
-    private static Optional<Item> deserializeNBT(CompoundTag tag) {
+    private static Optional<Wheel> deserializeNBT(CompoundTag tag) {
         if (!tag.contains(TAG_KEY_ITEM_ID)) {
             return Optional.empty();
         }
@@ -67,5 +68,19 @@ public class BoardWheels {
             return false;
         }
         return ITEMS.containsKey(((EurekaCraftItem) item).getItemId());
+    }
+
+    public static Optional<Wheel> getItem(String wheel) {
+        if (ITEMS.containsKey(wheel)) {
+            return Optional.of(ITEMS.get(wheel));
+        }
+        return Optional.empty();
+    }
+
+    public static Color GetColor(IWheel wheel) {
+        if (!ITEMS.containsKey(wheel.getItemId())) {
+            return Color.WHITE;
+        }
+        return wheel.getColor();
     }
 }

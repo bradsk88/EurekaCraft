@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
+import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -130,7 +131,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
 
-        Optional<Item> wheel = BoardWheels.FromStack(stack);
+        Optional<Wheel> wheel = BoardWheels.FromStack(stack);
         if (wheel.isEmpty()) {
             tooltip.add(new TextComponent("Wheel: None")); // TODO: Translate
         } else {
@@ -255,7 +256,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
         if (wheel == null) {
             // Remove wheel
-            Optional<Item> boardWheel = BoardWheels.FromStack(target);
+            Optional<Wheel> boardWheel = BoardWheels.FromStack(target);
             if (boardWheel.isEmpty()) {
                 // TODO: Can we prevent the recipe from being accepted?
                 EurekaCraft.LOGGER.warn("Could not remove wheel because RefBoard had no wheel");

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -28,11 +27,11 @@ public class BoardPlayerRenderHandler {
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
         PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
-            (PlayerDeployedBoard.ColoredBoard bt) -> renderPlayerWithBoard(event, bt)
+            (PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(event, bt)
         );
     }
 
-    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, PlayerDeployedBoard.ColoredBoard bt) {
+    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, PlayerDeployedBoard.DeployedBoard bt) {
         if (BoardType.NONE.equals(bt.boardType)) {
             return;
         }
@@ -68,12 +67,14 @@ public class BoardPlayerRenderHandler {
                 OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
         );
 
-        WheelModel wModel = new WheelModel();
-        wModel.getModelRenderer().yRot = newYRot;
-        wModel.renderToBuffer(
-                matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
-        );
+        if (bt.wheel.isPresent()) {
+            WheelModel wModel = new WheelModel(bt.wheel.get());
+            wModel.getModelRenderer().yRot = newYRot;
+            wModel.renderToBuffer(
+                    matrixStack, ivertexbuilder, event.getPackedLight(),
+                    OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+            );
+        }
     }
 }
 

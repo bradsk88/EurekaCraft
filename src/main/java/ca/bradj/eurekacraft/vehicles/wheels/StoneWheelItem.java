@@ -1,11 +1,16 @@
 package ca.bradj.eurekacraft.vehicles.wheels;
 
-import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
+import java.awt.*;
 
-public class StoneWheelItem extends EurekaCraftItem {
+public class StoneWheelItem extends Wheel implements IWheel {
     public static final String ITEM_ID = "stone_wheel";
 
     public StoneWheelItem() {
         super(ITEM_ID);
+    }
+
+    @Override
+    public Color getColor() {
+        return Color.DARK_GRAY;
     }
 }
