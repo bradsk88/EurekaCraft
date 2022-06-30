@@ -172,6 +172,9 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         if (!(targetBoard instanceof RefBoardItem)) {
             return;
         }
+        if (!inputBoard.equals(targetBoard)) {
+            throw new IllegalStateException("Target board does not match input board for shaping");
+        }
         Item techItem = techStack.getItem();
         if (!(techItem instanceof IBoardStatsModifier)) {
             return;
@@ -181,6 +184,9 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         }
         RefBoardStats originalStats = ((RefBoardItem) inputBoard).boardStatsGetter().getBoardStats(inputBoardStack);
         RefBoardStats newStats = ((IBoardStatsModifier) techItem).modifyBoardStats(originalStats); // TODO: Enforce maximum
+
+        targetStack.setTag(inputBoardStack.getTag());
+
         storeStatsOnStack(targetStack, newStats);
     }
 
@@ -194,9 +200,28 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     @Override
     public void applyPaint(Collection<ItemStack> inputs, ItemStack paint, ItemStack target) {
+        ItemStack board = null;
+
+        for (ItemStack is : inputs) {
+            if (board != null) {
+                break;
+            }
+            if (is.getItem() instanceof RefBoardItem) {
+                board = is;
+            }
+        }
+
+        if (board == null) {
+            throw new IllegalStateException("No RefBoard found in inputs of RefBoard paint recipe");
+        }
+        if (board.getItem() != target.getItem()) {
+            throw new IllegalStateException("Output item does not match input RefBoard for painting");
+        }
+
         if (paint.getItem() instanceof IColorSource) {
             Color color = ((IColorSource) paint.getItem()).getColor();
             EurekaCraft.LOGGER.debug("Painted board " + color);
+            target.setTag(board.getTag());
             BoardColor.AddToStack(target, color);
         }
     }
@@ -226,15 +251,17 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             throw new IllegalStateException("Output item does not match input RefBoard");
         }
 
+        target.setTag(board.getTag());
+
         if (wheel == null) {
             // Remove wheel
-            Optional<Item> boardWheel = BoardWheels.FromStack(board);
+            Optional<Item> boardWheel = BoardWheels.FromStack(target);
             if (boardWheel.isEmpty()) {
                 // TODO: Can we prevent the recipe from being accepted?
                 EurekaCraft.LOGGER.warn("Could not remove wheel because RefBoard had no wheel");
                 return Optional.empty();
             }
-            BoardWheels.RemoveFromStack(board);
+            BoardWheels.RemoveFromStack(target);
             EurekaCraft.LOGGER.debug("Removed wheel " + boardWheel.get() + " from stack");
             return Optional.of(new ItemStack(boardWheel.get()));
         }

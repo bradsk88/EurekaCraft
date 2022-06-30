@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
+import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import ca.bradj.eurekacraft.interfaces.IPaintable;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
@@ -283,13 +284,15 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             ((IPaintable) iRecipe.getResultItem().getItem()).applyPaint(inputs, techStack, craftedOutput);
         }
 
-        if (iRecipe.getResultItem().getItem() instanceof IWrenchable) {
-            Optional<ItemStack> removedPart = ((IWrenchable) iRecipe.getResultItem().getItem()).applyWrench(inputs, craftedOutput);
-            if (removedPart.isPresent()) {
-                if (!itemHandler.getStackInSlot(RefTableConsts.secondaryOutputSlot).isEmpty()) {
-                    throw new IllegalStateException("Expected output slot to be empty for part removal recipe");
+        if (itemHandler.getStackInSlot(RefTableConsts.techSlot).sameItem(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
+            if (iRecipe.getResultItem().getItem() instanceof IWrenchable) {
+                Optional<ItemStack> removedPart = ((IWrenchable) iRecipe.getResultItem().getItem()).applyWrench(inputs, craftedOutput);
+                if (removedPart.isPresent()) {
+                    if (!itemHandler.getStackInSlot(RefTableConsts.secondaryOutputSlot).isEmpty()) {
+                        throw new IllegalStateException("Expected output slot to be empty for part removal recipe");
+                    }
+                    itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, removedPart.get(), false);
                 }
-                itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, removedPart.get(), false);
             }
         }
     }

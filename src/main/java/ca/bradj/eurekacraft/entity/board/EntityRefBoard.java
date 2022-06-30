@@ -14,6 +14,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
+import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -87,6 +88,7 @@ public class EntityRefBoard extends Entity {
     private boolean damaged;
     private boolean canFly;
     private RefBoardStats boardStats;
+    private WheelStats wheelStats = WheelStats.NONE;
 
     private float lastYRot = INITIAL_YROT;
     private Vec3 lastDirection = new Vec3(1.0, 1.0, 1.0);
@@ -120,6 +122,7 @@ public class EntityRefBoard extends Entity {
         damaged = ((RefBoardItem) item.getItem()).isDamagedBoard();
         canFly = ((RefBoardItem) item.getItem()).canFly();
         boardStats = RefBoardItem.GetStatsFromNBT(item);
+        wheelStats = WheelStats.GetStatsFromNBT(item);
 
         this.playerOrNull = player;
 
@@ -357,12 +360,13 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
+        float accelFactor = 1f + (0.1f * (wheelStats.acceleration)/100f);
+        float brakeFactor = 1f - (0.1f * (wheelStats.braking/100f));
+
         if (this.playerOrNull.isShiftKeyDown()) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
-            c = Control.ACCELERATE;
+            flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
         }
-
-
 
         if (canSurf(flightSpeed)) {
             liftOrFall = surfLift;
@@ -378,8 +382,8 @@ public class EntityRefBoard extends Entity {
 
         switch (c) {
             // TODO: Based on wheel
-            case ACCELERATE -> flightSpeed = Math.min(flightSpeed + defaultLandAccel, defaultMaxSpeed);
-            case BRAKE -> flightSpeed = Math.max(0, flightSpeed / defaultWaterDecel);
+            case ACCELERATE -> flightSpeed = Math.min(flightSpeed * accelFactor, defaultMaxSpeed);
+            case BRAKE -> flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
             case NONE -> {
             }
             default -> throw new IllegalArgumentException("Unexpected control value: " + c);
