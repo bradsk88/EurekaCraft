@@ -30,14 +30,14 @@ public class PlayerBoardControlProvider implements ICapabilitySerializable<Compo
         return player.getCapability(PLAYER_BOARD_CONTROL).orElse(ControlCapability.NONE).getControl();
     }
 
-    public static void setControl(@Nonnull Entity p, Control c) {
+    public static void setControl(@Nonnull Entity p, Control c, boolean andPublish) {
         LazyOptional<ControlCapability> capability = p.getCapability(PLAYER_BOARD_CONTROL);
         capability.ifPresent(b -> {
             boolean wasChanged = b.setControl(c);
-            if (wasChanged) {
+            if (wasChanged && andPublish) {
                 logger.debug("Sending board control change packet: " + c);
                 EurekaCraftNetwork.CHANNEL.send(
-                        PacketDistributor.ALL.noArg(), // TODO: Consider limiting reach
+                        PacketDistributor.SERVER.noArg(), // TODO: Consider limiting reach
                         new BoardControlMessage(p.getId(), c)
                 );
             }

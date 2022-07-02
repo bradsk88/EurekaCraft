@@ -12,5 +12,11 @@
   "cook": false,
   "output": {
     "item": "eurekacraft:ref_board"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:wheel_placeholder"
+    },
+    "chance": 1
   }
 }

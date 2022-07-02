@@ -14,7 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -63,7 +63,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public Component getDisplayName() {
-        return new TextComponent("container." + EurekaCraft.MODID + ".ref_table");
+        return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
     }
 
 
@@ -224,7 +224,11 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
                 ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
-                itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
+                if (sOutput.sameItemStackIgnoreDurability(WheelItemsInit.WHEEL_PLACEHOLDER_ITEM.get().getDefaultInstance())) {
+                    EurekaCraft.LOGGER.debug("Not outputting placeholder secondary");
+                } else {
+                    itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
+                }
             }
 
             Collection<ItemStack> inputs = new ArrayList<>();
@@ -318,12 +322,20 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         Optional<RefTableRecipe> recipe = getActivePrimaryRecipe();
         if (recipe.isPresent()) {
             RefTableRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
+            RefTableRecipe.Secondary secondary = recipe.get().getSecondaryResultItem();
             if (!extra.ingredient.isEmpty()) {
                 ItemStack techItem = this.itemHandler.getStackInSlot(RefTableConsts.techSlot);
                 if (!extra.ingredient.test(techItem)) {
                     return Optional.empty();
                 }
             }
+            if (!secondary.output.isEmpty()) {
+                ItemStack secondarySlotStack = this.itemHandler.getStackInSlot(RefTableConsts.secondaryOutputSlot);
+                if (!secondarySlotStack.isEmpty()) {
+                    return Optional.empty();
+                }
+            }
+            // TODO: Don't activate "wheel removal" when board has no wheel
         }
         return recipe;
     }

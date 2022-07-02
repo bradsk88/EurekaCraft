@@ -1,7 +1,7 @@
 package ca.bradj.eurekacraft.core.network.msg;
 
-import ca.bradj.eurekacraft.client.ClientAccess;
 import ca.bradj.eurekacraft.vehicles.control.Control;
+import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -36,8 +36,8 @@ public class BoardControlMessage {
     public boolean handle(Supplier<NetworkEvent.Context> ctx) {
         final AtomicBoolean success = new AtomicBoolean(false);
         ctx.get().enqueueWork(() -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                    () -> () -> success.set(ClientAccess.updatePlayerBoardControl(this.playerId, this.control))
+            DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER,
+                    () -> () -> PlayerBoardControlProvider.setControl(ctx.get().getSender(), control, false)
             );
         });
         ctx.get().setPacketHandled(true);

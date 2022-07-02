@@ -21,7 +21,7 @@
       "trigger": "eurekacraft:ref_table_trigger",
       "conditions": {
         "machine_output": {
-          "item": "eurekacraft:blueprint_advanced"
+          "items": ["eurekacraft:blueprint_advanced"]
         }
       }
     }

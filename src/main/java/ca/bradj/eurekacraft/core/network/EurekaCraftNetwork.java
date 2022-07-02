@@ -33,7 +33,7 @@ public class EurekaCraftNetwork {
                 decoder(TraparStormMessage::decode).
                 consumer(TraparStormMessage::handle).
                 add();
-        registerMessage(BoardControlMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+        registerMessage(BoardControlMessage.class, NetworkDirection.PLAY_TO_SERVER).
                 encoder(BoardControlMessage::encode).
                 decoder(BoardControlMessage::decode).
                 consumer(BoardControlMessage::handle).

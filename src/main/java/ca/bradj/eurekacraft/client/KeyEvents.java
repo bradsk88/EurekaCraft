@@ -26,21 +26,25 @@ public final class KeyEvents {
         PlayerDeployedBoardProvider.getBoardTypeFor(player).ifPresentOrElse(
                 (PlayerDeployedBoard.DeployedBoard bt) -> {
                     if (BoardType.NONE.equals(bt.boardType)) {
-                        PlayerBoardControlProvider.setControl(player, Control.NONE);
+                        setControl(player, Control.NONE);
                         return;
                     }
                     if (KeyInit.brakeFlightMapping.isDown()) {
-                        PlayerBoardControlProvider.setControl(player, Control.BRAKE);
+                        setControl(player, Control.BRAKE);
                     } else if (KeyInit.accelerateFlightMapping.isDown()) {
-                        PlayerBoardControlProvider.setControl(player, Control.ACCELERATE);
+                        setControl(player, Control.ACCELERATE);
                     } else {
-                        PlayerBoardControlProvider.setControl(player, Control.NONE);
+                        setControl(player, Control.NONE);
                     }
                 },
                 () -> {
-                    PlayerBoardControlProvider.setControl(player, Control.NONE);
+                    setControl(player, Control.NONE);
                 }
         );
 
+    }
+
+    private static void setControl(Player player, Control c) {
+        PlayerBoardControlProvider.setControl(player, c, true);
     }
 }

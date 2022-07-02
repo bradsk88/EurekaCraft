@@ -21,7 +21,7 @@
       "trigger": "eurekacraft:ref_table_trigger",
       "conditions": {
         "machine_output": {
-          "item": "eurekacraft:scub_goggles"
+          "items": ["eurekacraft:scub_goggles"]
         }
       }
     }

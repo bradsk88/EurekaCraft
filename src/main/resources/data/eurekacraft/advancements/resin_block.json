@@ -21,7 +21,7 @@
       "trigger": "eurekacraft:ref_table_trigger",
       "conditions": {
         "machine_output": {
-          "item": "eurekacraft:resin_block"
+          "items": ["eurekacraft:resin_block"]
         }
       }
     }
