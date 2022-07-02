@@ -54,7 +54,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     private int lastFireAmount = 1;
 
     private final ItemStackHandler itemHandler = createHandler();
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
+    private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
     private int noiseCooldown = 0;
 
     public RefTableTileEntity(BlockPos p_155229_, BlockState p_155230_) {
@@ -80,6 +80,12 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         super.load(nbt);
     }
 
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        handler = LazyOptional.of(() -> itemHandler);
+    }
+
     private CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());
         tag.putInt("cooked", this.craftPercent);
@@ -89,6 +95,12 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     @Override
     protected void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(this.store(nbt));
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        handler.invalidate();
     }
 
     @Nonnull
@@ -105,6 +117,11 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             @Override
             protected void validateSlotIndex(int slot) {
                 super.validateSlotIndex(slot); // TODO: Be more forgiving in case number of slots changes?
+            }
+
+            @Override
+            protected void onContentsChanged(int slot) {
+                setChanged();
             }
         };
     }
