@@ -22,19 +22,23 @@ public class LowSkyWavesFeature extends Feature<NoneFeatureConfiguration> {
         BlockPos blockpos = p_159473_.origin();
         Random random = p_159473_.random();
         WorldGenLevel worldgenlevel = p_159473_.level();
-        if (blockpos.getY() < worldgenlevel.getMinBuildHeight() + 5) {
-            return false;
-        } else {
-            int i = random.nextInt(xzSpread);
-            int j = random.nextInt(xzSpread);
-
-            for (BlockPos blockpos1 : BlockPos.betweenClosed(blockpos.offset(-i, 0, -j), blockpos.offset(i, 1, j))) {
-                this.tryPlaceBlock(worldgenlevel, blockpos1, random);
-
+        if (blockpos.getY() < worldgenlevel.getMinBuildHeight() + 5 || blockpos.getY() > 100) {
+            if (blockpos.getY() >= 100) {
+                // Less dense up high (1/3 the amount)
+                if (random.nextInt(3) != 0) {
+                    return false;
+                }
             }
-
-            return true;
         }
+        int i = random.nextInt(xzSpread);
+        int j = random.nextInt(xzSpread);
+
+        for (BlockPos blockpos1 : BlockPos.betweenClosed(blockpos.offset(-i, 0, -j), blockpos.offset(i, 1, j))) {
+            this.tryPlaceBlock(worldgenlevel, blockpos1, random);
+
+        }
+
+        return true;
     }
 
     private void tryPlaceBlock(LevelAccessor p_65268_, BlockPos p_65269_, Random p_65270_) {
