@@ -22,10 +22,7 @@
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:sanding_machine_block",
-            "count": {
-              "min": 1
-            }
+            "items": ["eurekacraft:sanding_machine_block"]
           }
         ]
       }

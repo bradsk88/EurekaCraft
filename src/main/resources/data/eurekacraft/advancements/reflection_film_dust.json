@@ -22,10 +22,7 @@
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:reflection_film_dust",
-            "count": {
-              "min": 1
-            }
+            "items": ["eurekacraft:reflection_film_dust"]
           }
         ]
       }

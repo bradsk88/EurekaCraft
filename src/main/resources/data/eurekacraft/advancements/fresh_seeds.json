@@ -22,10 +22,7 @@
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:fresh_seeds",
-            "count": {
-              "min": 1
-            }
+            "items": ["eurekacraft:fresh_seeds"]
           }
         ]
       }

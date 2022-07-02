@@ -22,10 +22,7 @@
             "conditions": {
                 "items": [
                     {
-                        "item": "eurekacraft:blueprint",
-                        "count": {
-                            "min": 1
-                        }
+                        "items": ["eurekacraft:blueprint"]
                     }
                 ]
             }

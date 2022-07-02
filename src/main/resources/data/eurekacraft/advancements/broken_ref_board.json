@@ -22,10 +22,7 @@
       "conditions": {
         "items": [
           {
-            "item": "eurekacraft:broken_ref_board",
-            "count": {
-              "min": 1
-            }
+            "items": ["eurekacraft:broken_ref_board"]
           }
         ]
       }
