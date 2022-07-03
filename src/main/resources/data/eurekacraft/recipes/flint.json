@@ -1,0 +1,24 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:gravel"
+    },
+    {
+      "item": "minecraft:gravel"
+    },
+    {
+      "item": "minecraft:gravel"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "minecraft:flint"
+  },
+  "secondary": {
+    "output": {
+      "item": "minecraft:flint"
+    },
+    "chance": 0.5
+  }
+}

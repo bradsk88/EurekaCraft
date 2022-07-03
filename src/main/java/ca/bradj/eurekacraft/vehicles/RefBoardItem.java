@@ -166,23 +166,24 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         }
         ItemStack inputBoardStack = (ItemStack) inputs.toArray()[0];
         Item inputBoard = inputBoardStack.getItem();
-        if (!(inputBoard instanceof RefBoardItem)) {
+        Item techItem = techStack.getItem();
+        if (!(techItem instanceof IBoardStatsModifier)) {
             return;
         }
         Item targetBoard = targetStack.getItem();
+        if (!(targetBoard instanceof IBoardStatsGetterProvider)) {
+            return;
+        }
+        if (!(inputBoard instanceof RefBoardItem)) {
+            return;
+        }
         if (!(targetBoard instanceof RefBoardItem)) {
             return;
         }
         if (!inputBoard.equals(targetBoard)) {
             throw new IllegalStateException("Target board does not match input board for shaping");
         }
-        Item techItem = techStack.getItem();
-        if (!(techItem instanceof IBoardStatsModifier)) {
-            return;
-        }
-        if (!(targetStack.getItem() instanceof IBoardStatsGetterProvider)) {
-            return;
-        }
+
         RefBoardStats originalStats = ((RefBoardItem) inputBoard).boardStatsGetter().getBoardStats(inputBoardStack);
         RefBoardStats newStats = ((IBoardStatsModifier) techItem).modifyBoardStats(originalStats); // TODO: Enforce maximum
 
@@ -201,6 +202,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     @Override
     public void applyPaint(Collection<ItemStack> inputs, ItemStack paint, ItemStack target) {
+        if (!(paint.getItem() instanceof IColorSource)) {
+            return;
+        }
+
         ItemStack board = null;
 
         for (ItemStack is : inputs) {
