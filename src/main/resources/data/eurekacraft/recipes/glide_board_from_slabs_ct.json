@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "PPP",
+    "PRP",
+    " L "
+  ],
+  "key": {
+    "P": {
+      "item": "eurekacraft:precision_wood"
+    },
+    "R": {
+      "item": "eurekacraft:resin"
+    },
+    "L": {
+      "item": "minecraft:lava_bucket"
+    }
+  },
+  "result": {
+    "item": "eurekacraft:glide_board"
+  }
+}

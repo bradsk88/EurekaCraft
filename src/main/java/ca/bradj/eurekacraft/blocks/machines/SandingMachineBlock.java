@@ -11,18 +11,23 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class SandingMachineBlock extends EntityBlock {
 
@@ -31,7 +36,7 @@ public class SandingMachineBlock extends EntityBlock {
     public static final String ITEM_ID = "sanding_machine_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
             tab(ModItemGroup.EUREKACRAFT_GROUP);
-    ;
+    private SandingMachineTileEntity entity;
 
     public SandingMachineBlock() {
         super(
@@ -43,7 +48,8 @@ public class SandingMachineBlock extends EntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return TilesInit.SANDING_MACHINE.get().create(p_153215_, p_153216_);
+        this.entity = TilesInit.SANDING_MACHINE.get().create(p_153215_, p_153216_);
+        return this.entity;
     }
 
     @Nullable
@@ -75,5 +81,10 @@ public class SandingMachineBlock extends EntityBlock {
         }
 
         NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, blockpos);
+    }
+
+    @Override
+    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder p_60538_) {
+        return this.entity.getItemsStacksForDrop();
     }
 }

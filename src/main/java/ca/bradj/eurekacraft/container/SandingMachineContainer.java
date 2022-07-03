@@ -81,6 +81,6 @@ public class SandingMachineContainer extends MachineContainer {
 
     @Override
     protected int getInventorySlotCount() {
-        return tileEntity.getSlotCount();
+        return tileEntity.getTotalSlotCount();
     }
 }

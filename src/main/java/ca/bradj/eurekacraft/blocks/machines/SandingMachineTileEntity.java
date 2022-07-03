@@ -6,9 +6,7 @@ import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
-import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -20,31 +18,20 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class SandingMachineTileEntity extends BlockEntity implements MenuProvider {
-    private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
+public class SandingMachineTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
     public static final String ENTITY_ID = "sanding_machine_tile_entity";
 
@@ -55,12 +42,9 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
     private static int abrasiveSlot = inputSlots;
     private static int outputSlot = abrasiveSlot + 1;
     private static int totalSlots = outputSlot + 1;
-    private final ItemStackHandler itemHandler = createHandler();
-    private final LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
-    private int noiseCooldown = 0;
 
     public SandingMachineTileEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(TilesInit.SANDING_MACHINE.get(), p_155229_, p_155230_);
+        super(TilesInit.SANDING_MACHINE.get(), p_155229_, p_155230_, totalSlots);
     }
 
     @Override
@@ -76,43 +60,13 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
 
     @Override
     public void load(CompoundTag nbt) {
-        itemHandler.deserializeNBT(nbt.getCompound("inv"));
-        this.sandPercent = nbt.getInt("cooked");
         super.load(nbt);
+        this.sandPercent = nbt.getInt("cooked");
     }
 
-    private CompoundTag save(CompoundTag tag) {
-        tag.put("inv", itemHandler.serializeNBT());
+    protected CompoundTag store(CompoundTag tag) {
         tag.putInt("cooked", this.sandPercent);
         return tag;
-    }
-
-    @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(this.save(tag));
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.save(new CompoundTag());
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return this.handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    private ItemStackHandler createHandler() {
-        return new ItemStackHandler(totalSlots);
     }
 
     public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, SandingMachineTileEntity entity) {
@@ -129,7 +83,7 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
 
     private void updateCookingStatus(Optional<SandingMachineRecipe> active) {
         if (active.isPresent()) {
-            ItemStack outSlot = this.itemHandler.getStackInSlot(outputSlot);
+            ItemStack outSlot = getStackInSlot(outputSlot);
             if (!outSlot.isEmpty()) {
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
                     return;
@@ -154,9 +108,8 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
 
     private boolean hasSandpaper() {
         Ingredient.TagValue tags = new Ingredient.TagValue(TagsInit.Items.SANDING_DISCS);
-        ItemStack abrasive = this.itemHandler.getStackInSlot(abrasiveSlot);
+        ItemStack abrasive = getStackInSlot(abrasiveSlot);
         return tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
-
     }
 
     private void doCook(Optional<SandingMachineRecipe> recipe) {
@@ -172,50 +125,23 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
             ItemStack output = iRecipe.getResultItem();
 
             for (int i = 0; i < inputSlots; i++) {
-                itemHandler.extractItem(i, 1, false);
+                extractItem(i, 1);
             }
 
             useExtraIngredient();
 
-            itemHandler.insertItem(outputSlot, output, false);
+            insertItem(outputSlot, output);
 
             setChanged();
         });
     }
 
-    private void makeCraftingNoise(Optional<SandingMachineRecipe> recipe) {
-        assert this.level != null;
-
-        if (this.noiseCooldown > 0) {
-            this.noiseCooldown--;
-            return;
-        }
-
-        recipe.ifPresent((r) -> {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(abrasiveSlot);
-            Item item = stackInSlot.getItem();
-            if (!(item instanceof NoisyCraftingItem)) {
-                return;
-            }
-
-            ((NoisyCraftingItem) item).getCraftingSound().ifPresent((s) -> {
-                float volume = 0.5f;
-                float pitch = 0.5f;
-                this.level.playSound(
-                        null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch
-                );
-                this.noiseCooldown = s.noiseCooldown;
-            });
-        });
-
-    }
-
     private void useExtraIngredient() {
-        ItemStack stackInSlot = itemHandler.getStackInSlot(abrasiveSlot);
+        ItemStack stackInSlot = getStackInSlot(abrasiveSlot);
         stackInSlot.hurt(1, new Random(), null);
         if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
-            this.itemHandler.extractItem(abrasiveSlot, 1, false);
+            extractItem(abrasiveSlot, 1);
         }
     }
 
@@ -224,7 +150,7 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         Container inv = new SimpleContainer(inputSlots);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < inputSlots; i++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+            ItemStack stackInSlot = getStackInSlot(i);
             inv.setItem(i, stackInSlot);
             if (!stackInSlot.isEmpty()) {
                 shapeless.add(stackInSlot);
@@ -264,7 +190,8 @@ public class SandingMachineTileEntity extends BlockEntity implements MenuProvide
         this.sandPercent = v;
     }
 
-    public int getSlotCount() {
-        return totalSlots;
+    @Override
+    protected ItemStack getItemForCraftingNoise() {
+        return getStackInSlot(abrasiveSlot);
     }
 }

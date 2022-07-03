@@ -9,9 +9,7 @@ import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import ca.bradj.eurekacraft.interfaces.IPaintable;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.interfaces.IWrenchable;
-import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -23,7 +21,6 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -31,19 +28,13 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class RefTableTileEntity extends BlockEntity implements MenuProvider {
+public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
     private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
@@ -53,12 +44,9 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     private int fireRemaining = 0;
     private int lastFireAmount = 1;
 
-    private final ItemStackHandler itemHandler = createHandler();
-    private LazyOptional<IItemHandler> handler = LazyOptional.of(() -> itemHandler);
-    private int noiseCooldown = 0;
 
     public RefTableTileEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(TilesInit.REF_TABLE.get(), p_155229_, p_155230_);
+        super(TilesInit.REF_TABLE.get(), p_155229_, p_155230_, RefTableConsts.totalSlots);
     }
 
     @Override
@@ -75,65 +63,14 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
     @Override
     public void load(CompoundTag nbt) {
-        itemHandler.deserializeNBT(nbt.getCompound("inv"));
-        this.craftPercent = nbt.getInt("cooked");
         super.load(nbt);
+        this.craftPercent = nbt.getInt("cooked");
     }
 
-    @Override
-    public void onLoad() {
-        super.onLoad();
-        handler = LazyOptional.of(() -> itemHandler);
-    }
-
-    private CompoundTag store(CompoundTag tag) {
-        tag.put("inv", itemHandler.serializeNBT());
+    protected CompoundTag store(CompoundTag tag) {
+        tag = super.store(tag);
         tag.putInt("cooked", this.craftPercent);
         return tag;
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag nbt) {
-        super.saveAdditional(this.store(nbt));
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        handler.invalidate();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return this.handler.cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    private ItemStackHandler createHandler() {
-        return new ItemStackHandler(RefTableConsts.totalSlots) {
-            @Override
-            protected void validateSlotIndex(int slot) {
-                super.validateSlotIndex(slot); // TODO: Be more forgiving in case number of slots changes?
-            }
-
-            @Override
-            protected void onContentsChanged(int slot) {
-                setChanged();
-            }
-        };
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        this.load(tag);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.store(new CompoundTag());
     }
 
     // Crafting
@@ -160,7 +97,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     private void updateCookingStatus(Optional<RefTableRecipe> active) {
         if (active.isPresent()) {
 
-            ItemStack outSlot = this.itemHandler.getStackInSlot(RefTableConsts.outputSlot);
+            ItemStack outSlot = getStackInSlot(RefTableConsts.outputSlot);
             if (!outSlot.isEmpty()) {
                 if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
                     return;
@@ -177,7 +114,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
                         this.craftPercent = 0;
                         return;
                     }
-                    this.itemHandler.extractItem(RefTableConsts.fuelSlot, 1, false);
+                    extractItem(RefTableConsts.fuelSlot, 1);
                     this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), RecipeType.SMELTING);
                     if (this.fireRemaining < 0) {
                         this.fireRemaining = 500;
@@ -203,7 +140,7 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
     }
 
     private boolean hasCoal() {
-        return this.itemHandler.getStackInSlot(RefTableConsts.fuelSlot).
+        return this.getStackInSlot(RefTableConsts.fuelSlot).
                 sameItemStackIgnoreDurability(
                         Items.COAL.getDefaultInstance()
                 );
@@ -219,7 +156,6 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         this.craftPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-//            logger.debug("recipe match!");
             ItemStack output = iRecipe.getResultItem();
 
             if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
@@ -227,13 +163,13 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
                 if (sOutput.sameItemStackIgnoreDurability(WheelItemsInit.WHEEL_PLACEHOLDER_ITEM.get().getDefaultInstance())) {
                     EurekaCraft.LOGGER.debug("Not outputting placeholder secondary");
                 } else {
-                    itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, sOutput, false);
+                    insertItem(RefTableConsts.secondaryOutputSlot, sOutput);
                 }
             }
 
             Collection<ItemStack> inputs = new ArrayList<>();
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
-                ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+                ItemStack stackInSlot = getStackInSlot(i);
                 if (stackInSlot.isEmpty()) {
                     continue;
                 }
@@ -241,60 +177,29 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             }
 
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
-                itemHandler.extractItem(i, 1, false);
+                extractItem(i, 1);
             }
 
             if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
                 useExtraIngredient(iRecipe, inputs, output, level);
             }
 
-            itemHandler.insertItem(RefTableConsts.outputSlot, output.copy(), false);
+            insertItem(RefTableConsts.outputSlot, output.copy());
 
             setChanged();
         });
     }
 
-    private void makeCraftingNoise(Optional<RefTableRecipe> recipe) {
-        assert this.level != null;
-
-        if (this.noiseCooldown > 0) {
-            this.noiseCooldown--;
-            return;
-        }
-
-        recipe.ifPresent((r) -> {
-            if (r.getExtraIngredient().ingredient.isEmpty()) {
-                return;
-            }
-
-            ItemStack stackInSlot = itemHandler.getStackInSlot(RefTableConsts.techSlot);
-            Item item = stackInSlot.getItem();
-            if (!(item instanceof NoisyCraftingItem)) {
-                return;
-            }
-
-            ((NoisyCraftingItem) item).getCraftingSound().ifPresent((s) -> {
-                float volume = 0.5f;
-                float pitch = 0.5f;
-                this.level.playSound(
-                        null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch
-                );
-                this.noiseCooldown = s.noiseCooldown;
-            });
-        });
-
-    }
-
     private void useExtraIngredient(
             RefTableRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
     ) {
-        ItemStack techStack = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        ItemStack techStack = getStackInSlot(RefTableConsts.techSlot);
         techStack.hurt(1, new Random(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
-            this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
+            extractItem(RefTableConsts.techSlot, 1);
         } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
-            this.itemHandler.extractItem(RefTableConsts.techSlot, 1, false);
+            extractItem(RefTableConsts.techSlot, 1);
         }
 
         if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
@@ -305,14 +210,14 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             ((IPaintable) iRecipe.getResultItem().getItem()).applyPaint(inputs, techStack, craftedOutput);
         }
 
-        if (itemHandler.getStackInSlot(RefTableConsts.techSlot).sameItem(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
+        if (getStackInSlot(RefTableConsts.techSlot).sameItem(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
             if (iRecipe.getResultItem().getItem() instanceof IWrenchable) {
                 Optional<ItemStack> removedPart = ((IWrenchable) iRecipe.getResultItem().getItem()).applyWrench(inputs, craftedOutput);
                 if (removedPart.isPresent()) {
-                    if (!itemHandler.getStackInSlot(RefTableConsts.secondaryOutputSlot).isEmpty()) {
+                    if (!getStackInSlot(RefTableConsts.secondaryOutputSlot).isEmpty()) {
                         throw new IllegalStateException("Expected output slot to be empty for part removal recipe");
                     }
-                    itemHandler.insertItem(RefTableConsts.secondaryOutputSlot, removedPart.get(), false);
+                    insertItem(RefTableConsts.secondaryOutputSlot, removedPart.get());
                 }
             }
         }
@@ -324,13 +229,13 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
             RefTableRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
             RefTableRecipe.Secondary secondary = recipe.get().getSecondaryResultItem();
             if (!extra.ingredient.isEmpty()) {
-                ItemStack techItem = this.itemHandler.getStackInSlot(RefTableConsts.techSlot);
+                ItemStack techItem = getStackInSlot(RefTableConsts.techSlot);
                 if (!extra.ingredient.test(techItem)) {
                     return Optional.empty();
                 }
             }
             if (!secondary.output.isEmpty()) {
-                ItemStack secondarySlotStack = this.itemHandler.getStackInSlot(RefTableConsts.secondaryOutputSlot);
+                ItemStack secondarySlotStack = getStackInSlot(RefTableConsts.secondaryOutputSlot);
                 if (!secondarySlotStack.isEmpty()) {
                     return Optional.empty();
                 }
@@ -345,13 +250,13 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         Container inv = new SimpleContainer(RefTableConsts.inputSlots + 1);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < RefTableConsts.inputSlots; i++) {
-            ItemStack stackInSlot = itemHandler.getStackInSlot(i);
+            ItemStack stackInSlot = getStackInSlot(i);
             inv.setItem(i, stackInSlot);
             if (!stackInSlot.isEmpty()) {
                 shapeless.add(stackInSlot);
             }
         }
-        ItemStack techItem = itemHandler.getStackInSlot(RefTableConsts.techSlot);
+        ItemStack techItem = getStackInSlot(RefTableConsts.techSlot);
         inv.setItem(RefTableConsts.inputSlots, techItem);
         shapeless.add(techItem);
 
@@ -388,10 +293,6 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
         this.craftPercent = v;
     }
 
-    public int getTotalSlotCount() {
-        return RefTableConsts.totalSlots;
-    }
-
     public int getFireRemaining() {
         return this.fireRemaining;
     }
@@ -406,5 +307,10 @@ public class RefTableTileEntity extends BlockEntity implements MenuProvider {
 
     public void setFireTotal(int i) {
         this.lastFireAmount = i;
+    }
+
+    @Override
+    protected ItemStack getItemForCraftingNoise() {
+        return getStackInSlot(RefTableConsts.techSlot);
     }
 }

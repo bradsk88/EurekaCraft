@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.container;
 
-import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
@@ -15,8 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
@@ -26,7 +23,6 @@ public class RefTableContainer extends MachineContainer {
     private FunctionalIntReferenceHolder cookProgressSlot;
     private FunctionalIntReferenceHolder fireRemainderSlot;
 
-    private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     public static final int boxHeight = 18, boxWidth = 18;
     public static final int inventoryLeftX = 8;
     public static final int titleBarHeight = 12;
