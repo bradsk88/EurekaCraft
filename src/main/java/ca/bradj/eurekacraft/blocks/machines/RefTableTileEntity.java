@@ -236,7 +236,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             }
             if (!secondary.output.isEmpty()) {
                 ItemStack secondarySlotStack = getStackInSlot(RefTableConsts.secondaryOutputSlot);
-                if (!secondarySlotStack.isEmpty()) {
+                boolean isSameSecondary = secondarySlotStack.sameItemStackIgnoreDurability(secondary.output);
+                boolean canFitSecondary = secondarySlotStack.getCount() < secondary.output.getMaxStackSize();
+                boolean canDeposit = secondarySlotStack.isEmpty() || (isSameSecondary && canFitSecondary);
+                if (!canDeposit) {
                     return Optional.empty();
                 }
             }
