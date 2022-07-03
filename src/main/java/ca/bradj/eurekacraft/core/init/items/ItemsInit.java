@@ -24,6 +24,7 @@ public class ItemsInit {
 
 	static {
 		WheelItemsInit.register(ITEMS);
+		GuideItemsInit.register(ITEMS);
 	}
 
 	public static final RegistryObject<Item> FRESH_SEEDS_ITEM = ITEMS.register(
