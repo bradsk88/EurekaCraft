@@ -28,7 +28,7 @@ public class RefBoardColoredModel implements BakedModel {
     ) {
         this.quads = enableTinting(parent);
         this.transforms = parent.getTransforms();
-        this.overrides = parent.getOverrides();
+        this.overrides = new RefBoardItemOverrideList();
     }
 
     private List<BakedQuad> enableTinting(
@@ -77,8 +77,6 @@ public class RefBoardColoredModel implements BakedModel {
 
     @Override
     public ItemOverrides getOverrides() {
-        // TODO: Use this to add wheels
-        // https://github.com/TheGreyGhost/MinecraftByExample/tree/working-1-16-4/src/main/java/minecraftbyexample/mbe15_item_dynamic_item_model
         return overrides;
     }
 
