@@ -5,32 +5,63 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Random;
 
 public class RefBoardItemOverrideList extends ItemOverrides {
 
     private static final Color INVISIBLE = new Color(0, 0, 0, 0);
 
-    // TODO: Finish this
-    private static final BakedModel NO_BOARD_MODEL = new SimpleBakedModel(
-            ImmutableList.of(new BakedQuad(new int[]{}, 0, Direction.DOWN, null, false)),
-            ImmutableMap.of(),
-            false, false, false,
-            null, ItemTransforms.NO_TRANSFORMS, ItemOverrides.EMPTY
-    );
+    // TODO: Make board visible from first person perspective
+    private static final BakedModel NO_BOARD_MODEL = new BakedModel() {
+        @Override
+        public List<BakedQuad> getQuads(@Nullable BlockState p_119123_, @Nullable Direction p_119124_, Random p_119125_) {
+            return ImmutableList.of(new BakedQuad(new int[]{}, 0, Direction.DOWN, null, false));
+        }
+
+        @Override
+        public boolean useAmbientOcclusion() {
+            return false;
+        }
+
+        @Override
+        public boolean isGui3d() {
+            return false;
+        }
+
+        @Override
+        public boolean usesBlockLight() {
+            return false;
+        }
+
+        @Override
+        public boolean isCustomRenderer() {
+            return false;
+        }
+
+        @Override
+        public TextureAtlasSprite getParticleIcon() {
+            return null;
+        }
+
+        @Override
+        public ItemOverrides getOverrides() {
+            return ItemOverrides.EMPTY;
+        }
+    };
 
     @Nullable
     @Override
@@ -42,7 +73,7 @@ public class RefBoardItemOverrideList extends ItemOverrides {
             BoardType deployedBoard = PlayerDeployedBoardProvider.getBoardTypeFor(player).
                     map(v -> v.boardType).
                     orElse(BoardType.NONE);
-            if (BoardType.NONE.equals(deployedBoard)) {
+            if (!BoardType.NONE.equals(deployedBoard)) {
                 return NO_BOARD_MODEL;
             }
         }
