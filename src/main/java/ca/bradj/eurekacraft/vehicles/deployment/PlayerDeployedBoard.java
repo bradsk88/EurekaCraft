@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -73,6 +74,31 @@ public class PlayerDeployedBoard {
         }
 
         public static DeployedBoard NONE = DeployedBoard.plain(BoardType.NONE);
+
+        public static boolean IsStackDeployed(ItemStack boardItem) {
+            if (boardItem.getTag() != null) {
+                return boardItem.getTag().getBoolean("deployed");
+            }
+            return false;
+        }
+
+        public static void AddToStack(ItemStack boardItem) {
+            CompoundTag tag = boardItem.getTag();
+            if (tag == null) {
+                tag = new CompoundTag();
+            }
+            tag.putBoolean("deployed", true);
+            boardItem.setTag(tag);
+        }
+
+        public static void RemoveFromStack(ItemStack boardItem) {
+            CompoundTag tag = boardItem.getTag();
+            if (tag == null) {
+                tag = new CompoundTag();
+            }
+            tag.putBoolean("deployed", false);
+            boardItem.setTag(tag);
+        }
 
         public Color getColor() {
             return this.color;

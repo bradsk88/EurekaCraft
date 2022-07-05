@@ -13,6 +13,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
@@ -86,6 +87,7 @@ public class EntityRefBoard extends Entity {
     private static final float maxFlySpeed = 2.0f;
     private static final float minSurfSpeed = runSpeed * 1.5f;
     private static final float surfLift = 0.05f;
+    private ItemStack boardItemStack;
 
     private float initialSpeed;
     private Entity playerOrNull;
@@ -111,6 +113,8 @@ public class EntityRefBoard extends Entity {
 
     public EntityRefBoard(Entity player, Level world, ItemStack boardItem) {
         super(EntitiesInit.REF_BOARD.get(), world);
+
+        this.boardItemStack = boardItem;
 
         if (world.isClientSide()) {
             return;
@@ -183,6 +187,7 @@ public class EntityRefBoard extends Entity {
         if (deployedBoards.containsKey(player.getUUID())) {
             logger.warn("Tried to spawn new. But there was already a deployed board");
             deployedBoards.remove(player.getUUID()).remove(RemovalReason.DISCARDED);
+            PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
             return null;
         }
 
@@ -192,7 +197,8 @@ public class EntityRefBoard extends Entity {
         EntityRefBoard glider = new EntityRefBoard(player, level, boardItem);
         Vec3 position = player.position();
         glider.setPos(position.x, position.y, position.z);
-        spawn(player, level, glider, board, c, wheel.map(v -> v));
+        spawn(player, level, glider, board, c, wheel);
+        PlayerDeployedBoard.DeployedBoard.AddToStack(boardItem);
         return glider;
     }
 
@@ -220,6 +226,9 @@ public class EntityRefBoard extends Entity {
             return;
         }
         PlayerDeployedBoardProvider.removeBoardFor(this.playerOrNull);
+        if (this.boardItemStack != null) {
+            PlayerDeployedBoard.DeployedBoard.RemoveFromStack(this.boardItemStack);
+        }
         if (!this.level.isClientSide()) {
             deployedBoards.remove(this.playerOrNull.getUUID());
         }

@@ -48,6 +48,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         this.statsGetter = new StatsGetter(stats);
     }
 
+    public BoardType getBoardType() {
+        return board;
+    }
+
     public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
         if (!(itemStack.getItem() instanceof RefBoardItem)) {
             throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");

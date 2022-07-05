@@ -2,7 +2,10 @@ package ca.bradj.eurekacraft.render;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
@@ -11,15 +14,21 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod.EventBusSubscriber(modid = EurekaCraft.MODID, value= Dist.CLIENT)
+import java.awt.*;
+
+import static net.minecraft.world.InteractionHand.OFF_HAND;
+
+@Mod.EventBusSubscriber(modid = EurekaCraft.MODID, value = Dist.CLIENT)
 public class BoardPlayerRenderHandler {
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -27,7 +36,7 @@ public class BoardPlayerRenderHandler {
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
         PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
-            (PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(event, bt)
+                (PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(event, bt)
         );
     }
 
@@ -47,7 +56,7 @@ public class BoardPlayerRenderHandler {
 
         Vec3 rv = living.getForward().normalize();
         final int tipAmt = 10;
-        switch(PlayerBoardControlProvider.getControl(event.getPlayer())) {
+        switch (PlayerBoardControlProvider.getControl(event.getPlayer())) {
             case BRAKE -> {
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (-tipAmt * rv.x)));
                 matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (-tipAmt * rv.z)));
@@ -75,6 +84,46 @@ public class BoardPlayerRenderHandler {
                     OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
             );
         }
+    }
+
+    @SubscribeEvent
+    public static void renderFirstPerson(RenderHandEvent event) {
+        if (event.getHand() == OFF_HAND) {
+            return;
+        }
+        Item item = event.getItemStack().getItem();
+        if (!(item instanceof RefBoardItem)) {
+            return;
+        }
+        if (!PlayerDeployedBoard.DeployedBoard.IsStackDeployed(event.getItemStack())) {
+            return;
+        }
+        Color c = BoardColor.FromStack(event.getItemStack());
+        if (event.getItemStack().sameItemStackIgnoreDurability(ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance())) {
+            renderPlayerHandWithBoard(event, ((RefBoardItem) item).getBoardType(), c);
+        }
+    }
+
+    private static void renderPlayerHandWithBoard(
+            RenderHandEvent event, BoardType bt, Color c
+    ) {
+        if (BoardType.NONE.equals(bt)) {
+            return;
+        }
+
+        PoseStack matrixStack = event.getPoseStack();
+
+        AbstractBoardModel<?> model = ModelsInit.getModel(bt, c);
+
+        matrixStack.mulPose(Vector3f.YP.rotationDegrees(-90));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-event.getInterpolatedPitch()));
+        matrixStack.translate(0.4, -1, 0);
+
+        VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());
+        model.renderToBuffer(
+                matrixStack, ivertexbuilder, event.getPackedLight(),
+                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+        );
     }
 }
 
