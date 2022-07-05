@@ -2,7 +2,7 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "rolls": 10,
+      "rolls": 5,
       "entries": [
         {
           "type": "minecraft:item",
@@ -36,16 +36,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "eurekacraft:reflection_film_dust",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.125
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "eurekacraft:fresh_seeds",
           "conditions": [
             {
@@ -61,6 +51,16 @@
             {
               "condition": "minecraft:random_chance",
               "chance": 0.5
+            }
+          ],
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0.0,
+                "max": 2.0,
+                "type": "minecraft:uniform"
+              }
             }
           ]
         },
@@ -82,6 +82,16 @@
               "condition": "minecraft:random_chance",
               "chance": 0.25
             }
+          ],
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0.0,
+                "max": 3.0,
+                "type": "minecraft:uniform"
+              }
+            }
           ]
         },
         {
@@ -91,6 +101,38 @@
             {
               "condition": "minecraft:random_chance",
               "chance": 0.05
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "eurekacraft:socket_wrench",
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.05
+            }
+          ]
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "eurekacraft:basic_wheels",
+          "expand": true,
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.05
+            }
+          ]
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "eurekacraft:tier2_wheels",
+          "expand": true,
+          "conditions": [
+            {
+              "condition": "minecraft:random_chance",
+              "chance": 0.01
             }
           ]
         },
@@ -126,7 +168,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 0.0,
-                "max": 6.0,
+                "max": 9.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -140,7 +182,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 0.0,
-                "max": 6.0,
+                "max": 9.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -154,7 +196,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 0.0,
-                "max": 6.0,
+                "max": 9.0,
                 "type": "minecraft:uniform"
               }
             }
