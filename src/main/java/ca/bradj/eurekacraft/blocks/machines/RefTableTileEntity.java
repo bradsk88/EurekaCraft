@@ -21,6 +21,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -233,6 +234,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 if (!extra.ingredient.test(techItem)) {
                     return Optional.empty();
                 }
+                if (invalidSocketRecipe(techItem)) {
+                    return Optional.empty();
+                }
             }
             if (!secondary.output.isEmpty()) {
                 ItemStack secondarySlotStack = getStackInSlot(RefTableConsts.secondaryOutputSlot);
@@ -246,6 +250,29 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             // TODO: Don't activate "wheel removal" when board has no wheel
         }
         return recipe;
+    }
+
+    private boolean invalidSocketRecipe(ItemStack techItem) {
+        Collection<ItemStack> inputs = new ArrayList<>();
+        for (int i = 0; i < RefTableConsts.inputSlots; i++) {
+            ItemStack stackInSlot = getStackInSlot(i);
+            if (stackInSlot.isEmpty()) {
+                continue;
+            }
+            inputs.add(stackInSlot);
+        }
+
+        if (!techItem.sameItemStackIgnoreDurability(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
+            return false;
+        }
+        for (Item i : inputs.stream().map(ItemStack::getItem).toList()) {
+            if (i instanceof IWrenchable) {
+                if (((IWrenchable) i).canApplyWrench(inputs, techItem)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private Optional<RefTableRecipe> getActivePrimaryRecipe() {

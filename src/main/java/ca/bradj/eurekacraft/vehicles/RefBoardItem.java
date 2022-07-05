@@ -236,34 +236,61 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         }
     }
 
+    private static class WrenchInputs {
+        final ItemStack board;
+        final ItemStack wheel;
+
+        public WrenchInputs(ItemStack board, ItemStack wheel) {
+            this.board = board;
+            this.wheel = wheel;
+        }
+
+        public static WrenchInputs fromInputs(Collection<ItemStack> inputs) {
+            ItemStack board = null;
+            ItemStack wheel = null;
+
+            for (ItemStack is : inputs) {
+                if (wheel != null && board != null) {
+                    break;
+                }
+                if (BoardWheels.isWheel(is.getItem())) {
+                    wheel = is;
+                    continue;
+                }
+                if (is.getItem() instanceof RefBoardItem) {
+                    board = is;
+                }
+            }
+
+            if (board == null) {
+                throw new IllegalStateException("No RefBoard found in inputs of RefBoard wrench recipe");
+            }
+            return new WrenchInputs(board, wheel);
+        }
+    }
+
+    @Override
+    public boolean canApplyWrench(Collection<ItemStack> inputs, ItemStack techItem) {
+        WrenchInputs i = WrenchInputs.fromInputs(inputs);
+        Optional<Wheel> wheel = BoardWheels.FromStack(i.board);
+        if (i.wheel == null) {
+            // Only allow wrench to remove wheel if there is one on the board
+            return wheel.isPresent();
+        }
+        // Only allow wrench to add wheel if board has none
+        return wheel.isEmpty();
+    }
+
     @Override
     public Optional<ItemStack> applyWrench(Collection<ItemStack> inputs, ItemStack target) {
-        ItemStack board = null;
-        ItemStack wheel = null;
+        WrenchInputs i = WrenchInputs.fromInputs(inputs);
 
-        for (ItemStack is : inputs) {
-            if (wheel != null && board != null) {
-                break;
-            }
-            if (BoardWheels.isWheel(is.getItem())) {
-                wheel = is;
-                continue;
-            }
-            if (is.getItem() instanceof RefBoardItem) {
-                board = is;
-            }
-        }
-
-        if (board == null) {
-            throw new IllegalStateException("No RefBoard found in inputs of RefBoard wrench recipe");
-        }
-        if (board.getItem() != target.getItem()) {
+        if (i.board.getItem() != target.getItem()) {
             throw new IllegalStateException("Output item does not match input RefBoard");
         }
+        target.setTag(i.board.getTag());
 
-        target.setTag(board.getTag());
-
-        if (wheel == null) {
+        if (i.wheel == null) {
             // Remove wheel
             Optional<Wheel> boardWheel = BoardWheels.FromStack(target);
             if (boardWheel.isEmpty()) {
@@ -276,7 +303,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             return Optional.of(new ItemStack(boardWheel.get()));
         }
 
-        EurekaCraftItem wheelItem = (EurekaCraftItem) wheel.getItem();
+        EurekaCraftItem wheelItem = (EurekaCraftItem) i.wheel.getItem();
 
         BoardWheels.AddToStack(target, wheelItem);
         return Optional.empty();
