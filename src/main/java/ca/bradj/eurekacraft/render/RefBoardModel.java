@@ -28,19 +28,19 @@ public class RefBoardModel extends AbstractBoardModel<RefBoardModel> {
     @Override
     protected ModelPart build() {
         CubeListBuilder cubeList = CubeListBuilder.create();
-        cubeList.texOffs(0, 0).addBox(0.0F, 0.0F, -4.0F, 15.0F, -1.0F, 8.0F);
-        cubeList.texOffs(0, 0).addBox(-2.0F, 0.0F, -5.0F, 2.0F, -1.0F, 10.0F);
-        cubeList.texOffs(0, 0).addBox(-8.0F, 0.0F, -6.0F, 6.0F, -1.0F, 12.0F);
-        cubeList.texOffs(0, 0).addBox(-10.0F, 0.0F, -5.0F, 2.0F, -1.0F, 10.0F);
-        cubeList.texOffs(0, 0).addBox(-12.0F, 0.0F, -4.0F, 2.0F, -1.0F, 8.0F);
-        cubeList.texOffs(0, 0).addBox(-14.0F, 0.0F, -3.0F, 2.0F, -1.0F, 6.0F);
-        cubeList.texOffs(0, 0).addBox(5.0F, 0.0F, -5.0F, 6.0F, -1.0F, 10.0F);
-        cubeList.texOffs(0, 0).addBox(8.0F, 1.0F, -2.0F, 5.0F, -1.0F, 1.0F);
-        cubeList.texOffs(0, 0).addBox(7.0F, 2.0F, -2.0F, 5.0F, -1.0F, 1.0F);
-        cubeList.texOffs(0, 0).addBox(8.0F, 1.0F, 1.0F, 5.0F, -1.0F, 1.0F);
-        cubeList.texOffs(0, 0).addBox(7.0F, 2.0F, 1.0F, 5.0F, -1.0F, 1.0F);
-        cubeList.texOffs(0, 0).addBox(-10.0F, 1.0F, -2.0F, 5.0F, -1.0F, 4.0F);
-        cubeList.texOffs(0, 0).addBox(-10.0F, 2.0F, -1.0F, 3.0F, -1.0F, 2.0F);
+        cubeList.texOffs(0, 0).addBox(0.0F, 0.0F, -4.0F, 15.0F, 1.0F, 8.0F);
+        cubeList.texOffs(0, 0).addBox(-2.0F, 0.0F, -5.0F, 2.0F, 1.0F, 10.0F);
+        cubeList.texOffs(0, 0).addBox(-8.0F, 0.0F, -6.0F, 6.0F, 1.0F, 12.0F);
+        cubeList.texOffs(0, 0).addBox(-10.0F, 0.0F, -5.0F, 2.0F, 1.0F, 10.0F);
+        cubeList.texOffs(0, 0).addBox(-12.0F, 0.0F, -4.0F, 2.0F, 1.0F, 8.0F);
+        cubeList.texOffs(0, 0).addBox(-14.0F, 0.0F, -3.0F, 2.0F, 1.0F, 6.0F);
+        cubeList.texOffs(0, 0).addBox(5.0F, 0.0F, -5.0F, 6.0F, 1.0F, 10.0F);
+        cubeList.texOffs(0, 0).addBox(8.0F, 1.0F, -2.0F, 5.0F, 1.0F, 1.0F);
+        cubeList.texOffs(0, 0).addBox(7.0F, 2.0F, -2.0F, 5.0F, 1.0F, 1.0F);
+        cubeList.texOffs(0, 0).addBox(8.0F, 1.0F, 1.0F, 5.0F, 1.0F, 1.0F);
+        cubeList.texOffs(0, 0).addBox(7.0F, 2.0F, 1.0F, 5.0F, 1.0F, 1.0F);
+        cubeList.texOffs(0, 0).addBox(-10.0F, 1.0F, -2.0F, 5.0F, 1.0F, 4.0F);
+        cubeList.texOffs(0, 0).addBox(-10.0F, 2.0F, -1.0F, 3.0F, 1.0F, 2.0F);
 
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();

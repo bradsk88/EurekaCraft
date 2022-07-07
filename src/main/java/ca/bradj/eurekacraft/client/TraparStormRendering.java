@@ -17,23 +17,16 @@ public class TraparStormRendering {
     private static TraparStormRenderStarter starter;
 
     // TODO: Reimplement for 1.18.2
-//    public static void init() {
-//        DimensionSpecialEffects dimensionRenderInfo = DimensionSpecialEffects.forType(DTypeAccessor.getOverworldType());
-//        IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
-//        IWeatherRenderHandler traparRenderer = new TraparStormRenderHandler();
-//
-//        starter = new TraparStormRenderStarter(dimensionRenderInfo, traparRenderer, defaultRenderer);
-//        MinecraftForge.EVENT_BUS.register(starter);
-//    }
+    public static void init() {
+        DimensionSpecialEffects dimensionRenderInfo = DimensionSpecialEffects.forType(DimensionType.DEFAULT_OVERWORLD);
+        IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
+        IWeatherRenderHandler traparRenderer = new TraparStormRenderHandler();
+
+        starter = new TraparStormRenderStarter(dimensionRenderInfo, traparRenderer, defaultRenderer);
+        MinecraftForge.EVENT_BUS.register(starter);
+    }
 
     public static void updateFromMessage(TraparStormMessage traparStormMessage) {
         StormSavedData.updateFromMessage(traparStormMessage);
     }
-
-//    private class DTypeAccessor extends DimensionType {
-//
-//        public static DimensionType getOverworldType() {
-//            return DimensionType.DEFAULT_OVERWORLD;
-//        }
-//    }
 }

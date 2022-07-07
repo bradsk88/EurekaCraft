@@ -89,7 +89,7 @@ public class StormSavedData extends SavedData {
                 e.getValue().buildUp();
             }
         }
-//        logTraparForPlayers(world);
+        logTraparForPlayers(world);
     }
 
     private static void logTraparForPlayers(Level world) {

@@ -247,7 +247,6 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                     return Optional.empty();
                 }
             }
-            // TODO: Don't activate "wheel removal" when board has no wheel
         }
         return recipe;
     }

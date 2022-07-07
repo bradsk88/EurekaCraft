@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.client.KeyInit;
+import ca.bradj.eurekacraft.client.TraparStormRendering;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
@@ -74,10 +75,9 @@ public class EurekaCraft {
 
         KeyInit.init();
 
-        // TODO: Reimplement
-//        event.enqueueWork(
-//                TraparStormRendering::init
-//        );
+        event.enqueueWork(
+                TraparStormRendering::init
+        );
     }
 
     @SubscribeEvent
