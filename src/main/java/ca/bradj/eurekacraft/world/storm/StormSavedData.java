@@ -25,29 +25,29 @@ public class StormSavedData extends SavedData {
     private static final StormSavedData NOT_STORMING = new StormSavedData(ID.toString());
     private static Map<ChunkPos, StormSavedData> chunkData = new HashMap<>();
 
-    public static final float DEFAULT_TRAPAR_PER_TICK = 0.00005f;
-    private static final float MAX_TRAPAR_GAIN_PER_TICK = 0.0001f;
+    public static final float DEFAULT_TRAPAR_PER_100_TICK = 0.005f;
+    private static final float MAX_TRAPAR_GAIN_PER_100_TICK = 0.01f;
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
     private static int ticks = 0;
     private final ChunkPos pos;
-    private final float gainPerTick;
-    private final float lossPerTick;
+    private final float gainPer100Tick;
+    private final float lossPer100Tick;
 
     public boolean storming = false;
     private float traparLevel;
 
     private StormSavedData(String id, ChunkPos pos, float gainPerTick) {
         super();
-        this.gainPerTick = gainPerTick;
-        this.lossPerTick = 1 * gainPerTick;
+        this.gainPer100Tick = gainPerTick;
+        this.lossPer100Tick = 40 * gainPerTick;
         this.pos = pos;
         this.traparLevel = new Random().nextFloat();
     }
 
 
     public StormSavedData(String p_i2141_1_) {
-        this(p_i2141_1_, new ChunkPos(0), DEFAULT_TRAPAR_PER_TICK);
+        this(p_i2141_1_, new ChunkPos(0), DEFAULT_TRAPAR_PER_100_TICK);
     }
 
     public StormSavedData(long seed, ChunkPos cp) {
@@ -56,7 +56,7 @@ public class StormSavedData extends SavedData {
 
     private static float gainFromSeedAndChunk(long seed, ChunkPos cp) {
         long posSeed = (100L * cp.x) + cp.z;
-        return new Random(seed + posSeed).nextFloat() * MAX_TRAPAR_GAIN_PER_TICK;
+        return new Random(seed + posSeed).nextFloat() * MAX_TRAPAR_GAIN_PER_100_TICK;
     }
 
     public static StormSavedData forChunk(ChunkPos cp) {
@@ -77,7 +77,7 @@ public class StormSavedData extends SavedData {
         if (chunkData.isEmpty()) {
             return;
         }
-        if (ticks < 2) {
+        if (ticks < 100) {
             ticks++;
             return;
         }
@@ -99,7 +99,7 @@ public class StormSavedData extends SavedData {
             if (d == null) {
                 logger.debug("Near " + p.getName().getContents() + ": null");
             } else {
-                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPerTick +"], p["+ d.pos+"]");
+                logger.debug("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPer100Tick +"], p["+ d.pos+"]");
             }
         }
     }
@@ -134,7 +134,7 @@ public class StormSavedData extends SavedData {
     }
 
     private void buildUp() {
-        this.traparLevel += this.gainPerTick;
+        this.traparLevel += this.gainPer100Tick;
         if (traparLevel >= 1.0f && !this.storming) {
             this.storming = true;
             EurekaCraftNetwork.CHANNEL.send(
@@ -146,11 +146,11 @@ public class StormSavedData extends SavedData {
     }
 
     private void peterOut() {
-        this.traparLevel -= this.lossPerTick;
+        this.traparLevel -= this.lossPer100Tick;
         if (traparLevel <= 0.0f && this.storming) {
             this.storming = false;
             EurekaCraftNetwork.CHANNEL.send(
-                    PacketDistributor.ALL.noArg(), // TODO: Consider limiting reach
+                    PacketDistributor.ALL.noArg(),
                     new TraparStormMessage(this.pos, false)
             );
         }

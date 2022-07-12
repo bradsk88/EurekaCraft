@@ -108,10 +108,10 @@ public class RefBoardColoredModelWithWheel implements BakedModel {
 
             for (int i = 0; i < vertices.length; i += 8) {
                 int agbr = 0;
-                agbr |= wheelColor.getAlpha() << 24;
-                agbr |= wheelColor.getBlue() << 16;
-                agbr |= wheelColor.getGreen() << 8;
                 agbr |= wheelColor.getRed() << 0;
+                agbr |= wheelColor.getGreen() << 8;
+                agbr |= wheelColor.getBlue() << 16;
+                agbr |= 255 << 24;
                 vertices[i + 3] = agbr;
             }
             newQuads.add(new BakedQuad(

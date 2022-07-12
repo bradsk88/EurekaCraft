@@ -368,10 +368,21 @@ public class EntityRefBoard extends Entity {
         if (boosted) {
             // Apply lift
             // TODO: Get "lift factor" from block
-            double blockLift = 0.5;
+            double blockLift = 0.25;
             if (Control.BRAKE.equals(c)) {
-                blockLift = 0.75;
+                blockLift = 0.35;
             }
+            double floorY = level.getSeaLevel();
+            double playerY = this.getY();
+            double heightAboveFloor = Math.max(1, playerY - floorY);
+            int maxHeight = level.getMaxBuildHeight();
+            if (heightAboveFloor > 0.5f * maxHeight) {
+                blockLift = 0.5 * blockLift;
+            }
+            double maxHeightAboveFloor = maxHeight - floorY;
+            double percentToMaxHeight = Math.max(0.1, (1 - (heightAboveFloor / maxHeightAboveFloor)));
+            blockLift = blockLift * percentToMaxHeight;
+            EurekaCraft.LOGGER.debug("Percent to max height: " + percentToMaxHeight + ", blockLift: " + blockLift);
             liftOrFall = blockLift * liftFactor;
         } else {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
