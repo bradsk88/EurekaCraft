@@ -66,6 +66,12 @@ public class EntityRefBoard extends Entity {
     private static final int BOOST_TICKS = 3;
     private static final float INITIAL_YROT = 0.000001f;
 
+    private static final float BLOCK_LIFT_RESIDUAL = 0.25f;
+    private static final float BLOCK_LIFT_STORM_DEFAULT = 0.25f;
+    private static final float BLOCK_LIFT_STORM_MAX = 0.35f;
+    private static final float BLOCK_LIFT_WAVE_BLOCK_DEFAULT = 0.5f;
+    private static final float BLOCK_LIFT_WAVE_BLOCK_MAX = 0.75f;
+
     static Map<UUID, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
     private static Block[] PASSABLE_BLOCKS = {
@@ -169,13 +175,6 @@ public class EntityRefBoard extends Entity {
     public void deserializeNBT(CompoundTag nbt) {
         EntityRefBoard.Serializer ser = new EntityRefBoard.Serializer(this);
         ser.deserializeNBT(nbt);
-    }
-
-    public static void boostPlayer(Level world, int id) {
-        if (world.isClientSide()) {
-            return;
-        }
-        boostedPlayers.put(id, BOOST_TICKS);
     }
 
     public static EntityRefBoard spawnFromInventory(
@@ -343,10 +342,15 @@ public class EntityRefBoard extends Entity {
     }
 
     private void flyOrSurf(Control c) {
+        float blockLift = this.calculateBoost(c);
         boolean boosted = this.consumeBoost();
+        if (boosted && blockLift == 0) {
+            blockLift = BLOCK_LIFT_RESIDUAL;
+        }
+
         if (this.playerOrNull instanceof JudgeEntity && !damaged) {
             // TODO: Remove. Judge should set off trapar bombs
-            boosted = true;
+            blockLift = BLOCK_LIFT_STORM_MAX;
         }
 
         double boardWeight = boardStats.weight();
@@ -365,27 +369,8 @@ public class EntityRefBoard extends Entity {
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
-        if (boosted) {
-            // Apply lift
-            // TODO: Get "lift factor" from block
-
-            // FIXME: This is good for storms but too weak for wave blocks
-            double blockLift = 0.25;
-            if (Control.BRAKE.equals(c)) {
-                blockLift = 0.35;
-            }
-            double floorY = level.getSeaLevel();
-            double playerY = this.getY();
-            double heightAboveFloor = Math.max(1, playerY - floorY);
-            int maxHeight = level.getMaxBuildHeight();
-            if (heightAboveFloor > 0.5f * maxHeight) {
-                blockLift = 0.5 * blockLift;
-            }
-            double maxHeightAboveFloor = maxHeight - floorY;
-            double percentToMaxHeight = Math.max(0.1, (1 - (heightAboveFloor / maxHeightAboveFloor)));
-            blockLift = blockLift * percentToMaxHeight;
-            EurekaCraft.LOGGER.debug("Percent to max height: " + percentToMaxHeight + ", blockLift: " + blockLift);
-            liftOrFall = blockLift * liftFactor;
+        if (blockLift > 0) {
+            liftOrFall = applyBoost(blockLift, liftFactor);
         } else {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
@@ -430,6 +415,23 @@ public class EntityRefBoard extends Entity {
         this.playerOrNull.fallDistance = 0; // To not die!
         this.playerOrNull.setYBodyRot(this.lastYRot);
         this.moveTo(this.playerOrNull.position());
+    }
+
+    private double applyBoost(float blockLift, double liftFactor) {
+        double liftOrFall;
+        double floorY = level.getSeaLevel();
+        double playerY = this.getY();
+        double heightAboveFloor = Math.max(1, playerY - floorY);
+        int maxHeight = level.getMaxBuildHeight();
+        if (heightAboveFloor > 0.5f * maxHeight) {
+            blockLift = 0.5f * blockLift;
+        }
+        double maxHeightAboveFloor = maxHeight - floorY;
+        double percentToMaxHeight = Math.max(0.1, (1 - (heightAboveFloor / maxHeightAboveFloor)));
+        blockLift *= (float) percentToMaxHeight;
+        EurekaCraft.LOGGER.trace("Percent to max height: " + percentToMaxHeight + ", blockLift: " + blockLift);
+        liftOrFall = blockLift * liftFactor;
+        return liftOrFall;
     }
 
     private void animateSurf() {
@@ -549,18 +551,29 @@ public class EntityRefBoard extends Entity {
         return false;
     }
 
-    private boolean consumeBoost() {
+    private float calculateBoost(Control c) {
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
-        } else {
-            Direction faceDir = this.playerOrNull.getDirection();
-            BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
-            BlockState blockInFront = this.level.getBlockState(inFront);
-            if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
-                boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            if (Control.BRAKE.equals(c)) {
+                return BLOCK_LIFT_STORM_MAX;
             }
+            return BLOCK_LIFT_STORM_DEFAULT;
         }
 
+        Direction faceDir = this.playerOrNull.getDirection();
+        BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
+        BlockState blockInFront = this.level.getBlockState(inFront);
+        if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
+            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            if (Control.BRAKE.equals(c)) {
+                return BLOCK_LIFT_WAVE_BLOCK_MAX;
+            }
+            return BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
+        }
+        return 0;
+    }
+
+    private boolean consumeBoost() {
         boolean boosted = false;
         int playerId = this.playerOrNull.getId();
         int boost = boostedPlayers.getOrDefault(playerId, 0);
