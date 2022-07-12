@@ -11,6 +11,6 @@ public class StoneWheelItem extends Wheel implements IWheel {
 
     @Override
     public Color getColor() {
-        return Color.DARK_GRAY;
+        return Color.DARK_GRAY.brighter();
     }
 }

@@ -107,15 +107,13 @@ public class RefBoardColoredModelWithWheel implements BakedModel {
             int[] vertices = wheelQuad.getVertices();
 
             for (int i = 0; i < vertices.length; i += 8) {
-                int agbr = 0;
-                agbr |= wheelColor.getRed() << 0;
-                agbr |= wheelColor.getGreen() << 8;
-                agbr |= wheelColor.getBlue() << 16;
-                agbr |= 255 << 24;
-                vertices[i + 3] = agbr;
+                // FIXME: this isn't working because tinting happens AFTER getting quads
+                vertices[i + 3] = new Color(
+                        wheelColor.getBlue(), wheelColor.getGreen(), wheelColor.getRed(), 255
+                ).getRGB();
             }
             newQuads.add(new BakedQuad(
-                    vertices, wheelQuad.getTintIndex(), wheelQuad.getDirection(),
+                    vertices, -1, wheelQuad.getDirection(),
                     wheelQuad.getSprite(), wheelQuad.isShade()
             ));
         }

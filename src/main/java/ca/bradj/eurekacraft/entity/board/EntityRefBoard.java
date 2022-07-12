@@ -368,6 +368,8 @@ public class EntityRefBoard extends Entity {
         if (boosted) {
             // Apply lift
             // TODO: Get "lift factor" from block
+
+            // FIXME: This is good for storms but too weak for wave blocks
             double blockLift = 0.25;
             if (Control.BRAKE.equals(c)) {
                 blockLift = 0.35;

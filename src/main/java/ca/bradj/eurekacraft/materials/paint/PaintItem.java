@@ -102,7 +102,7 @@ public class PaintItem extends Item implements IColorSource {
         return new PaintItem(of100(100, 100, 0));
     }
 
-    private static Color of100(int r, int g, int b) {
+    public static Color of100(int r, int g, int b) {
         int r1 = (int) (255 * (r / 100f));
         int g1 = (int) (255 * (g / 100f));
         int b1 = (int) (255 * (b / 100f));

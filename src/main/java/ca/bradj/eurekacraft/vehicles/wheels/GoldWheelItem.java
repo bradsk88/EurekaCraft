@@ -11,6 +11,6 @@ public class GoldWheelItem extends Wheel implements IWheel {
 
     @Override
     public Color getColor() {
-        return Color.YELLOW;
+        return Color.YELLOW.darker();
     }
 }
