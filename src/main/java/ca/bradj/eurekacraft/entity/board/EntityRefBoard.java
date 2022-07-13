@@ -66,11 +66,11 @@ public class EntityRefBoard extends Entity {
     private static final int BOOST_TICKS = 3;
     private static final float INITIAL_YROT = 0.000001f;
 
-    private static final float BLOCK_LIFT_RESIDUAL = 0.25f;
-    private static final float BLOCK_LIFT_STORM_DEFAULT = 0.25f;
-    private static final float BLOCK_LIFT_STORM_MAX = 0.35f;
+    private static final float BLOCK_LIFT_RESIDUAL = 0.5f;
+    private static final float BLOCK_LIFT_STORM_DEFAULT = 0.5f;
+    private static final float BLOCK_LIFT_STORM_BRAKING = 0.35f;
     private static final float BLOCK_LIFT_WAVE_BLOCK_DEFAULT = 0.5f;
-    private static final float BLOCK_LIFT_WAVE_BLOCK_MAX = 0.75f;
+    private static final float BLOCK_LIFT_WAVE_BLOCK_BRAKING = 0.75f;
 
     static Map<UUID, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
@@ -350,7 +350,7 @@ public class EntityRefBoard extends Entity {
 
         if (this.playerOrNull instanceof JudgeEntity && !damaged) {
             // TODO: Remove. Judge should set off trapar bombs
-            blockLift = BLOCK_LIFT_STORM_MAX;
+            blockLift = BLOCK_LIFT_STORM_BRAKING;
         }
 
         double boardWeight = boardStats.weight();
@@ -555,7 +555,7 @@ public class EntityRefBoard extends Entity {
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
             if (Control.BRAKE.equals(c)) {
-                return BLOCK_LIFT_STORM_MAX;
+                return BLOCK_LIFT_STORM_BRAKING;
             }
             return BLOCK_LIFT_STORM_DEFAULT;
         }
@@ -566,7 +566,7 @@ public class EntityRefBoard extends Entity {
         if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
             if (Control.BRAKE.equals(c)) {
-                return BLOCK_LIFT_WAVE_BLOCK_MAX;
+                return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
             }
             return BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
         }

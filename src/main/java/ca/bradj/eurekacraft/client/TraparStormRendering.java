@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.client;
 
-import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
 import ca.bradj.eurekacraft.render.TraparStormRenderHandler;
 import ca.bradj.eurekacraft.render.TraparStormRenderStarter;
@@ -9,12 +8,8 @@ import net.minecraft.client.renderer.DimensionSpecialEffects;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraftforge.client.IWeatherRenderHandler;
 import net.minecraftforge.common.MinecraftForge;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class TraparStormRendering {
-    private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private static TraparStormRenderStarter starter;
 
     // TODO: Reimplement for 1.18.2
     public static void init() {
@@ -22,7 +17,7 @@ public class TraparStormRendering {
         IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
         IWeatherRenderHandler traparRenderer = new TraparStormRenderHandler();
 
-        starter = new TraparStormRenderStarter(dimensionRenderInfo, traparRenderer, defaultRenderer);
+        TraparStormRenderStarter starter = new TraparStormRenderStarter(dimensionRenderInfo, traparRenderer, defaultRenderer);
         MinecraftForge.EVENT_BUS.register(starter);
     }
 

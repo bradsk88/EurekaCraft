@@ -46,18 +46,35 @@ public class TraparStormRenderStarter {
         updateFromState();
     }
 
+    @SubscribeEvent
+    public void onWeather(TickEvent.WorldTickEvent evt) {
+        if (evt.world.isRaining()) {
+            setToDefaultRenderer();
+        } else {
+            updateFromState();
+        }
+    }
+
     private void updateFromState() {
         if (gogglesOn) {
-            if (this.dimension.getWeatherRenderHandler() == this.traparRenderer) {
-                return;
-            }
-            this.dimension.setWeatherRenderHandler(this.traparRenderer);
+            setToTraparRenderer();
         } else {
-            if (this.dimension.getWeatherRenderHandler() == this.defaultRenderer) {
-                return;
-            }
-            this.dimension.setWeatherRenderHandler(this.defaultRenderer);
+            setToDefaultRenderer();
         }
+    }
+
+    private void setToDefaultRenderer() {
+        if (this.dimension.getWeatherRenderHandler() == this.defaultRenderer) {
+            return;
+        }
+        this.dimension.setWeatherRenderHandler(this.defaultRenderer);
+    }
+
+    private void setToTraparRenderer() {
+        if (this.dimension.getWeatherRenderHandler() == this.traparRenderer) {
+            return;
+        }
+        this.dimension.setWeatherRenderHandler(this.traparRenderer);
     }
 
 }
