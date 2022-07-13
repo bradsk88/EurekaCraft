@@ -41,7 +41,7 @@ public class GlideBoardModel extends AbstractBoardModel<GlideBoardModel> {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
         partdefinition.addOrReplaceChild("board", VoxelShapes, PartPose.rotation((float) Math.PI, 0, 0));
-        return LayerDefinition.create(meshdefinition, 0, 0).bakeRoot();
+        return LayerDefinition.create(meshdefinition, 16, 16).bakeRoot();
     }
 
     @Override
