@@ -11,7 +11,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class TraparStormRendering {
 
-    // TODO: Reimplement for 1.18.2
     public static void init() {
         DimensionSpecialEffects dimensionRenderInfo = DimensionSpecialEffects.forType(DimensionType.DEFAULT_OVERWORLD);
         IWeatherRenderHandler defaultRenderer = dimensionRenderInfo.getWeatherRenderHandler();
