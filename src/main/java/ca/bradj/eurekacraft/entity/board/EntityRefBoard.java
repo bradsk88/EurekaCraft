@@ -20,6 +20,7 @@ import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
+import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -39,6 +40,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -343,6 +345,9 @@ public class EntityRefBoard extends Entity {
 
     private void flyOrSurf(Control c) {
         float blockLift = this.calculateBoost(c);
+        if (blockLift > 0) {
+            EurekaCraft.LOGGER.trace("Boosted at " + this.blockPosition());
+        }
         boolean boosted = this.consumeBoost();
         if (boosted && blockLift == 0) {
             blockLift = BLOCK_LIFT_RESIDUAL;
@@ -558,6 +563,14 @@ public class EntityRefBoard extends Entity {
                 return BLOCK_LIFT_STORM_BRAKING;
             }
             return BLOCK_LIFT_STORM_DEFAULT;
+        }
+
+        if (ChunkWavesDataManager.get(level).getData(random, new ChunkPos(this.blockPosition())).isWavePresentAt(this.blockPosition())) {
+            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            if (Control.BRAKE.equals(c)) {
+                return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
+            }
+            return BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
         }
 
         Direction faceDir = this.playerOrNull.getDirection();

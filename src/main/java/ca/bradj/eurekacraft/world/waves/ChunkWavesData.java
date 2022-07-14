@@ -1,13 +1,9 @@
 package ca.bradj.eurekacraft.world.waves;
 
-import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.*;
 
@@ -26,14 +22,29 @@ public class ChunkWavesData {
 
     public static ChunkWavesData generate(Random rand, ChunkPos cp) {
         // TODO: Randomize number? Get from config;
-        int numWaves = 20;
+        int numWaves = 10;
         int xRange = cp.getMaxBlockX() - cp.getMinBlockX();
         int zRange = cp.getMaxBlockZ() - cp.getMinBlockZ();
         Map<BlockPos, Boolean> wavesMap = new HashMap<>(numWaves);
+        // Low waves
+        for (int i = 0; i < numWaves; i++) {
+            BlockPos bp = new BlockPos(
+                    cp.getMinBlockX() + rand.nextInt(xRange),
+                    rand.nextInt(100),
+                    cp.getMinBlockZ() + rand.nextInt(zRange)
+            );
+            wavesMap.put(bp, true);
+            for (Direction d : Direction.values()) {
+                if (rand.nextBoolean()) {
+                    wavesMap.put(bp.relative(d), true);
+                }
+            }
+        }
+        // High waves
         for (int i = 0; i < numWaves; i++) {
             wavesMap.put(new BlockPos(
                 cp.getMinBlockX() + rand.nextInt(xRange),
-                    rand.nextInt(256), // TODO: Get max height from world
+                    100 + rand.nextInt(100), // TODO: Get max height from world
                     cp.getMinBlockZ() + rand.nextInt(zRange)
             ), true);
         }

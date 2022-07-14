@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.world.waves;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -107,6 +108,10 @@ public class ChunkWavesDataManager extends SavedData {
         });
         tag.put("chunk_wave_data", chunks);
         return tag;
+    }
+
+    public static ChunkWavesData getForClient(ChunkPos cp) {
+        return chunkData.getOrDefault(cp, ChunkWavesData.fromCollection(ImmutableList.of()));
     }
 
     public static void updateFromMessage(ChunkWavesMessage msg) {
