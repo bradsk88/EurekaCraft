@@ -12,6 +12,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.model.ModelDataManager;
@@ -25,6 +26,7 @@ import java.util.Collection;
 public class WaveBlockRendering {
 
     private static Minecraft mc = Minecraft.getInstance();
+    private static Vec3 lastPos;
 
     @SubscribeEvent
     public static void registerDataRenderers(RenderLevelLastEvent evt){
@@ -46,17 +48,23 @@ public class WaveBlockRendering {
     }
 
     private static void renderChunkWaves(float partialTick, BlockRenderDispatcher renderer, ClientLevel world, BlockState state, BakedModel bm, PoseStack matrixStack, ChunkPos cp) {
-        // TODO: Make faster by caching previous (eye? block?) position and interpolate
-        // https://forums.minecraftforge.net/topic/38327-1710-renderplayerpre-event-how-to-smooth-out-model-jitter/#comment-203576
         Collection<BlockPos> waveBlocks =  ChunkWavesDataManager.getForClient(cp).getWaves();
+
+        Vec3 curPos = mc.cameraEntity.getEyePosition();
+        Vec3 iPos = curPos;
+        if (lastPos != null) {
+            iPos = lastPos.lerp(curPos, partialTick);
+        }
+        lastPos = iPos;
+
         for (BlockPos p : waveBlocks) {
             IModelData model = bm.getModelData(world, p, state, ModelDataManager.getModelData(world, new BlockPos(p)));
 
             matrixStack.pushPose();
             matrixStack.translate(
-                    p.getX() - mc.player.getEyePosition().x,
-                    p.getY() - mc.player.getEyePosition().y,
-                    p.getZ() - mc.player.getEyePosition().z
+                    p.getX() - iPos.x,
+                    p.getY() - iPos.y,
+                    p.getZ() - iPos.z
             );
             renderer.renderSingleBlock(state, matrixStack, mc.renderBuffers().crumblingBufferSource(), 15728880, OverlayTexture.NO_OVERLAY, model);
             matrixStack.popPose();
