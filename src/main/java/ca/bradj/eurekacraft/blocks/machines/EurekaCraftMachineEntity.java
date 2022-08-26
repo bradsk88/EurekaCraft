@@ -85,6 +85,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             }
             items.add(iStack);
         }
+        items.add(getEmptySelfAsBlockItem());
         return items;
     }
 
@@ -148,5 +149,6 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
     }
 
+    protected abstract ItemStack getEmptySelfAsBlockItem();
     protected abstract ItemStack getItemForCraftingNoise();
 }

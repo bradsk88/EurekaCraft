@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import ca.bradj.eurekacraft.interfaces.IPaintable;
@@ -55,6 +56,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
     }
 
+    @Override
+    protected ItemStack getEmptySelfAsBlockItem() {
+        return ItemsInit.REF_TABLE_BLOCK.get().getDefaultInstance();
+    }
 
     @Nullable
     @Override
