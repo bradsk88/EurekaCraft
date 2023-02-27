@@ -37,7 +37,7 @@ public class WaveBlockRendering {
         PoseStack matrixStack = evt.getPoseStack();
 
         ChunkPos cp = mc.player.chunkPosition();
-        Vec3 eyePos = mc.player.getEyePosition(evt.getPartialTick());
+        Vec3 eyePos = mc.gameRenderer.getMainCamera().getPosition();
         // TODO: Render in front of player (unless camere facing backward)
         for (int i = -4; i < 4; i++) {
             for (int j = -4; j < 4; j++) {

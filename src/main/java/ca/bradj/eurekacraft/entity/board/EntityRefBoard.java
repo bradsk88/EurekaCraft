@@ -565,7 +565,8 @@ public class EntityRefBoard extends Entity {
             return BLOCK_LIFT_STORM_DEFAULT;
         }
 
-        if (ChunkWavesDataManager.get(level).getData(random, new ChunkPos(this.blockPosition())).isWavePresentAt(this.blockPosition())) {
+        ChunkPos cp = new ChunkPos(this.blockPosition());
+        if (ChunkWavesDataManager.get(level).getData(random, cp).isWavePresentAt(this.blockPosition())) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
             if (Control.BRAKE.equals(c)) {
                 return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
