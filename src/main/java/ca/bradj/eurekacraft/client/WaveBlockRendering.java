@@ -6,6 +6,7 @@ import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,7 +29,7 @@ public class WaveBlockRendering {
     private static Vec3 lastPos;
 
     @SubscribeEvent
-    public static void registerDataRenderers(RenderLevelLastEvent evt){
+    public static void registerDataRenderers(RenderLevelLastEvent evt) {
         BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
         ClientLevel world = mc.level;
         BlockState state = BlocksInit.RESIN.get().defaultBlockState();
@@ -37,28 +37,40 @@ public class WaveBlockRendering {
         PoseStack matrixStack = evt.getPoseStack();
 
         ChunkPos cp = mc.player.chunkPosition();
+        Vec3 eyePos = mc.player.getEyePosition(evt.getPartialTick());
         // TODO: Render in front of player (unless camere facing backward)
         for (int i = -4; i < 4; i++) {
             for (int j = -4; j < 4; j++) {
                 ChunkPos cpj = new ChunkPos(cp.x + i, cp.z + j);
-                renderChunkWaves(evt.getPartialTick(), renderer, world, state, bm, matrixStack, cpj);
+                renderChunkWaves(evt.getPartialTick(), renderer, eyePos, world, state, bm, matrixStack, cpj);
             }
         }
-
+        evt.getLevelRenderer().renderLevel(
+                matrixStack,
+                evt.getPartialTick(),
+                evt.getStartNanos(),
+                true,
+                mc.gameRenderer.getMainCamera(),
+                mc.gameRenderer,
+                new LightTexture(mc.gameRenderer, mc),
+                evt.getProjectionMatrix()
+        );
     }
 
-    private static void renderChunkWaves(float partialTick, BlockRenderDispatcher renderer, ClientLevel world, BlockState state, BakedModel bm, PoseStack matrixStack, ChunkPos cp) {
-        Collection<BlockPos> waveBlocks =  ChunkWavesDataManager.getForClient(cp).getWaves();
-
-        Vec3 curPos = mc.cameraEntity.getEyePosition();
-        Vec3 iPos = curPos;
-        if (lastPos != null) {
-            iPos = lastPos.lerp(curPos, partialTick);
-        }
-        lastPos = iPos;
+    private static void renderChunkWaves(
+            float partialTick,
+            BlockRenderDispatcher renderer,
+            Vec3 iPos,
+            ClientLevel world,
+            BlockState state,
+            BakedModel bm,
+            PoseStack matrixStack,
+            ChunkPos cp
+    ) {
+        Collection<BlockPos> waveBlocks = ChunkWavesDataManager.getForClient(cp).getWaves();
 
         for (BlockPos p : waveBlocks) {
-            IModelData model = bm.getModelData(world, p, state, ModelDataManager.getModelData(world, new BlockPos(p)));
+            IModelData model = bm.getModelData(world, p, state, null);
 
             matrixStack.pushPose();
             matrixStack.translate(
@@ -66,7 +78,14 @@ public class WaveBlockRendering {
                     p.getY() - iPos.y,
                     p.getZ() - iPos.z
             );
-            renderer.renderSingleBlock(state, matrixStack, mc.renderBuffers().crumblingBufferSource(), 15728880, OverlayTexture.NO_OVERLAY, model);
+            renderer.renderSingleBlock(
+                    state,
+                    matrixStack,
+                    mc.renderBuffers().crumblingBufferSource(),
+                    15728880,
+                    OverlayTexture.NO_OVERLAY,
+                    model
+            );
             matrixStack.popPose();
         }
     }
