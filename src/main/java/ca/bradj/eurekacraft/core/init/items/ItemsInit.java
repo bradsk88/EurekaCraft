@@ -244,6 +244,10 @@ public class ItemsInit {
 			PaintItem.YELLOW_ITEM_ID, PaintItem::yellow
 	);
 
+	public static final RegistryObject<Item> PHOTO = ITEMS.register(
+			Photo.ITEM_ID, Photo::new
+	);
+
 	public static void register(IEventBus bus) {
 		ITEMS.register(bus);
 	}
