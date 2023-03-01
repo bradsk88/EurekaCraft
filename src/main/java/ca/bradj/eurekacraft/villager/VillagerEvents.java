@@ -90,11 +90,6 @@ public class VillagerEvents {
                         4, 8, 0.75F
                 ),
                 new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 4),
-                        new ItemStack(ItemsInit.SANDING_MACHINE_BLOCK.get(), 1),
-                        4, 8, 0.75F
-                ),
-                new MerchantOffer(
                         new ItemStack(Items.EMERALD, 2),
                         new ItemStack(Items.OAK_SLAB, 16),
                         4, 8, 0.75F

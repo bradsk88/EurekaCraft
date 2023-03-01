@@ -59,6 +59,9 @@ public class RefBoardDataLoader {
         );
         if (board.isAlive()) {
             ItemStack mainHandItem = event.getPlayer().getMainHandItem();
+            if (mainHandItem.isEmpty()) {
+                return;
+            }
             UUID handBoardUUID = mainHandItem.getOrCreateTag().getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
             UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
             if (handBoardUUID.equals(entityBoardUUID)) {

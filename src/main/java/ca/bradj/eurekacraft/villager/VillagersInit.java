@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraftforge.client.model.pipeline.BlockInfo;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -26,18 +25,18 @@ public class VillagersInit {
             ForgeRegistries.PROFESSIONS, EurekaCraft.MODID
     );
 
-    public static final RegistryObject<PoiType> FRESH_LEAVES_POI = POI_TYPES.register(
-            "fresh_leaves_poi",
-            () -> new PoiType("fresh_leaves_poi", PoiType.getBlockStates(BlocksInit.FRESH_SEEDS_CROP.get()), 1, 1)
+    public static final RegistryObject<PoiType> SANDING_MACHINE_POI = POI_TYPES.register(
+            "sanding_machine_poi",
+            () -> new PoiType("sanding_machine_poi", PoiType.getBlockStates(BlocksInit.SANDING_MACHINE.get()), 1, 1)
     );
 
     public static final RegistryObject<VillagerProfession> REF_DEALER = VILLAGER_PROGRESSIONS.register(
             "ref_dealer",
             () -> new VillagerProfession(
                     "ref_dealer",
-                    FRESH_LEAVES_POI.get(),
+                    SANDING_MACHINE_POI.get(),
                     ImmutableSet.of(),
-                    ImmutableSet.of(BlocksInit.FRESH_SEEDS_CROP.get(), BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()),
+                    ImmutableSet.of(),
                     SoundEvents.VILLAGER_WORK_FISHERMAN
             )
     );
@@ -45,7 +44,7 @@ public class VillagersInit {
     public static void registerPOIs() {
         try {
             Method registerBlockStates = ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class);
-            registerBlockStates.invoke(null, FRESH_LEAVES_POI.get());
+            registerBlockStates.invoke(null, SANDING_MACHINE_POI.get());
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }
