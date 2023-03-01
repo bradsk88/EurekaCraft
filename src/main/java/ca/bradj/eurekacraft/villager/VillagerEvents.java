@@ -54,7 +54,7 @@ public class VillagerEvents {
                         4, 8, 0.5F
                 ),
                 new MerchantOffer(
-                        new ItemStack(Items.CLAY, 16),
+                        new ItemStack(Items.CLAY_BALL, 16),
                         new ItemStack(Items.EMERALD, 1),
                         4, 8, 0.5F
                 ),
@@ -76,7 +76,7 @@ public class VillagerEvents {
                 ),
                 new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
-                        new ItemStack(Items.CLAY, 16),
+                        new ItemStack(Items.CLAY_BALL, 16),
                         4, 8, 0.75F
                 ),
                 new MerchantOffer(
@@ -85,7 +85,7 @@ public class VillagerEvents {
                         4, 8, 0.75F
                 ),
                 new MerchantOffer(
-                        new ItemStack(Items.CLAY, 10),
+                        new ItemStack(Items.CLAY_BALL, 10),
                         new ItemStack(Items.PAPER, 10),
                         new ItemStack(ItemsInit.CLAY_STICKY_DISC.get(), 5),
                         4, 8, 0.75F

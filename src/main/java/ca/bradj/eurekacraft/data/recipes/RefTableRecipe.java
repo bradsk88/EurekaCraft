@@ -28,18 +28,25 @@ public class RefTableRecipe implements IGlideBoardRecipe {
     private final NonNullList<Ingredient> recipeItems;
     private final boolean cook;
     private final Secondary secondaryOutput;
+    private final int outputQuantity;
     private ExtraInput extraIngredient;
 
     public RefTableRecipe(
-            ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems,
-            boolean cook, ExtraInput extraIngredient,
-            Secondary secondary) {
+            ResourceLocation id,
+            ItemStack output,
+            NonNullList<Ingredient> recipeItems,
+            boolean cook,
+            ExtraInput extraIngredient,
+            Secondary secondary,
+            int outputQuantity
+    ) {
         this.id = id;
         this.output = output;
         this.recipeItems = recipeItems;
         this.cook = cook;
         this.extraIngredient = extraIngredient;
         this.secondaryOutput = secondary;
+        this.outputQuantity = outputQuantity;
     }
 
     private boolean findMatchAndRemove(
@@ -123,7 +130,9 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
     @Override
     public ItemStack getResultItem() {
-        return this.output.copy();
+        ItemStack copy = this.output.copy();
+        copy.setCount(this.outputQuantity);
+        return copy;
     }
 
     public Secondary getSecondaryResultItem() {
@@ -145,11 +154,21 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         return RecipesInit.GLIDE_BOARD_SERIALIZER.get();
     }
 
+    @Override
+    public int getOutputQuantity() {
+        return outputQuantity;
+    }
+
     public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<RefTableRecipe> {
 
         @Override
         public RefTableRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "output")).getDefaultInstance();
+            JsonObject outputJSON = GsonHelper.getAsJsonObject(json, "output");
+            ItemStack output = ShapedRecipe.itemFromJson(outputJSON).getDefaultInstance();
+            int outputQty = 1;
+            if (outputJSON.has("quantity")) {
+                outputQty = outputJSON.get("quantity").getAsInt();
+            }
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
@@ -180,7 +199,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             boolean cook = json.get("cook").getAsBoolean();
 
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQty);
         }
 
         @Nullable
@@ -199,11 +218,13 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             ItemStack output = buffer.readItem();
             output = output.getItem().getDefaultInstance();
 
+            int outputQuantity = buffer.readInt();
+
             ItemStack secondaryItem = buffer.readItem();
             double secondaryChance = buffer.readDouble();
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity);
         }
 
         @Override
@@ -216,6 +237,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             buffer.writeBoolean(recipe.getExtraIngredient().consumeOnUse);
             buffer.writeBoolean(recipe.requiresCooking());
             buffer.writeItem(recipe.getResultItem());
+            buffer.writeInt(recipe.getOutputQuantity());
             buffer.writeItem(recipe.getSecondaryResultItem().output);
             buffer.writeDouble(recipe.getSecondaryResultItem().chance);
         }
