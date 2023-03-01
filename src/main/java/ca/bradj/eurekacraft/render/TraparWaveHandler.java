@@ -32,9 +32,9 @@ public class TraparWaveHandler implements BlockEntityRenderer<TraparWaveChildBlo
     @Override
     public void render(TraparWaveChildBlock.TileEntity te, float partialTicks, PoseStack matrixStackIn,
                        MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
-            return;
-        }
+//        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
+//            return;
+//        }
         BlockRenderDispatcher disp = this.context.getBlockRenderDispatcher();
         disp.renderSingleBlock(
                 BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(),
