@@ -17,7 +17,11 @@ public class ChunkWavesData {
     }
 
     public boolean isWavePresentAt(BlockPos bp) {
-        return waveBlocks.containsKey(bp);
+        BlockPos up = bp.relative(Direction.UP);
+        BlockPos down = bp.relative(Direction.DOWN);
+        return waveBlocks.containsKey(bp) ||
+                waveBlocks.containsKey(up) ||
+                waveBlocks.containsKey(down);
     }
 
     public static ChunkWavesData generate(Random rand, ChunkPos cp) {
@@ -34,16 +38,19 @@ public class ChunkWavesData {
                     cp.getMinBlockZ() + rand.nextInt(zRange)
             );
             wavesMap.put(bp, true);
-            for (Direction d : Direction.values()) {
+            for (Direction d : Direction.Plane.HORIZONTAL) {
                 if (rand.nextBoolean()) {
                     wavesMap.put(bp.relative(d), true);
+                    for (Direction d2 : Direction.Plane.HORIZONTAL) {
+                        wavesMap.put(bp.relative(d).relative(d2), true);
+                    }
                 }
             }
         }
         // High waves
         for (int i = 0; i < numWaves; i++) {
             wavesMap.put(new BlockPos(
-                cp.getMinBlockX() + rand.nextInt(xRange),
+                    cp.getMinBlockX() + rand.nextInt(xRange),
                     100 + rand.nextInt(100), // TODO: Get max height from world
                     cp.getMinBlockZ() + rand.nextInt(zRange)
             ), true);

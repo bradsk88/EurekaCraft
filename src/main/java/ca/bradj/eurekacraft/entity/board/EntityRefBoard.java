@@ -65,7 +65,7 @@ public class EntityRefBoard extends Entity {
 
     public static final String ENTITY_ID = "ref_board_entity";
 
-    private static final int BOOST_TICKS = 3;
+    private static final int BOOST_TICKS = 10;
     private static final float INITIAL_YROT = 0.000001f;
 
     private static final float BLOCK_LIFT_RESIDUAL = 0.5f;

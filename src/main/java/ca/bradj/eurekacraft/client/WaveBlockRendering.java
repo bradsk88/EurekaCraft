@@ -32,7 +32,7 @@ public class WaveBlockRendering {
     public static void registerDataRenderers(RenderLevelLastEvent evt) {
         BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
         ClientLevel world = mc.level;
-        BlockState state = BlocksInit.RESIN.get().defaultBlockState();
+        BlockState state = BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState();
         BakedModel bm = renderer.getBlockModel(state);
         PoseStack matrixStack = evt.getPoseStack();
 
@@ -78,6 +78,7 @@ public class WaveBlockRendering {
                     p.getY() - iPos.y,
                     p.getZ() - iPos.z
             );
+            matrixStack.scale(1, 2, 1);
             renderer.renderSingleBlock(
                     state,
                     matrixStack,
