@@ -6,11 +6,9 @@ import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
-import ca.bradj.eurekacraft.vehicles.BoardColor;
-import ca.bradj.eurekacraft.vehicles.BoardType;
-import ca.bradj.eurekacraft.vehicles.RefBoardItem;
-import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
@@ -62,6 +60,8 @@ import java.util.UUID;
 // TODO: Destroy ref board on player disconnect
 
 public class EntityRefBoard extends Entity {
+
+    public static final String NBT_KEY_BOARD_UUID = "board_uuid";
 
     public static final String ENTITY_ID = "ref_board_entity";
 
@@ -186,11 +186,16 @@ public class EntityRefBoard extends Entity {
             return null;
         }
         if (deployedBoards.containsKey(player.getUUID())) {
-            logger.warn("Tried to spawn new. But there was already a deployed board");
-            deployedBoards.remove(player.getUUID()).remove(RemovalReason.DISCARDED);
-            PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
-            return null;
+            EntityRefBoard oldBoard = deployedBoards.remove(player.getUUID());
+            if (!oldBoard.isRemoved()) {
+                logger.warn("Tried to spawn new. But there was already a deployed board");
+                oldBoard.remove(RemovalReason.DISCARDED);
+                PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
+                return null;
+            }
         }
+
+        EntityRefBoard.ensureBoardUUID(boardItem);
 
         Color c = BoardColor.FromStack(boardItem);
         Optional<Wheel> wheel = BoardWheels.FromStack(boardItem);
@@ -201,6 +206,18 @@ public class EntityRefBoard extends Entity {
         spawn(player, level, glider, board, c, wheel);
         PlayerDeployedBoard.DeployedBoard.AddToStack(boardItem);
         return glider;
+    }
+
+    private static void ensureBoardUUID(ItemStack boardItem) {
+        if (boardItem.getOrCreateTag().hasUUID(NBT_KEY_BOARD_UUID)) {
+            return;
+        }
+        UUID uuid = UUID.randomUUID();
+        boardItem.getOrCreateTag().putUUID(NBT_KEY_BOARD_UUID, uuid);
+    }
+
+    public static UUID getEntityBoardUUID(EntityRefBoard b) {
+        return b.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID);
     }
 
     static void spawn(
@@ -609,6 +626,8 @@ public class EntityRefBoard extends Entity {
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag n = new CompoundTag();
+            n.putString("board_type", ((RefBoardItem) board.boardItemStack.getItem()).getBoardType().toNBT());
+            n.putUUID(NBT_KEY_BOARD_UUID, board.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID));
 //            private float initialSpeed;
             n.putFloat("initial_speed", board.initialSpeed);
 //            private Entity playerOrNull;
@@ -639,6 +658,12 @@ public class EntityRefBoard extends Entity {
 
         @Override
         public void deserializeNBT(CompoundTag nbt) {
+            if (board.boardItemStack == null) {
+                // TODO: This item stack is throwaway. Is there another way we could store this UUID?
+                StandardRefBoard srb = ItemsInit.STANDARD_REF_BOARD.get();
+                board.boardItemStack = new ItemStack(srb);
+            }
+            board.boardItemStack.getOrCreateTag().putUUID(NBT_KEY_BOARD_UUID, nbt.getUUID(NBT_KEY_BOARD_UUID));
             board.initialSpeed = nbt.getFloat("initial_speed");
             board.damaged = nbt.getBoolean("damaged");
             board.canFly = nbt.getBoolean("can_fly");

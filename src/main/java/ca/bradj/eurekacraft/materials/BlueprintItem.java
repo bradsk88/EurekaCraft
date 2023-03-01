@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected {
 
-    private static final String NBT_KEY_BOARD_STATS = "board_stats";
+    public static final String NBT_KEY_BOARD_STATS = "board_stats";
     private static final IBoardStatsFactory FACTORY_INSTANCE = new BoardStatsFactory();
 
     public static final String ITEM_ID = "blueprint";

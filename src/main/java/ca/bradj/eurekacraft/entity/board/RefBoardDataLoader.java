@@ -1,12 +1,12 @@
 package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.vehicles.BoardType;
-import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
+import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,8 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.*;
-import java.util.Optional;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
 public class RefBoardDataLoader {
@@ -43,8 +42,7 @@ public class RefBoardDataLoader {
 
         EntityRefBoard.Data data = new EntityRefBoard.Data(player.getUUID(), board);
         data.setDirty();
-        // TODO: Reimplement
-//        world.getDataStorage().set(data);
+        world.getDataStorage().set(EntityRefBoard.Data.ID(player.getUUID()), data);
     }
 
     @SubscribeEvent
@@ -56,13 +54,21 @@ public class RefBoardDataLoader {
 
         EntityRefBoard board = new EntityRefBoard(event.getPlayer(), world);
         world.getDataStorage().get(
-                (CompoundTag t) -> new EntityRefBoard.Data(event.getPlayer().getUUID(), board),
+                (CompoundTag t) ->  new EntityRefBoard.Data(event.getPlayer().getUUID(), board, t),
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
         if (board.isAlive()) {
-            // TODO: Store board type, color, etc. on ref board data
-            BoardType bt = StandardRefBoard.ID;
-            EntityRefBoard.spawn(event.getPlayer(), world, board, bt, Color.WHITE, Optional.empty());
+            ItemStack mainHandItem = event.getPlayer().getMainHandItem();
+            UUID handBoardUUID = mainHandItem.getOrCreateTag().getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
+            UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
+            if (handBoardUUID.equals(entityBoardUUID)) {
+                EntityRefBoard.spawnFromInventory(
+                        event.getPlayer(),
+                        world,
+                        mainHandItem,
+                        ((RefBoardItem) mainHandItem.getItem()).getBoardType()
+                );
+            }
         }
     }
 
