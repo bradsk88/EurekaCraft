@@ -3,33 +3,41 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
-import ca.bradj.eurekacraft.vehicles.BoardColor;
-import ca.bradj.eurekacraft.vehicles.BoardType;
-import ca.bradj.eurekacraft.vehicles.RefBoardItem;
+import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.util.List;
 
 import static net.minecraft.world.InteractionHand.OFF_HAND;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID, value = Dist.CLIENT)
 public class BoardPlayerRenderHandler {
+
+    private static final LazyOptional<List<ItemStack>> RENDERABLE_BOARDS = LazyOptional.of(() -> ImmutableList.of(
+            ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance(),
+            ItemsInit.ELITE_BOARD.get().getDefaultInstance(),
+            ItemsInit.GLIDE_BOARD.get().getDefaultInstance()
+    ));
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -99,9 +107,18 @@ public class BoardPlayerRenderHandler {
             return;
         }
         Color c = BoardColor.FromStack(event.getItemStack());
-        if (event.getItemStack().sameItemStackIgnoreDurability(ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance())) {
+        if (isRenderableBoard(event.getItemStack())) {
             renderPlayerHandWithBoard(event, ((RefBoardItem) item).getBoardType(), c);
         }
+    }
+
+    private static boolean isRenderableBoard(ItemStack is) {
+        for (ItemStack i : RENDERABLE_BOARDS.orElse(ImmutableList.of())) {
+            if (is.sameItemStackIgnoreDurability(i)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void renderPlayerHandWithBoard(
