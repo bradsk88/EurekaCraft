@@ -85,6 +85,12 @@ public class VillagerEvents {
                         4, 8, 0.75F
                 ),
                 new MerchantOffer(
+                        new ItemStack(Items.CLAY, 10),
+                        new ItemStack(Items.PAPER, 10),
+                        new ItemStack(ItemsInit.CLAY_STICKY_DISC.get(), 5),
+                        4, 8, 0.75F
+                ),
+                new MerchantOffer(
                         new ItemStack(Items.EMERALD, 4),
                         new ItemStack(Items.IRON_BLOCK, 1),
                         4, 8, 0.75F
