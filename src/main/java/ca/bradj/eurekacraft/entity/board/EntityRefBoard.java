@@ -302,7 +302,7 @@ public class EntityRefBoard extends Entity {
 
     private void doHardPhysics() {
         boolean applyDamagedEffect = false;
-        if (damaged && random.nextBoolean() && random.nextBoolean()) {
+        if (damaged && random.nextBoolean()) {
             applyDamagedEffect = true;
         }
 
@@ -383,7 +383,7 @@ public class EntityRefBoard extends Entity {
         float accelFactor = 1f + (0.05f * (wheelStats.acceleration) / 100f);
         float brakeFactor = 1f - (0.1f * (wheelStats.braking / 100f));
 
-        if (this.playerOrNull.isShiftKeyDown()) {
+        if (this.playerOrNull.isShiftKeyDown() || (damaged && random.nextBoolean())) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
             flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
         }
@@ -464,7 +464,7 @@ public class EntityRefBoard extends Entity {
         double z = Math.sin(Math.PI * (nextYRot / 180));
         Vec3 nextRaw = new Vec3(x, 0, z);
 
-        if (applyDamagedEffect && random.nextBoolean()) {
+        if (applyDamagedEffect) {
             if (random.nextBoolean()) {
                 nextRaw = new Vec3(0, this.lastDirection.y, this.lastDirection.z);
             } else {

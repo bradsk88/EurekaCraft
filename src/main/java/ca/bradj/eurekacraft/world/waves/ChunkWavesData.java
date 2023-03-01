@@ -25,8 +25,10 @@ public class ChunkWavesData {
     }
 
     public static ChunkWavesData generate(Random rand, ChunkPos cp) {
-        // TODO: Randomize number? Get from config;
-        int numWaves = 10;
+        // TODO: Get upper and lower bound from config;
+        int upperBound = 15;
+        int lowerBound = 0;
+        int numWaves = (int) ((Math.random() * (upperBound - lowerBound)) + lowerBound);
         int xRange = cp.getMaxBlockX() - cp.getMinBlockX();
         int zRange = cp.getMaxBlockZ() - cp.getMinBlockZ();
         Map<BlockPos, Boolean> wavesMap = new HashMap<>(numWaves);
@@ -48,7 +50,7 @@ public class ChunkWavesData {
             }
         }
         // High waves
-        for (int i = 0; i < numWaves; i++) {
+        for (int i = 0; i < numWaves / 2; i++) {
             wavesMap.put(new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
                     100 + rand.nextInt(100), // TODO: Get max height from world
