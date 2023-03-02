@@ -1,15 +1,18 @@
 package ca.bradj.eurekacraft.world.waves;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.levelgen.Heightmap;
 
 import java.util.*;
 
 public class ChunkWavesData {
 
-    private Map<BlockPos, Boolean> waveBlocks = ImmutableMap.of();
+    private Map<BlockPos, Boolean> waveBlocks;
+    private boolean generatedRavineWaves;
 
     public ChunkWavesData(Map<BlockPos, Boolean> waveBlocks) {
         super();
@@ -24,15 +27,21 @@ public class ChunkWavesData {
                 waveBlocks.containsKey(down);
     }
 
-    public static ChunkWavesData generate(Random rand, ChunkPos cp) {
+    public static ChunkWavesData generate(ChunkAccess ca, Random rand) {
         // TODO: Get upper and lower bound from config;
+        ChunkPos cp = ca.getPos();
         int upperBound = 15;
         int lowerBound = 0;
         int numWaves = (int) ((Math.random() * (upperBound - lowerBound)) + lowerBound);
         int xRange = cp.getMaxBlockX() - cp.getMinBlockX();
         int zRange = cp.getMaxBlockZ() - cp.getMinBlockZ();
         Map<BlockPos, Boolean> wavesMap = new HashMap<>(numWaves);
-        // Low waves
+        addLowWaves(cp, rand, numWaves, xRange, zRange, wavesMap);
+        addHighWaves(cp, rand, numWaves, xRange, zRange, wavesMap);
+        return new ChunkWavesData(wavesMap);
+    }
+
+    private static void addLowWaves(ChunkPos cp, Random rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
         for (int i = 0; i < numWaves; i++) {
             BlockPos bp = new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
@@ -49,7 +58,9 @@ public class ChunkWavesData {
                 }
             }
         }
-        // High waves
+    }
+
+    private static void addHighWaves(ChunkPos cp, Random rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
         for (int i = 0; i < numWaves / 2; i++) {
             wavesMap.put(new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
@@ -57,7 +68,6 @@ public class ChunkWavesData {
                     cp.getMinBlockZ() + rand.nextInt(zRange)
             ), true);
         }
-        return new ChunkWavesData(wavesMap);
     }
 
     public static ChunkWavesData fromCollection(Collection<BlockPos> waveBlocks) {
@@ -70,5 +80,67 @@ public class ChunkWavesData {
 
     public Set<BlockPos> getWaves() {
         return waveBlocks.keySet();
+    }
+
+    public boolean generateRavineWaves(
+            ChunkAccess ca, Random rand
+    ) {
+        ChunkStatus[] statusesToCheck = new ChunkStatus[]{
+                ChunkStatus.HEIGHTMAPS, ChunkStatus.FULL
+        };
+        if (Arrays.stream(statusesToCheck).allMatch(v -> v != ca.getStatus())) {
+            return false;
+        }
+        if (this.generatedRavineWaves) {
+            return false;
+        }
+
+        ChunkPos cp = ca.getPos();
+
+        int maxX = cp.getMaxBlockX();
+        int minX = cp.getMinBlockX();
+        int maxZ = cp.getMaxBlockZ();
+        int minZ = cp.getMinBlockZ();
+        int[][] ys = new int[maxX - minX][maxZ - minZ];
+
+        int heightSum = 0;
+        int blocks = 0;
+        int i = 0; int j = 0;
+        for (int x = minX; x < maxX; x++) {
+            j = 0;
+            for (int z = minZ; z < maxZ; z++) {
+                blocks++;
+                int y = ca.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
+                heightSum += y;
+                ys[i][j] = y;
+                j++;
+            }
+            i++;
+        }
+
+        int avgHeight = heightSum / blocks;
+
+        i = 0;
+        for (int x = minX; x < maxX; x++) {
+            j = 0;
+            for (int z = minZ; z < maxZ; z++) {
+                int y = ys[i][j];
+                if (y < avgHeight - 10) {
+                    if (rand.nextBoolean()) {
+                        this.waveBlocks.put(new BlockPos(x, y + 1, z), true);
+                    }
+                    if (rand.nextBoolean()) {
+                        this.waveBlocks.put(new BlockPos(x, y + 5, z), true);
+                    }
+                    if (rand.nextBoolean()) {
+                        this.waveBlocks.put(new BlockPos(x, y + 10, z), true);
+                    }
+                }
+                j++;
+            }
+            i++;
+        }
+        this.generatedRavineWaves = true;
+        return true;
     }
 }

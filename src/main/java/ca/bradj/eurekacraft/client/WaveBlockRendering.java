@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.client;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -29,7 +30,7 @@ public class WaveBlockRendering {
     private static Vec3 lastPos;
 
     @SubscribeEvent
-    public static void registerDataRenderers(RenderLevelLastEvent evt) {
+    public static void handleRenderEvent(RenderLevelLastEvent evt) {
         BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
         ClientLevel world = mc.level;
         BlockState state = BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState();
@@ -42,7 +43,7 @@ public class WaveBlockRendering {
         for (int i = -4; i < 4; i++) {
             for (int j = -4; j < 4; j++) {
                 ChunkPos cpj = new ChunkPos(cp.x + i, cp.z + j);
-                renderChunkWaves(evt.getPartialTick(), renderer, eyePos, world, state, bm, matrixStack, cpj);
+                renderChunkWaves(renderer, eyePos, world, state, bm, matrixStack, cpj);
             }
         }
         evt.getLevelRenderer().renderLevel(
@@ -58,7 +59,6 @@ public class WaveBlockRendering {
     }
 
     private static void renderChunkWaves(
-            float partialTick,
             BlockRenderDispatcher renderer,
             Vec3 iPos,
             ClientLevel world,
@@ -67,7 +67,7 @@ public class WaveBlockRendering {
             PoseStack matrixStack,
             ChunkPos cp
     ) {
-        Collection<BlockPos> waveBlocks = ChunkWavesDataManager.getForClient(cp).getWaves();
+        Collection<BlockPos> waveBlocks = ImmutableList.copyOf(ChunkWavesDataManager.getForClient(cp).getWaves());
 
         for (BlockPos p : waveBlocks) {
             IModelData model = bm.getModelData(world, p, state, null);

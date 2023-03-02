@@ -80,7 +80,7 @@ public class BlocksInit {
 		ItemBlockRenderTypes.setRenderLayer(FRESH_SEEDS_CROP_HARDENED.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(TRAPAR_SAPLING.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(BROKEN_REF_BOARD.get(), RenderType.cutout());
-		ItemBlockRenderTypes.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(TRAPAR_WAVE_CHILD_BLOCK.get(), RenderType.translucent());
 		ItemBlockRenderTypes.setRenderLayer(TRAPAR_LEAVES_BLOCK.get(), RenderType.cutout());
 		ItemBlockRenderTypes.setRenderLayer(TRAPAR_SAPLING.get(), RenderType.cutout());
 	}

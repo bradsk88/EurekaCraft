@@ -583,7 +583,9 @@ public class EntityRefBoard extends Entity {
         }
 
         ChunkPos cp = new ChunkPos(this.blockPosition());
-        if (ChunkWavesDataManager.get(level).getData(random, cp).isWavePresentAt(this.blockPosition())) {
+        if (ChunkWavesDataManager.get(level).getData(
+                level.getChunk(cp.x, cp.z), level.getRandom()
+        ).isWavePresentAt(this.blockPosition())) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
             if (Control.BRAKE.equals(c)) {
                 return BLOCK_LIFT_WAVE_BLOCK_BRAKING;

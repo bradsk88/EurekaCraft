@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.world.waves;
 
-import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
 import com.google.common.collect.ImmutableList;
@@ -9,9 +8,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraftforge.network.PacketDistributor;
@@ -36,34 +35,38 @@ public class ChunkWavesDataManager extends SavedData {
         return storage.computeIfAbsent(ChunkWavesDataManager::new, ChunkWavesDataManager::new, "chunk_wave_data_manager");
     }
 
-    public static void tick(Level world) {
+    public static void tick(ServerLevel world) {
         tickCounter--;
         if (tickCounter <= 0) {
             tickCounter = 10;
             world.players().forEach(p -> {
-                if (p instanceof ServerPlayer serverPlayer) {
-                    ChunkPos cp = serverPlayer.chunkPosition();
-                    ChunkWavesData data = ChunkWavesDataManager.get(world).getData(world.random, cp);
-                    EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
-                    EurekaCraftNetwork.CHANNEL.send(
-                            PacketDistributor.PLAYER.with(() -> serverPlayer),
-                            new ChunkWavesMessage(cp, data.getWaves())
-                    );
-                }
+                ChunkPos cp = p.chunkPosition();
+                ChunkWavesData data = ChunkWavesDataManager.get(world).getData(
+                        world.getChunk(cp.x, cp.z), world.getRandom()
+                );
+//                EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
+                EurekaCraftNetwork.CHANNEL.send(
+                        PacketDistributor.PLAYER.with(() -> p),
+                        new ChunkWavesMessage(cp, data.getWaves())
+                );
             });
         }
     }
 
-    public ChunkWavesData getData(Random rand, ChunkPos chunkPos) {
-        return chunkData.computeIfAbsent(chunkPos, cp -> {
-            ChunkWavesData data = ChunkWavesData.generate(rand, cp);
+    public ChunkWavesData getData(ChunkAccess ca, Random rand) {
+        ChunkWavesData chunkWavesData = chunkData.computeIfAbsent(ca.getPos(), cp -> {
+            ChunkWavesData data = ChunkWavesData.generate(ca, rand);
             setDirty();
             return data;
         });
+        if (chunkWavesData.generateRavineWaves(ca, rand)) {
+            setDirty();
+        }
+        return chunkWavesData;
     }
 
-    public void initData(Random rand, ChunkPos pos) {
-        getData(rand, pos);
+    public void initData(ChunkAccess ca, Random rand) {
+        getData(ca, rand);
     }
 
     public ChunkWavesDataManager() {
