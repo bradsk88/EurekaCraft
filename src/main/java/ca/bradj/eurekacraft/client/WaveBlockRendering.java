@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.client;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -31,6 +32,10 @@ public class WaveBlockRendering {
 
     @SubscribeEvent
     public static void handleRenderEvent(RenderLevelLastEvent evt) {
+        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
+            return;
+        }
+
         BlockRenderDispatcher renderer = Minecraft.getInstance().getBlockRenderer();
         ClientLevel world = mc.level;
         BlockState state = BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState();
