@@ -1,0 +1,31 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:diamond_reflection_film"
+    },
+    {
+      "item": "eurekacraft:diamond_reflection_film"
+    },
+    {
+      "item": "eurekacraft:diamond_reflection_film"
+    },
+    {
+      "item": "eurekacraft:ref_board_core"
+    },
+    {
+      "item": "eurekacraft:diamond_reflection_film"
+    },
+    {
+      "item": "eurekacraft:diamond_reflection_film"
+    }
+  ],
+  "cook": true,
+  "extra": {
+    "item": "eurekacraft:blueprint_advanced",
+    "consume": true
+  },
+  "output": {
+    "item": "eurekacraft:elite_ref_board"
+  }
+}

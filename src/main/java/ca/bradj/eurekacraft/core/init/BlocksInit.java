@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.RedResinBlock;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
@@ -37,6 +38,9 @@ public class BlocksInit {
 	);
 	public static final RegistryObject<Block> RESIN = BLOCKS.register(
 			ResinBlock.ITEM_ID, ResinBlock::new
+	);
+	public static final RegistryObject<Block> RED_RESIN = BLOCKS.register(
+			RedResinBlock.ITEM_ID, RedResinBlock::new
 	);
 	public static final RegistryObject<Block> BROKEN_REF_BOARD = BLOCKS.register(
 			BrokenRefBoardBlock.ITEM_ID, BrokenRefBoardBlock::new

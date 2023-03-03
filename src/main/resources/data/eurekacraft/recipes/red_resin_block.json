@@ -5,26 +5,23 @@
       "item": "eurekacraft:red_resin"
     },
     {
-      "item": "eurekacraft:reflection_film_dust"
+      "item": "eurekacraft:red_resin"
     },
     {
       "item": "eurekacraft:red_resin"
     },
     {
-      "item": "minecraft:diamond"
+      "item": "eurekacraft:red_resin"
     },
     {
       "item": "eurekacraft:red_resin"
     },
     {
-      "item": "eurekacraft:reflection_film_dust"
+      "item": "eurekacraft:red_resin"
     }
   ],
-  "extra": {
-    "item": "eurekacraft:reflection_film_mold"
-  },
-  "cook": true,
+  "cook": false,
   "output": {
-    "item": "eurekacraft:diamond_reflection_film"
+    "item": "eurekacraft:red_resin_block"
   }
 }

@@ -146,6 +146,23 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     @Override
     public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, Random random) {
+
+        ItemStack board = null;
+
+        for (ItemStack is : inputs) {
+            if (board != null) {
+                break;
+            }
+            if (is.getItem() instanceof RefBoardItem) {
+                board = is;
+            }
+        }
+
+        if (board == null) {
+            throw new IllegalStateException("No RefBoard found in inputs of RefBoard paint recipe");
+        }
+
+        // TODO: Is elite board too overpowered on creation?
         if (techItem.getItem() instanceof IBoardStatsFactoryProvider) {
             IBoardStatsFactory factory = ((IBoardStatsFactoryProvider) techItem.getItem()).getBoardStatsFactory();
             RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(techItem, baseStats, random);

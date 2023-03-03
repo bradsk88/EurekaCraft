@@ -2,9 +2,6 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "item": "eurekacraft:red_resin"
-    },
-    {
       "item": "eurekacraft:reflection_film_dust"
     },
     {
@@ -18,6 +15,9 @@
     },
     {
       "item": "eurekacraft:reflection_film_dust"
+    },
+    {
+      "item": "eurekacraft:red_resin"
     }
   ],
   "extra": {
