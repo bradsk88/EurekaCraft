@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:coals",
+    "#minecraft:logs_that_burn",
+    "#minecraft:coal_ores",
+    "#minecraft:planks",
+    "minecraft:stick"
+  ]
+}

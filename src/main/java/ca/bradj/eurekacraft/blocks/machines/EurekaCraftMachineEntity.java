@@ -115,8 +115,8 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         itemHandler.insertItem(slot, stack, false);
     }
 
-    protected void extractItem(int slot, int amount) {
-        itemHandler.extractItem(slot, amount, false);
+    protected ItemStack extractItem(int slot, int amount) {
+        return itemHandler.extractItem(slot, amount, false);
     }
 
     public int getTotalSlotCount() {
