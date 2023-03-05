@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -41,16 +42,25 @@ public class ChunkWavesDataManager extends SavedData {
             tickCounter = 10;
             world.players().forEach(p -> {
                 ChunkPos cp = p.chunkPosition();
-                ChunkWavesData data = ChunkWavesDataManager.get(world).getData(
-                        world.getChunk(cp.x, cp.z), world.getRandom()
-                );
-//                EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
-                EurekaCraftNetwork.CHANNEL.send(
-                        PacketDistributor.PLAYER.with(() -> p),
-                        new ChunkWavesMessage(cp, data.getWaves())
-                );
+                for (int x = -3; x < 3; x++) {
+                    for (int z = -3; z < 3; z++) {
+                        // TODO: Could we send all 9 updates in one message?
+                        updateWavesOnClientSide(world, p, new ChunkPos(cp.x + x, cp.z + z));
+                    }
+                }
             });
         }
+    }
+
+    private static void updateWavesOnClientSide(ServerLevel world, ServerPlayer p, ChunkPos cp) {
+        ChunkWavesData data = ChunkWavesDataManager.get(world).getData(
+                world.getChunk(cp.x, cp.z), world.getRandom()
+        );
+//                EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
+        EurekaCraftNetwork.CHANNEL.send(
+                PacketDistributor.PLAYER.with(() -> p),
+                new ChunkWavesMessage(cp, data.getWaves())
+        );
     }
 
     public ChunkWavesData getData(ChunkAccess ca, Random rand) {

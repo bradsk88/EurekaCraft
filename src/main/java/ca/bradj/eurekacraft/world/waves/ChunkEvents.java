@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.world.waves;
 import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,10 +14,11 @@ public class ChunkEvents {
 
     @SubscribeEvent
     public static void chunkLoaded(ChunkEvent evt) {
-        if (evt.getWorld() == null) {
+        LevelAccessor world = evt.getWorld();
+        if (world == null) {
             return;
         }
-        if (evt.getWorld().isClientSide()) {
+        if (world.isClientSide()) {
             return;
         }
         ChunkWavesDataManager.get((Level) evt.getWorld()).initData(evt.getChunk(), evt.getWorld().getRandom());

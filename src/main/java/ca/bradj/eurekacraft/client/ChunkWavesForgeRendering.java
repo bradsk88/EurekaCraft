@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collection;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class WaveBlockRendering {
+public class ChunkWavesForgeRendering {
 
     private static Minecraft mc = Minecraft.getInstance();
     private static Vec3 lastPos;
