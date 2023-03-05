@@ -36,8 +36,8 @@ public class VillagersInit {
                     "ref_dealer",
                     SANDING_MACHINE_POI.get(),
                     ImmutableSet.of(),
-                    ImmutableSet.of(),
-                    SoundEvents.VILLAGER_WORK_FISHERMAN
+                    ImmutableSet.of(BlocksInit.REF_TABLE_BLOCK.get(), BlocksInit.FRESH_SEEDS_CROP.get(), BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()),
+                    SoundEvents.GRAVEL_STEP
             )
     );
 

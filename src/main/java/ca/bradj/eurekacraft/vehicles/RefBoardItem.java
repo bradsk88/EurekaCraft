@@ -73,12 +73,12 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
 
-        if (player.isOnGround()) {
-            return InteractionResultHolder.pass(s);
-        }
-
         boolean serverSide = !world.isClientSide;
         if (serverSide) {
+            if (player.isOnGround()) {
+                return InteractionResultHolder.pass(s);
+            }
+
             EntityRefBoard glider = spawnedGlidersMap.get(player);
             if (glider != null && !glider.isAlive()) {
                 despawnGlider(player, world, glider);

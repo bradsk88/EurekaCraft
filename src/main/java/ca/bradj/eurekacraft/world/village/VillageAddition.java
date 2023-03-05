@@ -76,7 +76,7 @@ public class VillageAddition {
         // Note, the resourcelocation is getting the pool files from the data folder. Not assets folder.
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:plains_ref_dealer_1", 10);
+                "eurekacraft:plains_ref_dealer_1", 20);
 
         // TODO: Build dealer in every biome
         //addBuildingToPool(templatePoolRegistry, processorListRegistry,
