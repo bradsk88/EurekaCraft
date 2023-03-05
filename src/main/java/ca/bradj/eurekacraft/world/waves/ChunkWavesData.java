@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.world.waves;
 
+import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.ChunkPos;
@@ -30,8 +31,8 @@ public class ChunkWavesData {
     public static ChunkWavesData generate(ChunkAccess ca, Random rand) {
         // TODO: Get upper and lower bound from config;
         ChunkPos cp = ca.getPos();
-        int upperBound = 15;
-        int lowerBound = 0;
+        int upperBound = EurekaConfig.wave_blobs_per_chunk_upper_bound.get();
+        int lowerBound = EurekaConfig.wave_blobs_per_chunk_lower_bound.get();
         int numWaves = (int) ((Math.random() * (upperBound - lowerBound)) + lowerBound);
         int xRange = cp.getMaxBlockX() - cp.getMinBlockX();
         int zRange = cp.getMaxBlockZ() - cp.getMinBlockZ();
