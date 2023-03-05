@@ -130,7 +130,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     public void appendHoverText(
             ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn
     ) {
-        RefBoardStats stats = getStatsForStack(stack);
+        RefBoardStats stats = baseStats;
+        if (world != null) {
+            stats = getStatsForStack(stack, world.getRandom());
+        }
+
         tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
@@ -158,12 +162,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             }
         }
 
-        if (board == null) {
-            throw new IllegalStateException("No RefBoard found in inputs of RefBoard paint recipe");
-        }
-
         // TODO: Is elite board too overpowered on creation?
         if (techItem.getItem() instanceof IBoardStatsFactoryProvider) {
+            if (board == null) {
+                return;
+            }
             IBoardStatsFactory factory = ((IBoardStatsFactoryProvider) techItem.getItem()).getBoardStatsFactory();
             RefBoardStats refBoardStats = factory.getBoardStatsFromNBTOrCreate(techItem, baseStats, random);
 
@@ -213,9 +216,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    RefBoardStats getStatsForStack(ItemStack stack) {
-        if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_STATS)) {
-            return baseStats;
+    RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+        if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
+            RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
+            storeStatsOnStack(stack, s);
+            return s;
         }
         CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
         return RefBoardStats.deserializeNBT(nbt);

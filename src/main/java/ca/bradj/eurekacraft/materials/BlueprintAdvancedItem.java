@@ -29,6 +29,9 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
         @Override
         public RefBoardStats getBoardStatsFromNBTOrCreate(ItemStack itemStack, RefBoardStats creationReference, Random rand) {
             RefBoardStats boostedReference = creationReference.WithAllIncreased(0.25);
+            if (RefBoardStats.isElite(creationReference)) {
+                boostedReference = creationReference;
+            }
             return super.getBoardStatsFromNBTOrCreate(itemStack, boostedReference, rand);
         }
     }

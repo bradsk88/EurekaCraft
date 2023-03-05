@@ -34,16 +34,16 @@ public class RefBoardStats {
     public static final RefBoardStats EliteBoard;
 
     static {
-        BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25);
-        HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25);
-        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, 0.10, NO_LIFT).
+        BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25, 0, 0);
+        HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25, 0, 0);
+        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, 0.10, NO_LIFT, 0, 0).
                 withLandResistance(0.80).
                 WithSurf(0.80);
-        SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, NO_LIFT).
+        SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, NO_LIFT, 0, 0).
                 WithSurf(MAX_SURF);
-        StandardBoard = new RefBoardStats("standard", 0.75, 0.5, 0.25, 0.5);
-        SpeedBoard = new RefBoardStats("speed", 0.5, MAX_SPEED, 0.10, 0.5);
-        EliteBoard = new RefBoardStats("elite", 0.25, 0.75, 0.8, MAX_LIFT);
+        StandardBoard = new RefBoardStats("standard", 0.75, 0.5, 0.25, 0.5, 0, 0);
+        SpeedBoard = new RefBoardStats("speed", 0.5, MAX_SPEED, 0.10, 0.5, 0, 0);
+        EliteBoard = new RefBoardStats("elite", 0.25, 0.75, 0.75, 0.75, 25, 25);
     }
 
     private double boardWeight;
@@ -55,15 +55,19 @@ public class RefBoardStats {
     private double landResistance ;
     private boolean damaged;
     private double surf;
+    private double latentBraking;
+    private double latentAccel;
 
     private RefBoardStats(
             String id,
             double boardWeight,
             double boardSpeed, // This is a boost and is not coupled to weight
             double turnSpeed, // This is a boost and is not coupled to weight
-            double liftFactor // This is a boost and is not coupled to weight
+            double liftFactor, // This is a boost and is not coupled to weight
+            double latentBraking,
+            double latentAcceleration
     ) {
-        this(id, boardWeight, boardSpeed, turnSpeed, liftFactor, 0, 0.4);
+        this(id, boardWeight, boardSpeed, turnSpeed, liftFactor, latentBraking, latentAcceleration, 0, 0.4);
     }
 
     private RefBoardStats(
@@ -72,6 +76,8 @@ public class RefBoardStats {
             double boardSpeed, // This is a boost and is not coupled to weight
             double turnSpeed, // This is a boost and is not coupled to weight
             double liftFactor, // This is a boost and is not coupled to weight
+            double latentBraking,
+            double latentAcceleration,
             double landResistance,
             double surf
     ) {
@@ -80,6 +86,8 @@ public class RefBoardStats {
         this.boardSpeed = Math.min(MAX_SPEED, boardSpeed);
         this.turnSpeed = Math.min(MAX_AGILITY, turnSpeed);
         this.liftFactor = Math.min(MAX_LIFT, liftFactor);
+        this.latentBraking = latentBraking;
+        this.latentAccel = latentAcceleration;
         this.landResistance = landResistance;
         this.surf = surf;
     }
@@ -106,6 +114,10 @@ public class RefBoardStats {
         return new RefBoardStats(
                 id, avgWeight, avgSpeed, avgAgility, avgLift, avgLandRes, avgSurf
         );
+    }
+
+    public static boolean isElite(RefBoardStats creationReference) {
+        return EliteBoard.id.equals(creationReference.id);
     }
 
     public RefBoardStats copy() {
@@ -135,7 +147,7 @@ public class RefBoardStats {
 
     public RefBoardStats damaged() {
         RefBoardStats refBoardStats = new RefBoardStats(
-                this.id, this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor
+                this.id, this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, 0, 0
         );
         refBoardStats.damaged = true;
         return refBoardStats;
@@ -232,5 +244,13 @@ public class RefBoardStats {
         RefBoardStats out = this.copy();
         out.liftFactor = newSpeed;
         return out;
+    }
+
+    public double getLatentBraking() {
+        return this.latentBraking;
+    }
+
+    public double getLatentAcceleration() {
+        return this.latentAccel;
     }
 }

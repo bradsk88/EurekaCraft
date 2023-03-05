@@ -85,8 +85,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             }
             items.add(iStack);
         }
+        items.add(getSelfAsItemStack());
         return items;
     }
+
+    protected abstract ItemStack getSelfAsItemStack();
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());

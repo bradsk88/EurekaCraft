@@ -60,14 +60,15 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
-        if (stack.getTag() == null || !stack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-            tooltip.add(new TextComponent("Stats Unknown")); // TODO: Translate
-        } else {
-            RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
-            tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-            tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-            tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        if (!stack.getOrCreateTag().contains(NBT_KEY_BOARD_STATS)) {
+            if (world != null) {
+                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.StandardBoard, world.getRandom());
+            }
         }
+        RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
+        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
+        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
+        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
     }
 
     @Override

@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -62,6 +63,11 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     public void load(CompoundTag nbt) {
         super.load(nbt);
         this.sandPercent = nbt.getInt("cooked");
+    }
+
+    @Override
+    protected ItemStack getSelfAsItemStack() {
+        return ItemsInit.SANDING_MACHINE_BLOCK.get().getDefaultInstance();
     }
 
     protected CompoundTag store(CompoundTag tag) {

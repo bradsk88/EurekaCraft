@@ -62,7 +62,11 @@ public class RefBoardDataLoader {
             if (mainHandItem.isEmpty()) {
                 return;
             }
-            UUID handBoardUUID = mainHandItem.getOrCreateTag().getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
+            CompoundTag tag = mainHandItem.getOrCreateTag();
+            if (!tag.hasUUID(EntityRefBoard.NBT_KEY_BOARD_UUID)) {
+                return;
+            }
+            UUID handBoardUUID = tag.getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
             UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
             if (handBoardUUID.equals(entityBoardUUID)) {
                 EntityRefBoard.spawnFromInventory(

@@ -397,8 +397,10 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        float accelFactor = 1f + (0.05f * (wheelStats.acceleration) / 100f);
-        float brakeFactor = 1f - (0.1f * (wheelStats.braking / 100f));
+        double wheelAccel = wheelStats.acceleration != 0 ? boardStats.getLatentAcceleration() + wheelStats.acceleration : 0;
+        double accelFactor = 1f + (0.05f * wheelAccel / 100f);
+        double wheelBraking = wheelStats.braking != 0 ? boardStats.getLatentBraking() + wheelStats.braking : 0;
+        double brakeFactor = 1f - (0.1f * wheelBraking / 100f);
 
         if (this.playerOrNull.isShiftKeyDown() || (damaged && random.nextBoolean())) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
@@ -419,7 +421,12 @@ public class EntityRefBoard extends Entity {
 
         switch (c) {
             case ACCELERATE -> flightSpeed = Math.min(flightSpeed * accelFactor, defaultMaxSpeed);
-            case BRAKE -> flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
+            case BRAKE -> {
+                flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
+                if (wheelBraking >= 100) {
+                    liftOrFall = Math.max(liftOrFall * 0.25, 0);
+                }
+            }
             case NONE -> {
             }
             default -> throw new IllegalArgumentException("Unexpected control value: " + c);

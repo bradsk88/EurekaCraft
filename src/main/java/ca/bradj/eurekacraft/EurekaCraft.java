@@ -49,8 +49,6 @@ public class EurekaCraft {
         AdvancementsInit.registerIconItems(bus);
         EntitiesInit.ENTITIES.register(bus);
         VillagersInit.register(bus);
-        // TODO: Reimplement
-//        FeaturesInit.PLACEMENTS.register(bus);
         FeaturesInit.FEATURES.register(bus);
         ContainerTypesInit.TYPES.register(bus);
         RecipesInit.register(bus);
