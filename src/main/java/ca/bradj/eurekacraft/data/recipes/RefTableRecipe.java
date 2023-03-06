@@ -13,7 +13,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -157,7 +156,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         return outputQuantity;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<RefTableRecipe> {
+    public static class Serializer implements RecipeSerializer<RefTableRecipe> {
 
         @Override
         public RefTableRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -238,16 +237,6 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             buffer.writeInt(recipe.getOutputQuantity());
             buffer.writeItem(recipe.getSecondaryResultItem().output);
             buffer.writeDouble(recipe.getSecondaryResultItem().chance);
-        }
-    }
-
-    public static class Type implements RecipeType<RefTableRecipe> {
-        public static final Type INSTANCE = new Type();
-        public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "glide_board");
-
-        @Override
-        public <C extends Container> Optional<RefTableRecipe> tryMatch(Recipe<C> p_44116_, Level p_44117_, C p_44118_) {
-            return RecipeType.super.tryMatch(p_44116_, p_44117_, p_44118_);
         }
     }
 

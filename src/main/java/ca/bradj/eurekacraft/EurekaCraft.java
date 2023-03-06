@@ -1,7 +1,6 @@
 package ca.bradj.eurekacraft;
 
 import ca.bradj.eurekacraft.client.BoardItemRendering;
-import ca.bradj.eurekacraft.client.KeyInit;
 import ca.bradj.eurekacraft.client.TraparStormRendering;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
@@ -72,8 +71,6 @@ public class EurekaCraft {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
         event.enqueueWork(BoardItemRendering::initItemProperties);
-
-        KeyInit.init();
 
         event.enqueueWork(
                 TraparStormRendering::init

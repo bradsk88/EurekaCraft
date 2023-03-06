@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -14,22 +14,22 @@ public class ChunkEvents {
 
     @SubscribeEvent
     public static void chunkLoaded(ChunkEvent evt) {
-        LevelAccessor world = evt.getWorld();
+        LevelAccessor world = evt.getLevel();
         if (world == null) {
             return;
         }
         if (world.isClientSide()) {
             return;
         }
-        ChunkWavesDataManager.get((Level) evt.getWorld()).initData(evt.getChunk(), evt.getWorld().getRandom());
+        ChunkWavesDataManager.get(world).initData(evt.getChunk(), world.getRandom());
     }
 
     @SubscribeEvent
-    public static void worldTick(TickEvent.WorldTickEvent evt) {
-        if (evt.world.isClientSide() || evt.phase == TickEvent.Phase.START) {
+    public static void worldTick(TickEvent.LevelTickEvent evt) {
+        if (evt.level.isClientSide() || evt.phase == TickEvent.Phase.START) {
             return;
         }
-        ChunkWavesDataManager.tick((ServerLevel) evt.world);
+        ChunkWavesDataManager.tick((ServerLevel) evt.level);
     }
 
 }

@@ -7,5 +7,5 @@
   ],
   "addition": "eurekacraft:blueprint",
   "chance": 0.5,
-  "type": "eurekacraft:blueprint_from_village_weaponsmith_chest"
+  "type": "eurekacraft:add_item"
 }

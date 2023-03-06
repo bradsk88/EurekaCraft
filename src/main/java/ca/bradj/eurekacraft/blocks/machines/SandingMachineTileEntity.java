@@ -10,9 +10,9 @@ import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -50,7 +50,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("container." + EurekaCraft.MODID + ".sanding_machine");
+        return Component.translatable("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
     @Nullable
@@ -83,7 +83,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         Optional<SandingMachineRecipe> activeRecipe = entity.getActiveRecipe();
         entity.updateCookingStatus(activeRecipe);
         if (entity.sanding) {
-            entity.doCook(activeRecipe);
+            entity.doCook(activeRecipe, level.getRandom());
         }
     }
 
@@ -118,7 +118,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         return tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
     }
 
-    private void doCook(Optional<SandingMachineRecipe> recipe) {
+    private void doCook(Optional<SandingMachineRecipe> recipe, RandomSource random) {
         if (sandPercent < 100) {
             this.sandPercent++;
             this.makeCraftingNoise(recipe);
@@ -134,7 +134,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
                 extractItem(i, 1);
             }
 
-            useExtraIngredient();
+            useExtraIngredient(random);
 
             insertItem(outputSlot, output);
 
@@ -142,9 +142,9 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         });
     }
 
-    private void useExtraIngredient() {
+    private void useExtraIngredient(RandomSource random) {
         ItemStack stackInSlot = getStackInSlot(abrasiveSlot);
-        stackInSlot.hurt(1, new Random(), null);
+        stackInSlot.hurt(1, random, null);
         if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
             extractItem(abrasiveSlot, 1);

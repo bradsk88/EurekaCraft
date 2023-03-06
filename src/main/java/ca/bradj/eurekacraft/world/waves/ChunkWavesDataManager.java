@@ -9,8 +9,10 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
@@ -20,6 +22,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.RandomAccess;
 
 public class ChunkWavesDataManager extends SavedData {
 
@@ -28,8 +31,8 @@ public class ChunkWavesDataManager extends SavedData {
     private static int tickCounter = 10;
 
     @Nonnull
-    public static ChunkWavesDataManager get(Level level) {
-        if (level.isClientSide) {
+    public static ChunkWavesDataManager get(LevelAccessor level) {
+        if (level.isClientSide()) {
             throw new RuntimeException("Client side access is not allowed");
         }
         DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
@@ -63,7 +66,7 @@ public class ChunkWavesDataManager extends SavedData {
         );
     }
 
-    public ChunkWavesData getData(ChunkAccess ca, Random rand) {
+    public ChunkWavesData getData(ChunkAccess ca, RandomSource rand) {
         ChunkWavesData chunkWavesData = chunkData.computeIfAbsent(ca.getPos(), cp -> {
             ChunkWavesData data = ChunkWavesData.generate(ca, rand);
             setDirty();
@@ -75,7 +78,7 @@ public class ChunkWavesDataManager extends SavedData {
         return chunkWavesData;
     }
 
-    public void initData(ChunkAccess ca, Random rand) {
+    public void initData(ChunkAccess ca, RandomSource rand) {
         getData(ca, rand);
     }
 

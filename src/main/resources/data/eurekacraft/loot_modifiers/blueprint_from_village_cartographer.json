@@ -7,5 +7,5 @@
   ],
   "addition": "eurekacraft:blueprint",
   "chance": 0.5,
-  "type": "eurekacraft:blueprint_from_village_cartographer"
+  "type": "eurekacraft:add_item"
 }

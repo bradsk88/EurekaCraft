@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.materials;
 import ca.bradj.eurekacraft.container.PhotoContainer;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -31,13 +30,13 @@ public class Photo extends Item implements MenuProvider {
         if (level.isClientSide()) {
             return InteractionResultHolder.consume(player.getItemInHand(p_41434_));
         }
-        NetworkHooks.openGui((ServerPlayer) player, this);
+        NetworkHooks.openScreen((ServerPlayer) player, this);
         return InteractionResultHolder.success(player.getItemInHand(p_41434_));
     }
 
     @Override
     public Component getDisplayName() {
-        return TextComponent.EMPTY;
+        return Component.empty();
     }
 
     @Nullable

@@ -7,11 +7,13 @@ import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.model.EmptyModel;
+import net.minecraftforge.client.model.data.ModelData;
 
 public class WaveBlockTileEntityRenderer implements BlockEntityRenderer<TraparWaveChildBlock.TileEntity> {
 
@@ -32,13 +34,15 @@ public class WaveBlockTileEntityRenderer implements BlockEntityRenderer<TraparWa
         if (!worn) {
             disp.renderSingleBlock(
                     Blocks.AIR.defaultBlockState(),
-                    matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, EmptyModelData.INSTANCE
+                    matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ModelData.EMPTY,
+                    RenderType.translucent()
             );
             return;
         }
         disp.renderSingleBlock(
                 BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(),
-                matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, EmptyModelData.INSTANCE
+                matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ModelData.EMPTY,
+                RenderType.translucent()
         );
     }
 }

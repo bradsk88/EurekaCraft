@@ -13,7 +13,6 @@ import ca.bradj.eurekacraft.interfaces.IWrenchable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -50,7 +49,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
+        return Component.translatable("container." + EurekaCraft.MODID + ".ref_table");
     }
 
 
@@ -197,7 +196,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             RefTableRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
     ) {
         ItemStack techStack = getStackInSlot(RefTableConsts.techSlot);
-        techStack.hurt(1, new Random(), null);
+        techStack.hurt(1, level.getRandom(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
             extractItem(RefTableConsts.techSlot, 1);
         } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {

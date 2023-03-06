@@ -9,7 +9,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -20,7 +20,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
@@ -38,7 +37,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public static final String ITEM_ID = "blueprint";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(RandomSource rand) {
         ItemStack i = ItemsInit.BLUEPRINT.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.StandardBoard, rand);
         return i;
@@ -49,7 +48,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return 1;
     }
 
@@ -66,13 +65,13 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
             }
         }
         RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
-        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, RandomSource random) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
         if (!(blueprint.getItem() instanceof BlueprintItem)) {
@@ -100,7 +99,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public static class BoardStatsFactory implements IBoardStatsFactory {
         @Override
         public RefBoardStats getBoardStatsFromNBTOrCreate(
-                ItemStack itemStack, RefBoardStats creationReference, Random rand
+                ItemStack itemStack, RefBoardStats creationReference, RandomSource rand
         ) {
             if (itemStack.getTag() == null) {
                 itemStack.setTag(new CompoundTag());

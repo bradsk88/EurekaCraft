@@ -1,6 +1,26 @@
-run
-build
+# eclipse
 bin
-.gradle
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
 .idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+
+# Files from Forge MDK
+forge*changelog.txt
 /mcmodsrepo/ca/bradj/eurekacraft/EurekaCraft/

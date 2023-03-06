@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
 
 import java.util.Collection;
 import java.util.Random;
@@ -92,7 +93,7 @@ public class RefBoardStats {
         this.surf = surf;
     }
 
-    public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, Random rand) {
+    public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, RandomSource rand) {
         double weight = creationReference.weight();
         double speed = creationReference.speed() + 0.15 - (0.25 * rand.nextDouble());
         double agility = creationReference.agility() + 0.15 - (0.25 * rand.nextDouble());

@@ -20,8 +20,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ import java.util.Optional;
 public class BoardItemRendering {
 
     @SubscribeEvent
-    public static void registerColors(ColorHandlerEvent.Item event) {
+    public static void registerColors(RegisterColorHandlersEvent.Item event) {
         event.getItemColors().register(new ItemColor() {
             @Override
             public int getColor(ItemStack p_92672_, int p_92673_) {
@@ -46,17 +46,17 @@ public class BoardItemRendering {
     public static StandardRefBoard refBoard;
 
     @SubscribeEvent
-    public static void registerItemModel(ModelBakeEvent evt) {
+    public static void registerItemModel(ModelEvent.BakingCompleted evt) {
         EurekaCraft.LOGGER.debug("Registering item model");
         ModelResourceLocation itemModelResourceLocation = RefBoardColoredModel.modelResourceLocation;
-        BakedModel existingModel = evt.getModelRegistry().get(itemModelResourceLocation);
+        BakedModel existingModel = evt.getModels().get(itemModelResourceLocation);
         if (existingModel == null) {
             EurekaCraft.LOGGER.warn("Did not find the expected vanilla baked model in registry: " + itemModelResourceLocation);
         } else if (existingModel instanceof RefBoardColoredModel) {
             EurekaCraft.LOGGER.warn("Tried to replace ChessboardModel twice");
         } else {
             RefBoardColoredModel customModel = new RefBoardColoredModel(existingModel);
-            evt.getModelRegistry().put(itemModelResourceLocation, customModel);
+            evt.getModels().put(itemModelResourceLocation, customModel);
         }
     }
 

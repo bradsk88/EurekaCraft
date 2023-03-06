@@ -17,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.client.IWeatherRenderHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +24,7 @@ import java.util.Random;
 
 import static net.minecraft.client.renderer.LevelRenderer.getLightColor;
 
-public class TraparStormRenderHandler implements IWeatherRenderHandler {
+public class TraparStormRenderHandler { //implements IWeatherRenderHandler {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -47,7 +46,7 @@ public class TraparStormRenderHandler implements IWeatherRenderHandler {
         }
     }
 
-    @Override
+    // FIXME: Migrate storm rendering : @Override
     public void render(int ticks, float partialTicks, ClientLevel world, Minecraft mc, LightTexture lightMapIn, double xIn, double yIn, double zIn) {
         // TODO: Reimplement
         if (mc.getCameraEntity() == null) {

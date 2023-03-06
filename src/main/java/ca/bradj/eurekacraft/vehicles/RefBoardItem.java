@@ -10,9 +10,8 @@ import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -25,8 +24,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable, IBoardStatsGetterProvider {
 
@@ -122,7 +121,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return 1;
     }
 
@@ -135,21 +134,21 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             stats = getStatsForStack(stack, world.getRandom());
         }
 
-        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
+        tooltip.add(Component.literal("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
 
         Optional<Wheel> wheel = BoardWheels.FromStack(stack);
         if (wheel.isEmpty()) {
-            tooltip.add(new TextComponent("Wheel: None")); // TODO: Translate
+            tooltip.add(Component.literal("Wheel: None")); // TODO: Translate
         } else {
-            TranslatableComponent wheelName = new TranslatableComponent(wheel.get().getDescriptionId());
-            tooltip.add(new TextComponent("Wheel: " + wheelName.getString()));
+            Component wheelName = Component.translatable(wheel.get().getDescriptionId());
+            tooltip.add(Component.literal("Wheel: " + wheelName.getString()));
         }
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, RandomSource random) {
 
         ItemStack board = null;
 
@@ -216,7 +215,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+    RefBoardStats getStatsForStack(ItemStack stack, RandomSource rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             storeStatsOnStack(stack, s);

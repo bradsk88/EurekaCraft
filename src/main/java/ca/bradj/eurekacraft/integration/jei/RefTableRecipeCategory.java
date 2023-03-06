@@ -9,9 +9,11 @@ import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import com.google.common.collect.ImmutableList;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -38,18 +40,8 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return RefTableRecipe.Type.ID;
-    }
-
-    @Override
-    public Class<? extends RefTableRecipe> getRecipeClass() {
-        return RefTableRecipe.class;
-    }
-
-    @Override
     public Component getTitle() {
-        return new TextComponent(BlocksInit.REF_TABLE_BLOCK.get().getName().getString());
+        return Component.literal(BlocksInit.REF_TABLE_BLOCK.get().getName().getString());
     }
 
     @Override
@@ -62,42 +54,46 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
         return this.icon;
     }
 
-    @Override
-    public void setIngredients(RefTableRecipe recipe, IIngredients ingredients) {
-        NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
-        for (int j = 0; j < 8; j++) {
-            if (j < recipe.getIngredients().size()) {
-                Ingredient p_set_2_ = recipe.getIngredients().get(j);
-                if (p_set_2_.isEmpty() || p_set_2_.getItems()[0].sameItemStackIgnoreDurability(Items.AIR.getDefaultInstance())) {
-                    i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
-                } else {
-                    i.set(j, p_set_2_);
-                }
-            } else {
-                i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
-            }
-        }
-        if (recipe.requiresCooking()) {
-            i.set(6, Ingredient.of(ITEMS_THAT_BURN));
-        } else {
-            i.set(6, Ingredient.of(Items.AIR.getDefaultInstance()));
-        }
-        i.set(7, recipe.getExtraIngredient().ingredient);
-        ingredients.setInputIngredients(i);
-        ImmutableList<ItemStack> outputs = ImmutableList.of(
-                recipe.getResultItem()
-        );
-        if (!recipe.getSecondaryResultItem().output.isEmpty()) {
-            outputs = ImmutableList.of(
-                    recipe.getResultItem(),
-                    recipe.getSecondaryResultItem().output
-            );
-        }
-        ingredients.setOutputs(VanillaTypes.ITEM, outputs);
-    }
 
+    // FIXME: Needed after migration?
+//    @Override
+//    public void setIngredients(RefTableRecipe recipe, IIngredients ingredients) {
+//        NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
+//        for (int j = 0; j < 8; j++) {
+//            if (j < recipe.getIngredients().size()) {
+//                Ingredient p_set_2_ = recipe.getIngredients().get(j);
+//                if (p_set_2_.isEmpty() || p_set_2_.getItems()[0].sameItemStackIgnoreDurability(Items.AIR.getDefaultInstance())) {
+//                    i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
+//                } else {
+//                    i.set(j, p_set_2_);
+//                }
+//            } else {
+//                i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
+//            }
+//        }
+//        if (recipe.requiresCooking()) {
+//            i.set(6, Ingredient.of(ITEMS_THAT_BURN));
+//        } else {
+//            i.set(6, Ingredient.of(Items.AIR.getDefaultInstance()));
+//        }
+//        i.set(7, recipe.getExtraIngredient().ingredient);
+//        ingredients.setInputIngredients(i);
+//        ImmutableList<ItemStack> outputs = ImmutableList.of(
+//                recipe.getResultItem()
+//        );
+//        if (!recipe.getSecondaryResultItem().output.isEmpty()) {
+//            outputs = ImmutableList.of(
+//                    recipe.getResultItem(),
+//                    recipe.getSecondaryResultItem().output
+//            );
+//        }
+//        ingredients.setOutputs(VanillaTypes.ITEM, outputs);
+//    }
+
+
+    // FIXME: Finish migrating
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, RefTableRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayoutBuilder recipeLayout, RefTableRecipe recipe, IFocusGroup focuses) {
         int leftEdge = RefTableContainer.inventoryLeftX;
         int topEdge = RefTableContainer.topOfInputs;
         int boxSize = RefTableContainer.boxWidth;
@@ -115,7 +111,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
         recipeLayout.getItemStacks().set(ingredients);
     }
 
-    private void init(IRecipeLayout recipeLayout, int idx, boolean isInput, int leftEdge, int topEdge) {
+    private void init(IRecipeLayoutBuilder recipeLayout, int idx, boolean isInput, int leftEdge, int topEdge) {
         recipeLayout.getItemStacks().init(idx, isInput, leftEdge - 1, topEdge - 1);
     }
 }
