@@ -5,9 +5,9 @@
       "item": "eurekacraft:red_resin_block"
     }
   ],
-  "cook": false,
+  "cook": true,
   "output": {
     "item": "eurekacraft:red_resin",
-    "quantity": 8
+    "quantity": 6
   }
 }

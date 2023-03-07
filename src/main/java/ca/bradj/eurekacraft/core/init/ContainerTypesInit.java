@@ -16,7 +16,7 @@ public class ContainerTypesInit {
 
 
         public static final DeferredRegister<MenuType<?>> TYPES = DeferredRegister.create(
-                ForgeRegistries.CONTAINERS, EurekaCraft.MODID
+                ForgeRegistries.MENU_TYPES, EurekaCraft.MODID
         );
 
         public static final RegistryObject<MenuType<RefTableContainer>> REF_TABLE = TYPES.register(

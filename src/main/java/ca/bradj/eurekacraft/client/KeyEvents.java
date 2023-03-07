@@ -32,9 +32,9 @@ public final class KeyEvents {
                         setControl(player, Control.NONE);
                         return;
                     }
-                    if (KeyEvents.brakeFlightMapping.isDown()) {
+                    if (KeyModEvents.brakeFlightMapping.isDown()) {
                         setControl(player, Control.BRAKE);
-                    } else if (KeyEvents.accelerateFlightMapping.isDown()) {
+                    } else if (KeyModEvents.accelerateFlightMapping.isDown()) {
                         setControl(player, Control.ACCELERATE);
                     } else {
                         setControl(player, Control.NONE);
@@ -45,35 +45,6 @@ public final class KeyEvents {
                 }
         );
 
-    }
-
-    public static KeyMapping brakeFlightMapping;
-    public static KeyMapping accelerateFlightMapping;
-
-    public static void registerKeyMappings(
-            RegisterKeyMappingsEvent evt
-    ) {
-        brakeFlightMapping = registerKey(
-                evt,
-                "flight.brake",
-                "key.eurekacraft.flight",
-                InputConstants.KEY_S
-        );
-        accelerateFlightMapping = registerKey(
-                evt,
-                "flight.accelerate",
-                "key.eurekacraft.flight",
-                InputConstants.KEY_W
-        );
-    }
-
-    private static KeyMapping registerKey(
-            RegisterKeyMappingsEvent evt,
-            String name, String category, int keycode
-    ) {
-        final var key = new KeyMapping("key." + EurekaCraft.MODID + "." + name, keycode, category);
-        evt.register(key);
-        return key;
     }
 
     private static void setControl(Player player, Control c) {

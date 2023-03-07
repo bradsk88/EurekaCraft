@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -94,7 +95,7 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     @Override
-    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, Random rand) {
+    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, RandomSource rand) {
         super.randomTick(p_52292_, level, blockPos, rand);
         if (isMaxAge(p_52292_)) {
             tryChangingToSapling(level, blockPos, rand);
@@ -102,7 +103,7 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     private void tryChangingToSapling(
-            ServerLevel level, BlockPos blockPos, Random rand
+            ServerLevel level, BlockPos blockPos, RandomSource rand
     ) {
         for (Direction d : Direction.Plane.HORIZONTAL) {
             BlockState blockState = level.getBlockState(blockPos.relative(d));

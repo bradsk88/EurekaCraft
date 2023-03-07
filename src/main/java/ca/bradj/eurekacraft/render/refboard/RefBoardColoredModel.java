@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.render.refboard;
 
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -7,7 +8,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,7 +21,10 @@ import java.util.stream.Collectors;
 public class RefBoardColoredModel implements BakedModel {
 
     public static final ModelResourceLocation modelResourceLocation
-            = new ModelResourceLocation("eurekacraft:ref_board", "inventory");
+            = new ModelResourceLocation(
+            "eurekacraft:ref_board",
+            "inventory"
+    );
     private final ItemTransforms transforms;
     private final ItemOverrides overrides;
 
@@ -34,17 +41,40 @@ public class RefBoardColoredModel implements BakedModel {
     private List<BakedQuad> enableTinting(
             BakedModel parentModel
     ) {
-        return parentModel.getQuads(null, null, null).stream().
-                map(v -> new BakedQuad(v.getVertices(), 0, v.getDirection(), v.getSprite(), v.isShade())).
+        return parentModel.getQuads(
+                        null,
+                        null,
+                        null
+                )
+                .stream().
+                map(v -> new BakedQuad(
+                        v.getVertices(),
+                        0,
+                        v.getDirection(),
+                        v.getSprite(),
+                        v.isShade()
+                )).
                 collect(Collectors.toList());
     }
 
     @Override
     public List<BakedQuad> getQuads(
-            @Nullable BlockState state,
-            @Nullable Direction dir, Random rand
+            @Nullable BlockState p_235039_,
+            @Nullable Direction p_235040_,
+            RandomSource p_235041_
     ) {
-        if (dir != null) {
+        return this.getQuads(p_235039_, p_235040_, p_235041_, ModelData.EMPTY, null);
+    }
+
+    @Override
+    public @NotNull List<BakedQuad> getQuads(
+            @Nullable BlockState state,
+            @Nullable Direction side,
+            @NotNull RandomSource rand,
+            @NotNull ModelData data,
+            @Nullable RenderType renderType
+    ) {
+        if (side != null) {
             return List.of();
         }
         return this.quads;

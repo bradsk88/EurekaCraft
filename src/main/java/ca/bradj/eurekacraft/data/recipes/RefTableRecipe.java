@@ -11,12 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class RefTableRecipe implements IGlideBoardRecipe {
 
@@ -25,7 +27,6 @@ public class RefTableRecipe implements IGlideBoardRecipe {
     private final NonNullList<Ingredient> recipeItems;
     private final boolean cook;
     private final Secondary secondaryOutput;
-    private final int outputQuantity;
     private ExtraInput extraIngredient;
 
     public RefTableRecipe(
@@ -34,8 +35,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             NonNullList<Ingredient> recipeItems,
             boolean cook,
             ExtraInput extraIngredient,
-            Secondary secondary,
-            int outputQuantity
+            Secondary secondary
     ) {
         this.id = id;
         this.output = output;
@@ -43,7 +43,6 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         this.cook = cook;
         this.extraIngredient = extraIngredient;
         this.secondaryOutput = secondary;
-        this.outputQuantity = outputQuantity;
     }
 
     private boolean findMatchAndRemove(
@@ -127,9 +126,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
     @Override
     public ItemStack getResultItem() {
-        ItemStack copy = this.output.copy();
-        copy.setCount(this.outputQuantity);
-        return copy;
+        return this.output.copy();
     }
 
     public Secondary getSecondaryResultItem() {
@@ -153,7 +150,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
     @Override
     public int getOutputQuantity() {
-        return outputQuantity;
+        return output.getCount();
     }
 
     public static class Serializer implements RecipeSerializer<RefTableRecipe> {
@@ -166,6 +163,8 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             if (outputJSON.has("quantity")) {
                 outputQty = outputJSON.get("quantity").getAsInt();
             }
+            output.setCount(outputQty);
+
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
@@ -196,7 +195,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             boolean cook = json.get("cook").getAsBoolean();
 
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQty);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Nullable
@@ -216,12 +215,13 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             output = output.getItem().getDefaultInstance();
 
             int outputQuantity = buffer.readInt();
+            output.setCount(outputQuantity);
 
             ItemStack secondaryItem = buffer.readItem();
             double secondaryChance = buffer.readDouble();
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary);
         }
 
         @Override
@@ -238,6 +238,11 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             buffer.writeItem(recipe.getSecondaryResultItem().output);
             buffer.writeDouble(recipe.getSecondaryResultItem().chance);
         }
+    }
+
+    public static class Type implements RecipeType<RefTableRecipe> {
+        public static final Type INSTANCE = new Type();
+        public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "glide_board");
     }
 
     public static class Secondary {

@@ -11,7 +11,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class TilesInit {
     public static final DeferredRegister<BlockEntityType<?>> TILES = DeferredRegister.create(
-            ForgeRegistries.BLOCK_ENTITIES, EurekaCraft.MODID
+            ForgeRegistries.BLOCK_ENTITY_TYPES, EurekaCraft.MODID
     );
 
     public static final RegistryObject<BlockEntityType<RefTableTileEntity>> REF_TABLE = TILES.register(

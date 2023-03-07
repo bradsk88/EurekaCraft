@@ -18,33 +18,55 @@ import java.lang.reflect.Method;
 public class VillagersInit {
 
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(
-            ForgeRegistries.POI_TYPES, EurekaCraft.MODID
+            ForgeRegistries.POI_TYPES,
+            EurekaCraft.MODID
     );
 
     public static final DeferredRegister<VillagerProfession> VILLAGER_PROGRESSIONS = DeferredRegister.create(
-            ForgeRegistries.PROFESSIONS, EurekaCraft.MODID
+            ForgeRegistries.VILLAGER_PROFESSIONS,
+            EurekaCraft.MODID
     );
 
     public static final RegistryObject<PoiType> SANDING_MACHINE_POI = POI_TYPES.register(
             "sanding_machine_poi",
-            () -> new PoiType("sanding_machine_poi", PoiType.getBlockStates(BlocksInit.SANDING_MACHINE.get()), 1, 1)
+            () -> new PoiType(
+                    ImmutableSet.copyOf(
+                            BlocksInit.SANDING_MACHINE.get()
+                                    .getStateDefinition()
+                                    .getPossibleStates()
+                    ),
+                    1,
+                    1
+            )
     );
 
     public static final RegistryObject<VillagerProfession> REF_DEALER = VILLAGER_PROGRESSIONS.register(
             "ref_dealer",
             () -> new VillagerProfession(
                     "ref_dealer",
-                    SANDING_MACHINE_POI.get(),
+                    x -> x.get() == SANDING_MACHINE_POI.get(),
+                    x -> x.get() == SANDING_MACHINE_POI.get(),
                     ImmutableSet.of(),
-                    ImmutableSet.of(BlocksInit.REF_TABLE_BLOCK.get(), BlocksInit.FRESH_SEEDS_CROP.get(), BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()),
+                    ImmutableSet.of(
+                            BlocksInit.REF_TABLE_BLOCK.get(),
+                            BlocksInit.FRESH_SEEDS_CROP.get(),
+                            BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()
+                    ),
                     SoundEvents.GRAVEL_STEP
             )
     );
 
     public static void registerPOIs() {
         try {
-            Method registerBlockStates = ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class);
-            registerBlockStates.invoke(null, SANDING_MACHINE_POI.get());
+            Method registerBlockStates = ObfuscationReflectionHelper.findMethod(
+                    PoiType.class,
+                    "registerBlockStates",
+                    PoiType.class
+            );
+            registerBlockStates.invoke(
+                    null,
+                    SANDING_MACHINE_POI.get()
+            );
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();
         }

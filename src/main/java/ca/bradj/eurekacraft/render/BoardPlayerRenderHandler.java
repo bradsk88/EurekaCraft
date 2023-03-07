@@ -43,7 +43,7 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
-        PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
+        PlayerDeployedBoardProvider.getBoardTypeFor(event.getEntity()).ifPresent(
                 (PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(event, bt)
         );
     }
@@ -58,13 +58,13 @@ public class BoardPlayerRenderHandler {
         PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
-        LivingEntity living = event.getEntityLiving();
+        LivingEntity living = event.getEntity();
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
 
         Vec3 rv = living.getForward().normalize();
         final int tipAmt = 10;
-        switch (PlayerBoardControlProvider.getControl(event.getPlayer())) {
+        switch (PlayerBoardControlProvider.getControl(event.getEntity())) {
             case BRAKE -> {
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (-tipAmt * rv.x)));
                 matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (-tipAmt * rv.z)));

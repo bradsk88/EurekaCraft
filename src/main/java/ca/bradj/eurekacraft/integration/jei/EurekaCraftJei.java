@@ -19,6 +19,19 @@ import java.util.stream.Collectors;
 
 @JeiPlugin
 public class EurekaCraftJei implements IModPlugin {
+
+    public static RecipeType<RefTableRecipe> REF_TABLE_RECIPE_TYPE = RecipeType.create(
+            EurekaCraft.MODID,
+            RefTableRecipe.Type.ID.getPath(),
+            RefTableRecipe.class
+    );
+
+    public static RecipeType<SandingMachineRecipe> SANDING_MACHINE_RECIPE_TYPE = RecipeType.create(
+            EurekaCraft.MODID,
+            SandingMachineRecipe.Type.ID.getPath(),
+            SandingMachineRecipe.class
+    );
+
     @Override
     public ResourceLocation getPluginUid() {
         return new ResourceLocation(EurekaCraft.MODID, "jei_plugin");
@@ -37,21 +50,17 @@ public class EurekaCraftJei implements IModPlugin {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         RecipeManager rm = Objects.requireNonNull(Minecraft.getInstance().level.getRecipeManager());
-        RecipeType<RefTableRecipe> glideBoardType = RecipeType.create(
-                EurekaCraft.MODID, RefTableRecipe.Type.ID.getPath(), RefTableRecipe.class
-        );
-        RecipeType<SandingMachineRecipe> sandingMachineType = RecipeType.create(
-                EurekaCraft.MODID, SandingMachineRecipe.Type.ID.getPath(), SandingMachineRecipe.class
-        );
-        List<RefTableRecipe> allRecipes = rm.getAllRecipesFor(RecipesInit.REF_TABLE).
+
+        List<RefTableRecipe> refRecipes = rm.getAllRecipesFor(RecipesInit.REF_TABLE).
                 stream().
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
-        registration.addRecipes(glideBoardType, allRecipes);
+        registration.addRecipes(REF_TABLE_RECIPE_TYPE, refRecipes);
+
         List<SandingMachineRecipe> smRecipes = rm.getAllRecipesFor(RecipesInit.SANDING_MACHINE).
                 stream().
                 filter(Objects::nonNull).
                 collect(Collectors.toList());
-        registration.addRecipes(sandingMachineType, smRecipes);
+        registration.addRecipes(SANDING_MACHINE_RECIPE_TYPE, smRecipes);
     }
 }

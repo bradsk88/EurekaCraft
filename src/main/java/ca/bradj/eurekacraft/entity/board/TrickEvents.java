@@ -19,13 +19,13 @@ public class TrickEvents {
             return;
         }
 
-        if (event.getPlayer().level.isClientSide()) {
+        if (event.getEntity().level.isClientSide()) {
             return;
         }
         ResourceLocation firstFlight = new ResourceLocation(EurekaCraft.MODID, AdvancementsInit.IDs.FirstFlight);
         ResourceLocation id = event.getAdvancement().getId();
         if (firstFlight.equals(id)) {
-            JudgeEntity.spawnToRewardPlayer((ServerPlayer) event.getPlayer());
+            JudgeEntity.spawnToRewardPlayer((ServerPlayer) event.getEntity());
         }
     }
 }

@@ -80,7 +80,7 @@ public class SandingMachineBlock extends EntityBlock {
             return;
         }
 
-        NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, blockpos);
+        NetworkHooks.openScreen((ServerPlayer) player, (MenuProvider) te, blockpos);
     }
 
     @Override

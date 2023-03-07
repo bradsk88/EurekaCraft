@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -24,7 +25,7 @@ public class StandardRefBoard extends RefBoardItem {
         super(RefBoardStats.StandardBoard, ID);
     }
 
-    public static ItemStack getWithRandomStats(Random rand) {
+    public static ItemStack getWithRandomStats(RandomSource rand) {
         ItemStack i = ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance();
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, rand);
         storeStatsOnStack(i, newStats);
@@ -32,7 +33,7 @@ public class StandardRefBoard extends RefBoardItem {
         return i;
     }
 
-    public static ItemStack getWithRandomBadStats(Random rand) {
+    public static ItemStack getWithRandomBadStats(RandomSource rand) {
         ItemStack i = ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance();
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, rand);
         storeStatsOnStack(i, newStats);

@@ -33,6 +33,10 @@ public class ChunkWavesForgeRendering {
 
     @SubscribeEvent
     public static void handleRenderEvent(RenderLevelStageEvent evt) {
+        if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
+            return;
+        }
+
         if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
             return;
         }
@@ -52,16 +56,8 @@ public class ChunkWavesForgeRendering {
                 renderChunkWaves(renderer, eyePos, world, state, bm, matrixStack, cpj);
             }
         }
-        evt.getLevelRenderer().renderLevel(
-                matrixStack,
-                evt.getPartialTick(),
-                0,
-                true,
-                mc.gameRenderer.getMainCamera(),
-                mc.gameRenderer,
-                new LightTexture(mc.gameRenderer, mc),
-                evt.getProjectionMatrix()
-        );
+
+        evt.getLevelRenderer().needsUpdate();
     }
 
     private static void renderChunkWaves(

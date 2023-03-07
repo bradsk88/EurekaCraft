@@ -7,15 +7,19 @@ import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -26,11 +30,25 @@ public class RefBoardItemOverrideList extends ItemOverrides {
 
     private static final Color INVISIBLE = new Color(0, 0, 0, 0);
 
-    // TODO: Make board visible from first person perspective
     private static final BakedModel NO_BOARD_MODEL = new BakedModel() {
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState p_119123_, @Nullable Direction p_119124_, Random p_119125_) {
+        public @NotNull List<BakedQuad> getQuads(
+                @Nullable BlockState state,
+                @Nullable Direction side,
+                @NotNull RandomSource rand,
+                @NotNull ModelData data,
+                @Nullable RenderType renderType
+        ) {
             return ImmutableList.of(new BakedQuad(new int[]{}, 0, Direction.DOWN, null, false));
+        }
+
+        @Override
+        public List<BakedQuad> getQuads(
+                @Nullable BlockState p_235039_,
+                @Nullable Direction p_235040_,
+                RandomSource p_235041_
+        ) {
+            return this.getQuads(p_235039_, p_235040_, p_235041_, ModelData.EMPTY, null);
         }
 
         @Override

@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,7 +28,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
 
     public static class BoardStatsFactory extends BlueprintItem.BoardStatsFactory {
         @Override
-        public RefBoardStats getBoardStatsFromNBTOrCreate(ItemStack itemStack, RefBoardStats creationReference, Random rand) {
+        public RefBoardStats getBoardStatsFromNBTOrCreate(ItemStack itemStack, RefBoardStats creationReference, RandomSource rand) {
             RefBoardStats boostedReference = creationReference.WithAllIncreased(0.25);
             if (RefBoardStats.isElite(creationReference)) {
                 boostedReference = creationReference;

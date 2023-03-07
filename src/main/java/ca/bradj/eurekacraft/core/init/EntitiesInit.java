@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 public class EntitiesInit {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(
-            ForgeRegistries.ENTITIES, EurekaCraft.MODID
+            ForgeRegistries.ENTITY_TYPES, EurekaCraft.MODID
     );
 
     private static final String REF_BOARD_ID = new ResourceLocation(EurekaCraft.MODID, EntityRefBoard.ENTITY_ID).toString();
