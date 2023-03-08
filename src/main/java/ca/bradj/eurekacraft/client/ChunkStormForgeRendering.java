@@ -62,6 +62,10 @@ public class ChunkStormForgeRendering {
 
     @SubscribeEvent
     public static void handleRenderEvent(RenderLevelStageEvent evt) {
+        if (true) {
+            return;
+        }
+
         if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
             return;
         }
