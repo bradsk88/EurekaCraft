@@ -1,7 +1,5 @@
 package ca.bradj.eurekacraft.core.network.msg;
 
-import ca.bradj.eurekacraft.client.TraparStormRendering;
-import ca.bradj.eurekacraft.world.waves.ChunkWavesData;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

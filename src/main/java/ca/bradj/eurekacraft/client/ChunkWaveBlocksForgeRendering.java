@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -26,7 +25,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collection;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class ChunkWavesForgeRendering {
+public class ChunkWaveBlocksForgeRendering {
 
     private static Minecraft mc = Minecraft.getInstance();
     private static Vec3 lastPos;

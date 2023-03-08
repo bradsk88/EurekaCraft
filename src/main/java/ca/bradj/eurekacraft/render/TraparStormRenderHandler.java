@@ -4,10 +4,8 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -17,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.client.extensions.IForgeDimensionSpecialEffects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +23,7 @@ import java.util.Random;
 
 import static net.minecraft.client.renderer.LevelRenderer.getLightColor;
 
-public class TraparStormRenderHandler { //implements IWeatherRenderHandler {
+public class TraparStormRenderHandler implements IForgeDimensionSpecialEffects { //implements IWeatherRenderHandler {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -46,73 +45,80 @@ public class TraparStormRenderHandler { //implements IWeatherRenderHandler {
         }
     }
 
-    // FIXME: Migrate storm rendering : @Override
-    public void render(int ticks, float partialTicks, ClientLevel world, Minecraft mc, LightTexture lightMapIn, double xIn, double yIn, double zIn) {
-        // TODO: Reimplement
-        if (mc.getCameraEntity() == null) {
-            return;
+    @Override
+    public boolean renderClouds(
+            ClientLevel level,
+            int ticks,
+            float partialTick,
+            PoseStack poseStack,
+            double blockPosXIn,
+            double blockPosYIn,
+            double blockPosZIn,
+            Matrix4f projectionMatrix
+    ) {
+        if (minecraft.getCameraEntity() == null) {
+            return false;
         }
 
-        if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.getCameraEntity())) {
+        if (!DeployedPlayerGoggles.areGogglesBeingWorn(minecraft.getCameraEntity())) {
             logger.error("Trapar Storm Renderer is still installed but player is not wearing goggles");
-            return;
+            return false;
         }
 
         float f = 1.0f; // rain level
 
-        lightMapIn.turnOnLightLayer();
-        Level level = this.minecraft.level;
-        int i = Mth.floor(xIn);
-        int j = Mth.floor(yIn);
-        int k = Mth.floor(zIn);
+//        lightMapIn.turnOnLightLayer();
+        int xInt = Mth.floor(blockPosXIn);
+        int cameraYInt = Mth.floor(blockPosYIn);
+        int zInt = Mth.floor(blockPosZIn);
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        int l = 5;
+        int radius = 5;
         if (Minecraft.useFancyGraphics()) {
-            l = 10;
+            radius = 10;
         }
 
         RenderSystem.depthMask(Minecraft.useShaderTransparency());
         int i1 = -1;
-        float f1 = (float) ticks + partialTicks;
+        float f1 = (float) ticks + partialTick;
         RenderSystem.setShader(GameRenderer::getParticleShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
-        for (int j1 = k - l; j1 <= k + l; ++j1) {
-            for (int k1 = i - l; k1 <= i + l; ++k1) {
-                int l1 = (j1 - k + 16) * 32 + k1 - i + 16;
-                double d0 = (double) this.rainSizeX[l1] * 0.5D;
-                double d1 = (double) this.rainSizeZ[l1] * 0.5D;
-                blockpos$mutableblockpos.set((double) k1, yIn, (double) j1);
+        for (int loopZ = zInt - radius; loopZ <= zInt + radius; ++loopZ) {
+            for (int loopX = xInt - radius; loopX <= xInt + radius; ++loopX) {
+                int loopBitCoord = (loopZ - zInt + 16) * 32 + loopX - xInt + 16;
+                double rainSizeX = (double) this.rainSizeX[loopBitCoord] * 0.5D;
+                double rainSizeZ = (double) this.rainSizeZ[loopBitCoord] * 0.5D;
+                blockpos$mutableblockpos.set((double) loopX, blockPosYIn, (double) loopZ);
 
                 if (!StormSavedData.forBlockPosition(blockpos$mutableblockpos).storming) {
                     continue;
                 }
 
-                int i2 = level.getHeight(Heightmap.Types.MOTION_BLOCKING, k1, j1);
-                int j2 = j - l;
-                int k2 = j + l;
-                if (j2 < i2) {
-                    j2 = i2;
+                int groundHeight = level.getHeight(Heightmap.Types.MOTION_BLOCKING, loopX, loopZ);
+                int rainCubeBottom = cameraYInt - radius;
+                int rainCubeTop = cameraYInt + radius;
+                if (rainCubeBottom < groundHeight) {
+                    rainCubeBottom = groundHeight;
                 }
 
-                if (k2 < i2) {
-                    k2 = i2;
+                if (rainCubeTop < groundHeight) {
+                    rainCubeTop = groundHeight;
                 }
 
-                int l2 = i2;
-                if (i2 < j) {
-                    l2 = j;
+                int groundYAboveCamera = groundHeight;
+                if (groundHeight < cameraYInt) {
+                    groundYAboveCamera = cameraYInt;
                 }
 
-                if (j2 != k2) {
-                    Random random = new Random((long) (k1 * k1 * 3121 + k1 * 45238971 ^ j1 * j1 * 418711 + j1 * 13761));
-                    blockpos$mutableblockpos.set(k1, j2, j1);
+                if (rainCubeBottom != rainCubeTop) {
+                    Random random = new Random((long) (loopX * loopX * 3121 + loopX * 45238971 ^ loopZ * loopZ * 418711 + loopZ * 13761));
+                    blockpos$mutableblockpos.set(loopX, rainCubeBottom, loopZ);
                     if (i1 != 0) {
                         if (i1 >= 0) {
                             tesselator.end();
@@ -123,18 +129,18 @@ public class TraparStormRenderHandler { //implements IWeatherRenderHandler {
                         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
                     }
 
-                    int i3 = ticks + k1 * k1 * 3121 + k1 * 45238971 + j1 * j1 * 418711 + j1 * 13761 & 31;
-                    float f2 = ((float) i3 + partialTicks) / 32.0F * (3.0F + random.nextFloat());
-                    double d2 = (double) k1 + 0.5D - xIn;
-                    double d4 = (double) j1 + 0.5D - zIn;
-                    float f3 = (float) Math.sqrt(d2 * d2 + d4 * d4) / (float) l;
+                    int i3 = ticks + loopX * loopX * 3121 + loopX * 45238971 + loopZ * loopZ * 418711 + loopZ * 13761 & 31;
+                    float f2 = ((float) i3 + partialTick) / 32.0F * (3.0F + random.nextFloat());
+                    double d2 = (double) loopX + 0.5D - blockPosXIn;
+                    double d4 = (double) loopZ + 0.5D - blockPosZIn;
+                    float f3 = (float) Math.sqrt(d2 * d2 + d4 * d4) / (float) radius;
                     float f4 = ((1.0F - f3 * f3) * 0.5F + 0.5F) * f;
-                    blockpos$mutableblockpos.set(k1, l2, j1);
-                    int j3 = getLightColor(level, blockpos$mutableblockpos);
-                    bufferbuilder.vertex((double) k1 - xIn - d0 + 0.5D, (double) k2 - yIn, (double) j1 - zIn - d1 + 0.5D).uv(0.0F, (float) j2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
-                    bufferbuilder.vertex((double) k1 - xIn + d0 + 0.5D, (double) k2 - yIn, (double) j1 - zIn + d1 + 0.5D).uv(1.0F, (float) j2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
-                    bufferbuilder.vertex((double) k1 - xIn + d0 + 0.5D, (double) j2 - yIn, (double) j1 - zIn + d1 + 0.5D).uv(1.0F, (float) k2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
-                    bufferbuilder.vertex((double) k1 - xIn - d0 + 0.5D, (double) j2 - yIn, (double) j1 - zIn - d1 + 0.5D).uv(0.0F, (float) k2 * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(j3).endVertex();
+                    blockpos$mutableblockpos.set(loopX, groundYAboveCamera, loopZ);
+                    int uv = getLightColor(level, blockpos$mutableblockpos);
+                    bufferbuilder.vertex((double) loopX - blockPosXIn - rainSizeX + 0.5D, (double) rainCubeTop - blockPosYIn, (double) loopZ - blockPosZIn - rainSizeZ + 0.5D).uv(0.0F, (float) rainCubeBottom * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(uv).endVertex();
+                    bufferbuilder.vertex((double) loopX - blockPosXIn + rainSizeX + 0.5D, (double) rainCubeTop - blockPosYIn, (double) loopZ - blockPosZIn + rainSizeZ + 0.5D).uv(1.0F, (float) rainCubeBottom * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(uv).endVertex();
+                    bufferbuilder.vertex((double) loopX - blockPosXIn + rainSizeX + 0.5D, (double) rainCubeBottom - blockPosYIn, (double) loopZ - blockPosZIn + rainSizeZ + 0.5D).uv(1.0F, (float) rainCubeTop * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(uv).endVertex();
+                    bufferbuilder.vertex((double) loopX - blockPosXIn - rainSizeX + 0.5D, (double) rainCubeBottom - blockPosYIn, (double) loopZ - blockPosZIn - rainSizeZ + 0.5D).uv(0.0F, (float) rainCubeTop * 0.25F + f2).color(1.0F, 1.0F, 1.0F, f4).uv2(uv).endVertex();
                 }
             }
         }
@@ -145,6 +151,7 @@ public class TraparStormRenderHandler { //implements IWeatherRenderHandler {
 
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
-        lightMapIn.turnOffLightLayer();
+//        lightMapIn.turnOffLightLayer();
+        return true;
     }
 }

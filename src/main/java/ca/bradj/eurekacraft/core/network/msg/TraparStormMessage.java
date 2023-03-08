@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.core.network.msg;
 
-import ca.bradj.eurekacraft.client.TraparStormRendering;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraftforge.api.distmarker.Dist;
@@ -46,7 +45,8 @@ public class TraparStormMessage {
         ctx.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
                     () -> () -> {
-                        TraparStormRendering.updateFromMessage(this);
+                // FIXME: Sync storm status from server
+//                        StormSavedData.updateClientFromMessage(this);
                         success.set(true);
                     }
             );
