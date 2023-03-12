@@ -9,9 +9,11 @@ import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -43,28 +45,29 @@ public class VillagerEvents {
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.PAPER, 32),
+                        new ItemStack(Items.PAPER, 24),
+                        new ItemStack(Items.EMERALD, 2),
                         BlueprintItem.getRandom(rand),
                         1, 4, 0.125F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.PAPER, 16),
+                        new ItemStack(Items.PAPER, 24),
                         new ItemStack(Items.EMERALD, 1),
                         4, 4, 0.25F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.CLAY_BALL, 16),
+                        new ItemStack(Items.CLAY_BALL, 24),
                         new ItemStack(Items.EMERALD, 1),
                         4, 4, 0.25F
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
-                        new ItemStack(ItemsInit.FLINT_SANDING_DISC.get(), 2),
+                        new ItemStack(ItemsInit.FLINT_SANDING_DISC.get(), 1),
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
-                        new ItemStack(ItemsInit.FLINT_STICKY_DISC.get(), 4),
+                        new ItemStack(ItemsInit.FLINT_STICKY_DISC.get(), 2),
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
@@ -74,12 +77,12 @@ public class VillagerEvents {
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
-                        new ItemStack(Items.CLAY_BALL, 16),
+                        new ItemStack(Items.CLAY_BALL, 8),
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
-                        new ItemStack(Items.PAPER, 16),
+                        new ItemStack(Items.PAPER, 8),
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
@@ -89,13 +92,13 @@ public class VillagerEvents {
                         4, 4, 0.1F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 4),
-                        new ItemStack(Items.IRON_BLOCK, 1),
+                        new ItemStack(Items.EMERALD, 2),
+                        new ItemStack(Items.IRON_INGOT, 1),
                         4, 4, 0.25F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(Items.OAK_SLAB, 16),
+                        new ItemStack(Items.EMERALD, 1),
+                        new ItemStack(Items.OAK_SLAB, 8),
                         4, 4, 0.5F
                 )
         );
@@ -105,7 +108,7 @@ public class VillagerEvents {
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(ItemsInit.REF_BOARD_CORE.get(), 1),
                         new ItemStack(Items.EMERALD, 4),
-                        StandardRefBoard.getWithRandomStats(rand),
+                        StandardRefBoard.getWithRandomBadStats(rand),
                         1, 8, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
@@ -136,12 +139,12 @@ public class VillagerEvents {
                         4, 8, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(ItemsInit.PRECISION_WOOD.get(), 4),
+                        new ItemStack(ItemsInit.PRECISION_WOOD.get(), 8),
                         new ItemStack(Items.EMERALD, 2),
                         4, 8, 0.25F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(ItemsInit.POLISHED_OAK_SLAB.get(), 8),
+                        new ItemStack(ItemsInit.POLISHED_OAK_SLAB.get(), 16),
                         new ItemStack(Items.EMERALD, 1),
                         4, 8, 0.125F
                 ),
@@ -150,91 +153,64 @@ public class VillagerEvents {
                         new ItemStack(Items.EMERALD, 4),
                         new ItemStack(ItemsInit.RESIN.get(), 16),
                         4, 8, 0.125F
-                )
+                ),
+                (trader, rand) -> {
+                    Item[] dyes = new Item[]{
+                            Items.BLACK_DYE,
+                            Items.WHITE_DYE,
+                            Items.BLUE_DYE,
+                            Items.BROWN_DYE,
+                            Items.CYAN_DYE,
+                            Items.GRAY_DYE,
+                            Items.GREEN_DYE,
+                            Items.LIGHT_BLUE_DYE,
+                            Items.LIGHT_GRAY_DYE,
+                            Items.LIME_DYE,
+                            Items.MAGENTA_DYE,
+                            Items.ORANGE_DYE,
+                            Items.PINK_DYE,
+                            Items.PURPLE_DYE,
+                            Items.RED_DYE,
+                            Items.YELLOW_DYE
+                    };
+                    Item dye = dyes[rand.nextInt(dyes.length - 1)];
+                    return new MerchantOffer(
+                            new ItemStack(dye, 16),
+                            new ItemStack(Items.EMERALD, 1),
+                            4, 8, 0.125F
+                    );
+                }
+
         );
 
         // Level 3: Improve a standard ref board
         final List<VillagerTrades.ItemListing> refDealerTrades3 = ImmutableList.of(
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_BLACK.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_BLUE.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_BROWN.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_CYAN.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_GRAY.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_GREEN.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_LIGHT_BLUE.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_LIGHT_GRAY.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_LIME.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_MAGENTA.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_ORANGE.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_PINK.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_PURPLE.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_RED.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_WHITE.get(), 1),
-                        4, 8, 0.5F
-                ),
-                (trader, random) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 2),
-                        new ItemStack(ItemsInit.PAINT_BUCKET_YELLOW.get(), 1),
-                        4, 8, 0.5F
-                ),
+                (trader, random) -> {
+                    Item[] dyes = new Item[]{
+                            ItemsInit.PAINT_BUCKET_BLACK.get(),
+                            ItemsInit.PAINT_BUCKET_WHITE.get(),
+                            ItemsInit.PAINT_BUCKET_BLUE.get(),
+                            ItemsInit.PAINT_BUCKET_BROWN.get(),
+                            ItemsInit.PAINT_BUCKET_CYAN.get(),
+                            ItemsInit.PAINT_BUCKET_GRAY.get(),
+                            ItemsInit.PAINT_BUCKET_GREEN.get(),
+                            ItemsInit.PAINT_BUCKET_LIGHT_BLUE.get(),
+                            ItemsInit.PAINT_BUCKET_LIGHT_GRAY.get(),
+                            ItemsInit.PAINT_BUCKET_LIME.get(),
+                            ItemsInit.PAINT_BUCKET_MAGENTA.get(),
+                            ItemsInit.PAINT_BUCKET_ORANGE.get(),
+                            ItemsInit.PAINT_BUCKET_PINK.get(),
+                            ItemsInit.PAINT_BUCKET_PURPLE.get(),
+                            ItemsInit.PAINT_BUCKET_RED.get(),
+                            ItemsInit.PAINT_BUCKET_YELLOW.get()
+                    };
+                    Item paint = dyes[random.nextInt(dyes.length - 1)];
+                    return new MerchantOffer(
+                            new ItemStack(Items.EMERALD, 2),
+                            new ItemStack(paint, 1),
+                            4, 8, 0.5F
+                    );
+                },
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 2),
                         new ItemStack(ItemsInit.SOFT_CHISEL.get(), 1),
@@ -274,7 +250,11 @@ public class VillagerEvents {
                 (trader, random) -> new MerchantOffer(
                             new ItemStack(Items.EMERALD, 6),
                             new ItemStack(ItemsInit.REFLECTION_FILM.get(), 8),
-                            new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 8),
+                            new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
+                            1, 8, 0.125F),
+                (trader, random) -> new MerchantOffer(
+                            new ItemStack(Items.EMERALD, 32),
+                            new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
                             1, 8, 0.125F),
                 (trader, random) -> new MerchantOffer(
                             new ItemStack(Items.EMERALD, 1),
