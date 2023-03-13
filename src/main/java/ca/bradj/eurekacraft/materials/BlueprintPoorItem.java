@@ -7,7 +7,9 @@ import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -22,7 +24,7 @@ import java.util.Random;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryProvider, ITechAffected {
+public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvider, ITechAffected {
 
     public static boolean debuggerReleaseControl() {
         GLFW.glfwSetInputMode(
@@ -35,21 +37,21 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
         return true;
     }
 
-    public static final String ITEM_ID = "blueprint_advanced";
+    public static final String ITEM_ID = "blueprint_poor";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
     public static ItemStack getRandom(Random rand) {
-        ItemStack i = ItemsInit.BLUEPRINT_ADVANCED.get()
+        ItemStack i = ItemsInit.BLUEPRINT_POOR.get()
                 .getDefaultInstance();
         Blueprints.getBoardStatsFromNBTOrCreate(
                 i,
-                RefBoardStats.EliteBoard,
+                RefBoardStats.BadBoard,
                 rand
         );
         return i;
     }
 
-    public BlueprintAdvancedItem() {
+    public BlueprintPoorItem() {
         super(PROPS);
     }
 
@@ -71,7 +73,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
             TooltipFlag flagIn
     ) {
         Blueprints.appendHoverText(
-                RefBoardStats.EliteBoard,
+                RefBoardStats.BadBoard,
                 stack,
                 world,
                 tooltip
@@ -87,9 +89,9 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
             Random random
     ) {
         // TODO: Consider making blueprint stats "relative" so they affect different boards differently
-        RefBoardStats reference = RefBoardStats.EliteBoard;
+        RefBoardStats reference = RefBoardStats.BadBoard;
         Blueprints.applyAsTechItem(
-                BlueprintAdvancedItem.class,
+                BlueprintPoorItem.class,
                 reference,
                 inputs,
                 blueprint,

@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collection;
@@ -34,16 +35,72 @@ public class RefBoardStats {
     public static final RefBoardStats EliteBoard;
 
     static {
-        BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25, 0, 0);
-        HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25, 0, 0);
-        GlideBoard = new RefBoardStats("glide", 0.25, 0.25, 0.10, NO_LIFT, 0, 0).
+        BadBoard = new RefBoardStats(
+                "bad",
+                1.0,
+                0.25,
+                0.25,
+                0.25,
+                0,
+                0
+        );
+        HeavyBoard = new RefBoardStats(
+                "heavy",
+                1.0,
+                0.5,
+                0.25,
+                0.25,
+                0,
+                0
+        );
+        GlideBoard = new RefBoardStats(
+                "glide",
+                0.25,
+                0.25,
+                0.10,
+                NO_LIFT,
+                0,
+                0
+        ).
                 withLandResistance(0.80).
                 WithSurf(0.80);
-        SurfBoard = new RefBoardStats("surf", 1.0, 0.75, MAX_AGILITY, NO_LIFT, 0, 0).
+        SurfBoard = new RefBoardStats(
+                "surf",
+                1.0,
+                0.75,
+                MAX_AGILITY,
+                NO_LIFT,
+                0,
+                0
+        ).
                 WithSurf(MAX_SURF);
-        StandardBoard = new RefBoardStats("standard", 0.75, 0.5, 0.25, 0.5, 0, 0);
-        SpeedBoard = new RefBoardStats("speed", 0.5, MAX_SPEED, 0.10, 0.5, 0, 0);
-        EliteBoard = new RefBoardStats("elite", 0.25, 0.75, 0.75, 0.75, 25, 25);
+        StandardBoard = new RefBoardStats(
+                "standard",
+                0.5,
+                0.5,
+                0.25,
+                0.5,
+                0,
+                0
+        );
+        SpeedBoard = new RefBoardStats(
+                "speed",
+                0.5,
+                MAX_SPEED,
+                0.10,
+                0.5,
+                0,
+                0
+        );
+        EliteBoard = new RefBoardStats(
+                "elite",
+                0.25,
+                0.75,
+                0.75,
+                0.75,
+                25,
+                25
+        );
     }
 
     private double boardWeight;
@@ -52,7 +109,7 @@ public class RefBoardStats {
     private double boardSpeed;
     private double turnSpeed;
     private double liftFactor;
-    private double landResistance ;
+    private double landResistance;
     private boolean damaged;
     private double surf;
     private double latentBraking;
@@ -61,58 +118,143 @@ public class RefBoardStats {
     private RefBoardStats(
             String id,
             double boardWeight,
-            double boardSpeed, // This is a boost and is not coupled to weight
-            double turnSpeed, // This is a boost and is not coupled to weight
-            double liftFactor, // This is a boost and is not coupled to weight
+            double boardSpeed,
+            // This is a boost and is not coupled to weight
+            double turnSpeed,
+            // This is a boost and is not coupled to weight
+            double liftFactor,
+            // This is a boost and is not coupled to weight
             double latentBraking,
             double latentAcceleration
     ) {
-        this(id, boardWeight, boardSpeed, turnSpeed, liftFactor, latentBraking, latentAcceleration, 0, 0.4);
+        this(
+                id,
+                boardWeight,
+                boardSpeed,
+                turnSpeed,
+                liftFactor,
+                latentBraking,
+                latentAcceleration,
+                0,
+                0.4
+        );
     }
 
     private RefBoardStats(
             String id,
             double boardWeight,
-            double boardSpeed, // This is a boost and is not coupled to weight
-            double turnSpeed, // This is a boost and is not coupled to weight
-            double liftFactor, // This is a boost and is not coupled to weight
+            double boardSpeed,
+            // This is a boost and is not coupled to weight
+            double turnSpeed,
+            // This is a boost and is not coupled to weight
+            double liftFactor,
+            // This is a boost and is not coupled to weight
             double latentBraking,
             double latentAcceleration,
             double landResistance,
             double surf
     ) {
         this.id = id;
-        this.boardWeight = Math.min(MAX_WEIGHT, Math.max(MIN_WEIGHT, boardWeight));
-        this.boardSpeed = Math.min(MAX_SPEED, boardSpeed);
-        this.turnSpeed = Math.min(MAX_AGILITY, turnSpeed);
-        this.liftFactor = Math.min(MAX_LIFT, liftFactor);
+        this.boardWeight = Math.min(
+                MAX_WEIGHT,
+                Math.max(
+                        MIN_WEIGHT,
+                        boardWeight
+                )
+        );
+        this.boardSpeed = Math.min(
+                MAX_SPEED,
+                boardSpeed
+        );
+        this.turnSpeed = Math.min(
+                MAX_AGILITY,
+                turnSpeed
+        );
+        this.liftFactor = Math.min(
+                MAX_LIFT,
+                liftFactor
+        );
         this.latentBraking = latentBraking;
         this.latentAccel = latentAcceleration;
         this.landResistance = landResistance;
         this.surf = surf;
     }
 
-    public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, Random rand) {
+    public static RefBoardStats FromReferenceWithRandomOffsets(
+            RefBoardStats creationReference,
+            Random rand
+    ) {
         double weight = creationReference.weight();
         double speed = creationReference.speed() + 0.15 - (0.25 * rand.nextDouble());
         double agility = creationReference.agility() + 0.15 - (0.25 * rand.nextDouble());
         double lift = creationReference.lift() + 0.15 - (0.25 * rand.nextDouble());
-        speed = Math.min(MAX_SPEED, speed);
-        agility = Math.min(MAX_AGILITY, agility);
-        lift = Math.min(MAX_LIFT, lift);
-        return new RefBoardStats(creationReference.id, weight, speed, agility, lift, creationReference.landResistance, creationReference.surf);
+        speed = Math.min(
+                MAX_SPEED,
+                speed
+        );
+        agility = Math.min(
+                MAX_AGILITY,
+                agility
+        );
+        lift = Math.min(
+                MAX_LIFT,
+                lift
+        );
+        return new RefBoardStats(
+                creationReference.id,
+                weight,
+                speed,
+                agility,
+                lift,
+                creationReference.landResistance,
+                creationReference.surf
+        );
     }
 
-    public static RefBoardStats Average(String id, Collection<RefBoardStats> inputStats) {
-            
-        double avgWeight = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::weight));
-        double avgSpeed = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::speed));
-        double avgAgility = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::agility));
-        double avgLift = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::lift));
-        double avgLandRes = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::landResist));
-        double avgSurf = inputStats.parallelStream().collect(Collectors.averagingDouble(RefBoardStats::surf));
+    public static RefBoardStats FromReferenceWithRandomBoost(
+            RefBoardStats creationReference,
+            Random rand,
+            float boostFactor
+    ) {
+        RefBoardStats newStats = creationReference;
+        switch (rand.nextInt(3)) {
+            case 0:
+                return newStats.WithAgility(creationReference.agility() * 1.1);
+            case 1:
+                return newStats.WithLift(creationReference.lift() * 1.1);
+            case 2:
+                return newStats.WithSpeed(creationReference.speed() * 1.1);
+            default:
+                EurekaCraft.LOGGER.error("Random stat boost had unexpected index. This is a bug. Boosting speed as a fallback.");
+                return newStats.WithSpeed(creationReference.speed() * 1.1);
+        }
+    }
+
+    public static RefBoardStats Average(
+            String id,
+            Collection<RefBoardStats> inputStats
+    ) {
+
+        double avgWeight = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::weight));
+        double avgSpeed = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::speed));
+        double avgAgility = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::agility));
+        double avgLift = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::lift));
+        double avgLandRes = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::landResist));
+        double avgSurf = inputStats.parallelStream()
+                .collect(Collectors.averagingDouble(RefBoardStats::surf));
         return new RefBoardStats(
-                id, avgWeight, avgSpeed, avgAgility, avgLift, avgLandRes, avgSurf
+                id,
+                avgWeight,
+                avgSpeed,
+                avgAgility,
+                avgLift,
+                avgLandRes,
+                avgSurf
         );
     }
 
@@ -122,20 +264,37 @@ public class RefBoardStats {
 
     public RefBoardStats copy() {
         return new RefBoardStats(
-                this.id, this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, this.landResistance, this.surf
+                this.id,
+                this.boardWeight,
+                this.boardSpeed,
+                this.turnSpeed,
+                this.liftFactor,
+                this.landResistance,
+                this.surf
         );
     }
 
     public RefBoardStats WithAllIncreased(double increase) {
         return new RefBoardStats(
-                this.id, this.boardWeight, this.boardSpeed + increase, this.turnSpeed + increase, this.liftFactor + increase,
-                this.landResistance, this.surf
+                this.id,
+                this.boardWeight,
+                this.boardSpeed + increase,
+                this.turnSpeed + increase,
+                this.liftFactor + increase,
+                this.landResistance,
+                this.surf
         );
     }
 
     public RefBoardStats withLandResistance(double landResistance) {
         return new RefBoardStats(
-                this.id, this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, landResistance, this.surf
+                this.id,
+                this.boardWeight,
+                this.boardSpeed,
+                this.turnSpeed,
+                this.liftFactor,
+                landResistance,
+                this.surf
         );
     }
 
@@ -147,7 +306,13 @@ public class RefBoardStats {
 
     public RefBoardStats damaged() {
         RefBoardStats refBoardStats = new RefBoardStats(
-                this.id, this.boardWeight, this.boardSpeed, this.turnSpeed, this.liftFactor, 0, 0
+                this.id,
+                this.boardWeight,
+                this.boardSpeed,
+                this.turnSpeed,
+                this.liftFactor,
+                0,
+                0
         );
         refBoardStats.damaged = true;
         return refBoardStats;
@@ -190,10 +355,22 @@ public class RefBoardStats {
         if (weight == 0 || speed == 0 || agility == 0) {
             throw new IllegalStateException("Zero stat being written to NBT");
         }
-        nbt.putDouble(NBT_KEY_STATS_WEIGHT, weight);
-        nbt.putDouble(NBT_KEY_STATS_SPEED, speed);
-        nbt.putDouble(NBT_KEY_STATS_AGILITY, agility);
-        nbt.putDouble(NBT_KEY_STATS_LIFT, lift);
+        nbt.putDouble(
+                NBT_KEY_STATS_WEIGHT,
+                weight
+        );
+        nbt.putDouble(
+                NBT_KEY_STATS_SPEED,
+                speed
+        );
+        nbt.putDouble(
+                NBT_KEY_STATS_AGILITY,
+                agility
+        );
+        nbt.putDouble(
+                NBT_KEY_STATS_LIFT,
+                lift
+        );
         return nbt;
     }
 

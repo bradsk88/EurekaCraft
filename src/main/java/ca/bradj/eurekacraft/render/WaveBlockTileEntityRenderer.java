@@ -27,7 +27,7 @@ public class WaveBlockTileEntityRenderer implements BlockEntityRenderer<TraparWa
     public void render(TraparWaveChildBlock.TileEntity te, float partialTicks, PoseStack matrixStackIn,
                        MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
         boolean worn = DeployedPlayerGoggles.areGogglesBeingWorn(mc.player);
-        EurekaCraft.LOGGER.debug("TileEntity: Goggles worn=" + worn + " for player " + mc.player);
+        EurekaCraft.LOGGER.trace("TileEntity: Goggles worn=" + worn + " for player " + mc.player);
         BlockRenderDispatcher disp = this.context.getBlockRenderDispatcher();
         if (!worn) {
             disp.renderSingleBlock(

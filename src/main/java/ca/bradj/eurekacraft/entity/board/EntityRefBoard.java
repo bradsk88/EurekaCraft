@@ -391,7 +391,7 @@ public class EntityRefBoard extends Entity {
         double liftOrFall = this.lastLift;
         double flightSpeed = Math.min(this.lastSpeed + defaultAccel, defaultMaxSpeed);
 
-        if (blockLift > 0) {
+        if (blockLift > 0 && boardStats.lift() > 0) {
             liftOrFall = applyBoost(blockLift, liftFactor);
         } else {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
@@ -412,7 +412,7 @@ public class EntityRefBoard extends Entity {
 
             flightSpeed = Math.max(0, flightSpeed / defaultWaterDecel);
             animateSurf();
-        } else if (playerOrNull.isInWater()) {
+        } else if (playerOrNull.isInWater() && liftOrFall <= 0) {
             if (!(playerOrNull instanceof JudgeEntity)) { // TODO: More generic check
                 this.kill();
                 return;

@@ -3,11 +3,11 @@
   "ingredients": [
     {
       "item": "eurekacraft:blueprint"
+    },
+    {
+      "item": "eurekacraft:blueprint"
     }
-  ], "extra": {
-    "item": "eurekacraft:blueprint",
-    "consume": true
-  },
+  ],
   "cook": false,
   "output": {
     "item": "eurekacraft:blueprint"

@@ -1,0 +1,35 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "eurekacraft:blueprint_poor"
+    },
+    {
+      "tag": "forge:dyes"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:blueprint_poor"
+  },
+  "secondary": {
+    "output": {
+      "item": "eurekacraft:blueprint_poor"
+    },
+    "chance": 1.0
+  },
+  "experience": 5.0,
+  "cookingTime": 20
+}
