@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
+import ca.bradj.eurekacraft.interfaces.IInitializable;
 import ca.bradj.eurekacraft.interfaces.IPaintable;
 import ca.bradj.eurekacraft.interfaces.ITechAffected;
 import ca.bradj.eurekacraft.interfaces.IWrenchable;
@@ -158,15 +159,24 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         this.craftPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-            ItemStack output = iRecipe.getResultItem();
+            // FIXME: This causes us to lose the NBT from the input item
+            ItemStack output = iRecipe.getResultItem().copy();
 
-            if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
+
+            if (level.getRandom().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
                 ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
                 if (sOutput.sameItemStackIgnoreDurability(WheelItemsInit.WHEEL_PLACEHOLDER_ITEM.get().getDefaultInstance())) {
                     EurekaCraft.LOGGER.debug("Not outputting placeholder secondary");
-                } else {
-                    insertItem(RefTableConsts.secondaryOutputSlot, sOutput);
                 }
+
+                if (iRecipe.getSecondaryResultItem().initialize) {
+                    if (!(sOutput.getItem() instanceof IInitializable)) {
+                        EurekaCraft.LOGGER.error("Recipe calls for init but item does not support it:" + sOutput.getItem());
+                    }
+                    ((IInitializable) sOutput.getItem()).initialize(sOutput, level.getRandom());
+                }
+
+                insertItem(RefTableConsts.secondaryOutputSlot, sOutput);
             }
 
             Collection<ItemStack> inputs = new ArrayList<>();
@@ -186,7 +196,16 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 useExtraIngredient(iRecipe, inputs, output, level);
             }
 
-            insertItem(RefTableConsts.outputSlot, output.copy());
+            if (iRecipe.shouldInitializeMainResultItem()) {
+                if (!(iRecipe.getResultItem().getItem() instanceof IInitializable)) {
+                    EurekaCraft.LOGGER.error(
+                            "Recipe calls for init but item does not support it:" + iRecipe.getResultItem().getItem()
+                    );
+                }
+                ((IInitializable)iRecipe.getResultItem().getItem()).initialize(iRecipe.getResultItem(), level.getRandom());
+            }
+
+            insertItem(RefTableConsts.outputSlot, output);
 
             setChanged();
         });
@@ -196,7 +215,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             RefTableRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
     ) {
         ItemStack techStack = getStackInSlot(RefTableConsts.techSlot);
-        techStack.hurt(1, new Random(), null);
+        techStack.hurt(1, level.getRandom(), null);
         if (iRecipe.getExtraIngredient().consumeOnUse) {
             extractItem(RefTableConsts.techSlot, 1);
         } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {

@@ -26,7 +26,7 @@ import java.util.Random;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable {
+public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable {
 
     public static boolean debuggerReleaseControl() {
         GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -36,16 +36,16 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public static final String NBT_KEY_BOARD_STATS = "board_stats";
     private static final IBoardStatsFactory FACTORY_INSTANCE = new BoardStatsFactory();
 
-    public static final String ITEM_ID = "blueprint";
+    public static final String ITEM_ID = "blueprint_poor";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
     public static ItemStack getRandom(Random rand) {
-        ItemStack i = ItemsInit.BLUEPRINT.get().getDefaultInstance();
-        FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.StandardBoard, rand);
+        ItemStack i = ItemsInit.BLUEPRINT_POOR.get().getDefaultInstance();
+        FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.BadBoard, rand);
         return i;
     }
 
-    public BlueprintItem() {
+    public BlueprintPoorItem() {
         super(PROPS);
     }
 
@@ -64,7 +64,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         // FIXME: This is causing stats to get overridden every time we add and remove them from an inventory
 //        if (!stack.getOrCreateTag().contains(NBT_KEY_BOARD_STATS)) {
 //            if (world != null) {
-//                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.StandardBoard, world.getRandom());
+//                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.BadBoard, world.getRandom());
 //            }
 //        }
         RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getOrCreateTag().getCompound(NBT_KEY_BOARD_STATS));
@@ -77,7 +77,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
-        if (!(blueprint.getItem() instanceof BlueprintItem)) {
+        if (!(blueprint.getItem() instanceof BlueprintPoorItem)) {
             return;
         }
         if (target.getTag() == null) {
@@ -85,11 +85,11 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         }
 
         // TODO: Consider making blueprint stats "relative" so they affect different boards differently
-        RefBoardStats reference = RefBoardStats.StandardBoard;
+        RefBoardStats reference = RefBoardStats.BadBoard;
 
         ArrayList<RefBoardStats> inputStats = new ArrayList<>();
         for (ItemStack item : inputs) {
-            if (item.getItem() instanceof BlueprintItem) { // TODO: Maybe take an interface?
+            if (item.getItem() instanceof BlueprintPoorItem) { // TODO: Maybe take an interface?
                 inputStats.add(FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(item, reference, random));
             }
         }
@@ -100,11 +100,8 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public void initialize(
-            ItemStack target,
-            Random random
-    ) {
-        RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
+    public void initialize(ItemStack target, Random random) {
+        RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, random);
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
     }
 
