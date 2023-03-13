@@ -6,12 +6,12 @@
     }
   ],
   "extra": {
-    "tag": "eurekacraft:axes",
+    "item": "minecraft:iron_axe",
     "consume": false
   },
   "cook": false,
   "output": {
-    "item": "eurekacraft:blueprint_poor"
+    "item": "eurekacraft:blueprint"
   },
   "secondary": {
     "output": {

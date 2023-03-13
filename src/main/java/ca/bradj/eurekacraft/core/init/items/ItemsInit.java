@@ -158,11 +158,6 @@ public class ItemsInit {
 			RefBoardCoreItem.ITEM_ID, RefBoardCoreItem::new
 	);
 
-	public static final RegistryObject<Item> BLUEPRINT_POOR = ITEMS.register(
-			BlueprintPoorItem.ITEM_ID, BlueprintPoorItem::new
-	);
-
-
 	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
 			BlueprintItem.ITEM_ID, BlueprintItem::new
 	);
