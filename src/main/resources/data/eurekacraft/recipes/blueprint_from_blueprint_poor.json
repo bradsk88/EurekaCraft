@@ -23,7 +23,7 @@
   "cook": false,
   "output": {
     "item": "eurekacraft:blueprint",
-    "initialize": true
+    "stats": "new"
   },
   "experience": 5.0,
   "cookingTime": 20

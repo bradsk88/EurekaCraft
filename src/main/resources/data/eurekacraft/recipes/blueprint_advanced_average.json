@@ -2,15 +2,15 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "item": "eurekacraft:blueprint"
+      "item": "eurekacraft:blueprint_advanced"
     },
     {
-      "item": "eurekacraft:blueprint"
+      "item": "eurekacraft:blueprint_advanced"
     }
   ],
   "cook": false,
   "output": {
-    "item": "eurekacraft:blueprint",
+    "item": "eurekacraft:blueprint_advanced",
     "stats": "boost_avg"
   },
   "experience": 5.0,

@@ -7,10 +7,8 @@ import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
-import ca.bradj.eurekacraft.interfaces.IInitializable;
-import ca.bradj.eurekacraft.interfaces.IPaintable;
-import ca.bradj.eurekacraft.interfaces.ITechAffected;
-import ca.bradj.eurekacraft.interfaces.IWrenchable;
+import ca.bradj.eurekacraft.interfaces.*;
+import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -34,6 +32,8 @@ import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
+
+import static ca.bradj.eurekacraft.materials.BlueprintItem.NBT_KEY_BOARD_STATS;
 
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
@@ -162,6 +162,20 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             // FIXME: This causes us to lose the NBT from the input item
             ItemStack output = iRecipe.getResultItem().copy();
 
+            Collection<ItemStack> inputs = new ArrayList<>();
+            for (int i = 0; i < RefTableConsts.inputSlots; i++) {
+                ItemStack stackInSlot = getStackInSlot(i);
+                if (stackInSlot.isEmpty()) {
+                    continue;
+                }
+                inputs.add(stackInSlot);
+            }
+
+            if (output.getItem() instanceof IBoardStatsCraftable) {
+                ((IBoardStatsCraftable) output.getItem()).generateNewBoardStats(
+                        output, inputs, level.getRandom()
+                );
+            }
 
             if (level.getRandom().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
                 ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
@@ -179,15 +193,6 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 insertItem(RefTableConsts.secondaryOutputSlot, sOutput);
             }
 
-            Collection<ItemStack> inputs = new ArrayList<>();
-            for (int i = 0; i < RefTableConsts.inputSlots; i++) {
-                ItemStack stackInSlot = getStackInSlot(i);
-                if (stackInSlot.isEmpty()) {
-                    continue;
-                }
-                inputs.add(stackInSlot);
-            }
-
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
                 extractItem(i, 1);
             }
@@ -196,13 +201,26 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 useExtraIngredient(iRecipe, inputs, output, level);
             }
 
-            if (iRecipe.shouldInitializeMainResultItem()) {
-                if (!(iRecipe.getResultItem().getItem() instanceof IInitializable)) {
-                    EurekaCraft.LOGGER.error(
-                            "Recipe calls for init but item does not support it:" + iRecipe.getResultItem().getItem()
-                    );
+            switch (iRecipe.getOutputConstructStatsPolicy()) {
+                case NEW -> {
+                    if (!(iRecipe.getResultItem().getItem() instanceof IInitializable)) {
+                        EurekaCraft.LOGGER.error(
+                                "Recipe calls for init but item does not support it:" + iRecipe.getResultItem().getItem()
+                        );
+                    }
+                    ((IInitializable)iRecipe.getResultItem().getItem()).initialize(iRecipe.getResultItem(), level.getRandom());
                 }
-                ((IInitializable)iRecipe.getResultItem().getItem()).initialize(iRecipe.getResultItem(), level.getRandom());
+                case BOOST_AVG -> {
+                    Collection<RefBoardStats> contextStats = inputs.stream().
+                            filter(v -> v.getItem() instanceof IBoardStatsGetter).
+                            map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v)).toList();
+                    RefBoardStats stats = RefBoardStats.Average("avg", contextStats);
+                    stats = RefBoardStats.WithRandomStatBoosted(stats, level.getRandom(), 1.25f);
+                    output.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
+                }
+                case INVALID -> {
+                    // TODO: Is this ok?
+                }
             }
 
             insertItem(RefTableConsts.outputSlot, output);

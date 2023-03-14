@@ -24,5 +24,5 @@ public interface IGlideBoardRecipe extends Recipe<Container> {
 
     int getOutputQuantity();
 
-    boolean shouldInitializeMainResultItem();
+    RefTableRecipe.ConstructStats getOutputConstructStatsPolicy();
 }
