@@ -3,6 +3,7 @@
   "pools": [
     {
       "rolls": 1.0,
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
@@ -11,12 +12,9 @@
       ],
       "conditions": [
         {
-          "condition": "minecraft:block_state_property",
-          "block": "eurekacraft:ref_table_block",
-          "properties": {}
+          "condition": "minecraft:survives_explosion"
         }
       ]
     }
-  ],
-  "functions": []
+  ]
 }
