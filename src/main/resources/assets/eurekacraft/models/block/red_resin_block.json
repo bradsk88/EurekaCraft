@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "eurekacraft:blocks/red_resin_block"
+  }
+}

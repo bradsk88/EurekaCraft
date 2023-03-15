@@ -20,7 +20,7 @@
       "item": "eurekacraft:resin"
     }
   ],
-  "cook": true,
+  "cook": false,
   "output": {
     "item": "eurekacraft:resin_block"
   }

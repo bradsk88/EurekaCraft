@@ -85,9 +85,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             }
             items.add(iStack);
         }
-        items.add(getEmptySelfAsBlockItem());
+        items.add(getSelfAsItemStack());
         return items;
     }
+
+    protected abstract ItemStack getSelfAsItemStack();
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());
@@ -113,8 +115,8 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         itemHandler.insertItem(slot, stack, false);
     }
 
-    protected void extractItem(int slot, int amount) {
-        itemHandler.extractItem(slot, amount, false);
+    protected ItemStack extractItem(int slot, int amount) {
+        return itemHandler.extractItem(slot, amount, false);
     }
 
     public int getTotalSlotCount() {
@@ -149,6 +151,5 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
     }
 
-    protected abstract ItemStack getEmptySelfAsBlockItem();
     protected abstract ItemStack getItemForCraftingNoise();
 }

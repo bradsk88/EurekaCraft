@@ -1,0 +1,17 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:oak_planks"
+    },
+    {
+      "item": "minecraft:oak_planks"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "minecraft:oak_slab",
+    "quantity": 4
+  },
+  "cookingTime": 20
+}

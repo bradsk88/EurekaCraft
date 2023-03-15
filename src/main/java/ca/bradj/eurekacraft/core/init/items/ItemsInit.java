@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init.items;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.RedResinBlock;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableBlock;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineBlock;
@@ -47,6 +48,13 @@ public class ItemsInit {
 			() -> new BlockItem(
 					BlocksInit.RESIN.get(),
 					ResinBlock.ITEM_PROPS
+			)
+	);
+	public static final RegistryObject<Item> RED_RESIN_BLOCK = ITEMS.register(
+			RedResinBlock.ITEM_ID,
+			() -> new BlockItem(
+					BlocksInit.RED_RESIN.get(),
+					RedResinBlock.ITEM_PROPS
 			)
 	);
 	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
@@ -110,11 +118,9 @@ public class ItemsInit {
 			ReflectionFilm.ITEM_ID, ReflectionFilm::new
 	);
 
-	// TODO: Bring back
-//	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
-//			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
-//	);
-
+	public static final RegistryObject<Item> DIAMOND_REFLECTION_FILM = ITEMS.register(
+			DiamondReflectionFilm.ITEM_ID, DiamondReflectionFilm::new
+	);
 
 	public static final RegistryObject<Item> REFLECTION_FILM_DUST = ITEMS.register(
 			ReflectionFilmDust.ITEM_ID, ReflectionFilmDust::new
@@ -170,6 +176,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> RESIN = ITEMS.register(
 			Resin.ITEM_ID, Resin::new
+	);
+
+	public static final RegistryObject<Item> RED_RESIN = ITEMS.register(
+			RedResin.ITEM_ID, RedResin::new
 	);
 
 	public static final RegistryObject<Item> SCUB_GLASS_LENS = ITEMS.register(
@@ -242,6 +252,10 @@ public class ItemsInit {
 
 	public static final RegistryObject<Item> PAINT_BUCKET_YELLOW = ITEMS.register(
 			PaintItem.YELLOW_ITEM_ID, PaintItem::yellow
+	);
+
+	public static final RegistryObject<Item> PHOTO = ITEMS.register(
+			Photo.ITEM_ID, Photo::new
 	);
 
 	public static void register(IEventBus bus) {

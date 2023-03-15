@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.render.refboard;
 
 import ca.bradj.eurekacraft.interfaces.IColorSource;
+import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
@@ -77,7 +78,8 @@ public class RefBoardItemOverrideList extends ItemOverrides {
                 return NO_BOARD_MODEL;
             }
         }
-        Color wColor = BoardWheels.FromStack(stack).map(IColorSource::getColor).orElse(INVISIBLE);
+        Color fallback = BoardColor.FromStack(stack);
+        Color wColor = BoardWheels.FromStack(stack).map(IColorSource::getColor).orElse(fallback);
         return new RefBoardColoredModelWithWheel(parent, wColor);
     }
 }

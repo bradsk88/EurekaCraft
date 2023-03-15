@@ -24,20 +24,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
-    private final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
 
@@ -71,6 +68,11 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     public void load(CompoundTag nbt) {
         super.load(nbt);
         this.craftPercent = nbt.getInt("cooked");
+    }
+
+    @Override
+    protected ItemStack getSelfAsItemStack() {
+        return ItemsInit.REF_TABLE_BLOCK.get().getDefaultInstance();
     }
 
     protected CompoundTag store(CompoundTag tag) {
@@ -120,8 +122,8 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                         this.craftPercent = 0;
                         return;
                     }
-                    extractItem(RefTableConsts.fuelSlot, 1);
-                    this.fireRemaining = Items.COAL.getBurnTime(Items.COAL.getDefaultInstance(), RecipeType.SMELTING);
+                    ItemStack item = extractItem(RefTableConsts.fuelSlot, 1);
+                    this.fireRemaining = item.getBurnTime(RecipeType.SMELTING);
                     if (this.fireRemaining < 0) {
                         this.fireRemaining = 500;
                     }
@@ -146,10 +148,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     }
 
     private boolean hasCoal() {
-        return this.getStackInSlot(RefTableConsts.fuelSlot).
-                sameItemStackIgnoreDurability(
-                        Items.COAL.getDefaultInstance()
-                );
+        ItemStack stackInSlot = this.getStackInSlot(RefTableConsts.fuelSlot);
+        int burnTime = ForgeHooks.getBurnTime(stackInSlot, RecipeType.SMELTING);
+        return burnTime > 0;
     }
 
     private void doCook(Optional<RefTableRecipe> recipe, Level level) {

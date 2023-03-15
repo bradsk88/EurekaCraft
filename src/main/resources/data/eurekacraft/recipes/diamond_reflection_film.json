@@ -2,27 +2,29 @@
   "type": "eurekacraft:glide_board",
   "ingredients": [
     {
-      "item": "minecraft:redstone"
+      "item": "eurekacraft:red_resin"
     },
     {
-      "item": "minecraft:redstone"
+      "item": "eurekacraft:reflection_film_dust"
     },
     {
-      "item": "eurekacraft:reflection_film"
+      "item": "eurekacraft:red_resin"
     },
     {
       "item": "minecraft:diamond"
     },
     {
-      "item": "minecraft:redstone"
+      "item": "eurekacraft:red_resin"
     },
     {
-      "item": "minecraft:redstone"
+      "item": "eurekacraft:reflection_film_dust"
     }
   ],
+  "extra": {
+    "item": "eurekacraft:reflection_film_mold"
+  },
   "cook": true,
   "output": {
-    "item": "eurekacraft:broken_ref_board",
-    "note": "TODO: Change output to diamond reflection film"
+    "item": "eurekacraft:diamond_reflection_film"
   }
 }

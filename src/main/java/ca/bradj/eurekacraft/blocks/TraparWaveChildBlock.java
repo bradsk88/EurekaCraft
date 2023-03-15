@@ -49,7 +49,7 @@ public class TraparWaveChildBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public boolean skipRendering(BlockState p_60532_, BlockState p_60533_, Direction p_60534_) {
+    public boolean skipRendering(BlockState p_53972_, BlockState p_53973_, Direction p_53974_) {
         return true;
     }
 

@@ -1,0 +1,15 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:resin"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "cook": true,
+  "output": {
+    "item": "eurekacraft:red_resin"
+  }
+}

@@ -70,6 +70,11 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         this.sandPercent = nbt.getInt("cooked");
     }
 
+    @Override
+    protected ItemStack getSelfAsItemStack() {
+        return ItemsInit.SANDING_MACHINE_BLOCK.get().getDefaultInstance();
+    }
+
     protected CompoundTag store(CompoundTag tag) {
         tag.putInt("cooked", this.sandPercent);
         return tag;

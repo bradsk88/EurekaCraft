@@ -6,11 +6,9 @@ import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
-import ca.bradj.eurekacraft.vehicles.BoardColor;
-import ca.bradj.eurekacraft.vehicles.BoardType;
-import ca.bradj.eurekacraft.vehicles.RefBoardItem;
-import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
@@ -20,6 +18,7 @@ import ca.bradj.eurekacraft.vehicles.wheels.IWheel;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
+import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -39,6 +38,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
@@ -61,9 +61,11 @@ import java.util.UUID;
 
 public class EntityRefBoard extends Entity {
 
+    public static final String NBT_KEY_BOARD_UUID = "board_uuid";
+
     public static final String ENTITY_ID = "ref_board_entity";
 
-    private static final int BOOST_TICKS = 3;
+    private static final int BOOST_TICKS = 10;
     private static final float INITIAL_YROT = 0.000001f;
 
     private static final float BLOCK_LIFT_RESIDUAL = 0.5f;
@@ -184,11 +186,16 @@ public class EntityRefBoard extends Entity {
             return null;
         }
         if (deployedBoards.containsKey(player.getUUID())) {
-            logger.warn("Tried to spawn new. But there was already a deployed board");
-            deployedBoards.remove(player.getUUID()).remove(RemovalReason.DISCARDED);
-            PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
-            return null;
+            EntityRefBoard oldBoard = deployedBoards.remove(player.getUUID());
+            if (!oldBoard.isRemoved()) {
+                logger.warn("Tried to spawn new. But there was already a deployed board");
+                oldBoard.remove(RemovalReason.DISCARDED);
+                PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
+                return null;
+            }
         }
+
+        EntityRefBoard.ensureBoardUUID(boardItem);
 
         Color c = BoardColor.FromStack(boardItem);
         Optional<Wheel> wheel = BoardWheels.FromStack(boardItem);
@@ -199,6 +206,18 @@ public class EntityRefBoard extends Entity {
         spawn(player, level, glider, board, c, wheel);
         PlayerDeployedBoard.DeployedBoard.AddToStack(boardItem);
         return glider;
+    }
+
+    private static void ensureBoardUUID(ItemStack boardItem) {
+        if (boardItem.getOrCreateTag().hasUUID(NBT_KEY_BOARD_UUID)) {
+            return;
+        }
+        UUID uuid = UUID.randomUUID();
+        boardItem.getOrCreateTag().putUUID(NBT_KEY_BOARD_UUID, uuid);
+    }
+
+    public static UUID getEntityBoardUUID(EntityRefBoard b) {
+        return b.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID);
     }
 
     static void spawn(
@@ -300,7 +319,7 @@ public class EntityRefBoard extends Entity {
 
     private void doHardPhysics() {
         boolean applyDamagedEffect = false;
-        if (damaged && random.nextBoolean() && random.nextBoolean()) {
+        if (damaged && random.nextBoolean()) {
             applyDamagedEffect = true;
         }
 
@@ -343,6 +362,9 @@ public class EntityRefBoard extends Entity {
 
     private void flyOrSurf(Control c) {
         float blockLift = this.calculateBoost(c);
+        if (blockLift > 0) {
+            EurekaCraft.LOGGER.trace("Boosted at " + this.blockPosition());
+        }
         boolean boosted = this.consumeBoost();
         if (boosted && blockLift == 0) {
             blockLift = BLOCK_LIFT_RESIDUAL;
@@ -375,10 +397,12 @@ public class EntityRefBoard extends Entity {
             liftOrFall = Math.max(liftOrFall + defaultFall, defaultFall);
         }
 
-        float accelFactor = 1f + (0.05f * (wheelStats.acceleration) / 100f);
-        float brakeFactor = 1f - (0.1f * (wheelStats.braking / 100f));
+        double wheelAccel = wheelStats.acceleration != 0 ? boardStats.getLatentAcceleration() + wheelStats.acceleration : 0;
+        double accelFactor = 1f + (0.05f * wheelAccel / 100f);
+        double wheelBraking = wheelStats.braking != 0 ? boardStats.getLatentBraking() + wheelStats.braking : 0;
+        double brakeFactor = 1f - (0.1f * wheelBraking / 100f);
 
-        if (this.playerOrNull.isShiftKeyDown()) {
+        if (this.playerOrNull.isShiftKeyDown() || (damaged && random.nextBoolean())) {
             liftOrFall = defaultLand * (1 - boardStats.landResist());
             flightSpeed = Math.min(this.lastSpeed + defaultLandAccel, defaultMaxSpeed);
         }
@@ -397,7 +421,12 @@ public class EntityRefBoard extends Entity {
 
         switch (c) {
             case ACCELERATE -> flightSpeed = Math.min(flightSpeed * accelFactor, defaultMaxSpeed);
-            case BRAKE -> flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
+            case BRAKE -> {
+                flightSpeed = Math.max(flightSpeed * brakeFactor, 0);
+                if (wheelBraking >= 100) {
+                    liftOrFall = Math.max(liftOrFall * 0.25, 0);
+                }
+            }
             case NONE -> {
             }
             default -> throw new IllegalArgumentException("Unexpected control value: " + c);
@@ -459,7 +488,7 @@ public class EntityRefBoard extends Entity {
         double z = Math.sin(Math.PI * (nextYRot / 180));
         Vec3 nextRaw = new Vec3(x, 0, z);
 
-        if (applyDamagedEffect && random.nextBoolean()) {
+        if (applyDamagedEffect) {
             if (random.nextBoolean()) {
                 nextRaw = new Vec3(0, this.lastDirection.y, this.lastDirection.z);
             } else {
@@ -560,6 +589,17 @@ public class EntityRefBoard extends Entity {
             return BLOCK_LIFT_STORM_DEFAULT;
         }
 
+        ChunkPos cp = new ChunkPos(this.blockPosition());
+        if (ChunkWavesDataManager.get(level).getData(
+                level.getChunk(cp.x, cp.z), level.getRandom()
+        ).isWavePresentAt(this.blockPosition())) {
+            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            if (Control.BRAKE.equals(c)) {
+                return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
+            }
+            return BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
+        }
+
         Direction faceDir = this.playerOrNull.getDirection();
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
@@ -595,6 +635,8 @@ public class EntityRefBoard extends Entity {
         @Override
         public CompoundTag serializeNBT() {
             CompoundTag n = new CompoundTag();
+            n.putString("board_type", ((RefBoardItem) board.boardItemStack.getItem()).getBoardType().toNBT());
+            n.putUUID(NBT_KEY_BOARD_UUID, board.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID));
 //            private float initialSpeed;
             n.putFloat("initial_speed", board.initialSpeed);
 //            private Entity playerOrNull;
@@ -625,6 +667,12 @@ public class EntityRefBoard extends Entity {
 
         @Override
         public void deserializeNBT(CompoundTag nbt) {
+            if (board.boardItemStack == null) {
+                // TODO: This item stack is throwaway. Is there another way we could store this UUID?
+                StandardRefBoard srb = ItemsInit.STANDARD_REF_BOARD.get();
+                board.boardItemStack = new ItemStack(srb);
+            }
+            board.boardItemStack.getOrCreateTag().putUUID(NBT_KEY_BOARD_UUID, nbt.getUUID(NBT_KEY_BOARD_UUID));
             board.initialSpeed = nbt.getFloat("initial_speed");
             board.damaged = nbt.getBoolean("damaged");
             board.canFly = nbt.getBoolean("can_fly");

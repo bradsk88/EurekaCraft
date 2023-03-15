@@ -71,7 +71,6 @@ public class BoardItemRendering {
                 new ResourceLocation(EurekaCraft.MODID, "deployed"),
                 new DeployedPropGetter()
         );
-        // FIXME: make this (or some other way of coloring the item) work
         ItemProperties.register(
                 ItemsInit.STANDARD_REF_BOARD.get(),
                 new ResourceLocation(EurekaCraft.MODID, "color"),

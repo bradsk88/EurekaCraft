@@ -1,0 +1,27 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:red_resin"
+    },
+    {
+      "item": "eurekacraft:red_resin"
+    },
+    {
+      "item": "eurekacraft:red_resin"
+    },
+    {
+      "item": "eurekacraft:red_resin"
+    },
+    {
+      "item": "eurekacraft:red_resin"
+    },
+    {
+      "item": "eurekacraft:red_resin"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:red_resin_block"
+  }
+}

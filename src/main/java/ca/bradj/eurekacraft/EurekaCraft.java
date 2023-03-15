@@ -6,9 +6,9 @@ import ca.bradj.eurekacraft.client.TraparStormRendering;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
-import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.villager.VillagersInit;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -48,8 +48,7 @@ public class EurekaCraft {
         ItemsInit.register(bus);
         AdvancementsInit.registerIconItems(bus);
         EntitiesInit.ENTITIES.register(bus);
-        // TODO: Reimplement
-//        FeaturesInit.PLACEMENTS.register(bus);
+        VillagersInit.register(bus);
         FeaturesInit.FEATURES.register(bus);
         ContainerTypesInit.TYPES.register(bus);
         RecipesInit.register(bus);
@@ -61,6 +60,7 @@ public class EurekaCraft {
 
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(EurekaCraftNetwork::init);
+        event.enqueueWork(VillagersInit::registerPOIs);
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {

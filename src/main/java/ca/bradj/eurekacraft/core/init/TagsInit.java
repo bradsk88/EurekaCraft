@@ -11,6 +11,7 @@ public class TagsInit {
     public static class Items {
 
         public static final TagKey<Item> SANDING_DISCS = createTag("sanding_disc");
+        public static final TagKey<Item> ITEMS_THAT_BURN = createTag("items_that_burn");
 
 
         private static TagKey<Item> createTag(String name) {

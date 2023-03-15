@@ -21,6 +21,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import static ca.bradj.eurekacraft.core.init.TagsInit.Items.ITEMS_THAT_BURN;
+
 public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
     public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
@@ -76,7 +78,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
             }
         }
         if (recipe.requiresCooking()) {
-            i.set(6, Ingredient.of(Items.COAL.getDefaultInstance()));
+            i.set(6, Ingredient.of(ITEMS_THAT_BURN));
         } else {
             i.set(6, Ingredient.of(Items.AIR.getDefaultInstance()));
         }

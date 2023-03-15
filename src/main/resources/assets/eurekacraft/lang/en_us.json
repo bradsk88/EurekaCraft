@@ -64,5 +64,6 @@
 	"message.tricks.congrats": "<Judge> Great work! Here's a little something for your effort. See ya later!",
 	"key.eurekacraft.flight": "EurekaCraft - Flight",
 	"key.eurekacraft.flight.brake": "Brake",
-	"key.eurekacraft.flight.accelerate": "Accelerate"
+	"key.eurekacraft.flight.accelerate": "Accelerate",
+	"entity.minecraft.villager.eurekacraft.ref_dealer": "Ref Dealer"
 }
