@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.villager;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
+import ca.bradj.eurekacraft.materials.BlueprintAdvancedItem;
 import ca.bradj.eurekacraft.materials.BlueprintItem;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
@@ -13,7 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -29,7 +29,7 @@ public class VillagerEvents {
         // Level 1: Built board construction tools
         final List<VillagerTrades.ItemListing> refDealerTrades1 = ImmutableList.of(
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 4),
+                        new ItemStack(Items.EMERALD, 8),
                         new ItemStack(ItemsInit.GLIDE_BOARD.get(), 1),
                         1, 4, 0.25F
                 ),
@@ -43,12 +43,6 @@ public class VillagerEvents {
                         new ItemStack(ItemsInit.BROKEN_BOARD.get(), 1),
                         new ItemStack(Items.EMERALD, 1),
                         4, 4, 0.0F
-                ),
-                (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.PAPER, 24),
-                        new ItemStack(Items.EMERALD, 2),
-                        BlueprintItem.getRandom(rand),
-                        1, 4, 0.125F
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.PAPER, 24),
@@ -71,11 +65,6 @@ public class VillagerEvents {
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 4),
-                        BlueprintItem.getRandom(rand),
-                        4, 4, 0.25F
-                ),
-                (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 1),
                         new ItemStack(Items.CLAY_BALL, 8),
                         4, 4, 0.0F
@@ -86,10 +75,10 @@ public class VillagerEvents {
                         4, 4, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.CLAY_BALL, 10),
-                        new ItemStack(Items.PAPER, 10),
-                        new ItemStack(ItemsInit.CLAY_STICKY_DISC.get(), 5),
-                        4, 4, 0.1F
+                        new ItemStack(Items.CLAY_BALL, 8),
+                        new ItemStack(Items.PAPER, 8),
+                        new ItemStack(ItemsInit.CLAY_STICKY_DISC.get(), 2),
+                        4, 4, 0.125F
                 ),
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 2),
@@ -216,11 +205,16 @@ public class VillagerEvents {
                         new ItemStack(ItemsInit.SOFT_CHISEL.get(), 1),
                         4, 8, 0.5F
                 ),
-                // TODO: Randomize blueprint stats
+                (trader, rand) -> new MerchantOffer(
+                        new ItemStack(Items.PAPER, 24),
+                        new ItemStack(Items.EMERALD, 2),
+                        BlueprintItem.getRandom(rand),
+                        1, 4, 0.125F
+                ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 8),
                         new ItemStack(ItemsInit.BLUEPRINT.get(), 1),
-                        new ItemStack(ItemsInit.BLUEPRINT_ADVANCED.get(), 1),
+                        BlueprintAdvancedItem.getRandom(random),
                         4, 8, 0.125F
                 ) {
                     @Override

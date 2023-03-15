@@ -36,7 +36,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     private static Map<Player, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
-    private final RefBoardStats baseStats;
+    protected final RefBoardStats baseStats;
     private BoardType board;
     private final StatsGetter statsGetter;
     protected boolean canFly = true;

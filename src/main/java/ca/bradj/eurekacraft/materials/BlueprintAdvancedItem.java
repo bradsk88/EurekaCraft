@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.network.chat.Component;
@@ -23,6 +24,12 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
 
     public static final String ITEM_ID = "blueprint_advanced";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
+
+    public static ItemStack getRandom(Random rand) {
+        ItemStack i = ItemsInit.BLUEPRINT_ADVANCED.get().getDefaultInstance();
+        FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.EliteBoard, rand);
+        return i;
+    }
 
     public BlueprintAdvancedItem() {
         super(PROPS);

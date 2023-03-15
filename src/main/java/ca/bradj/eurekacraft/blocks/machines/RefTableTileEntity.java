@@ -9,6 +9,7 @@ import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import ca.bradj.eurekacraft.vehicles.RefBoardStatsUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -214,8 +215,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                     Collection<RefBoardStats> contextStats = inputs.stream().
                             filter(v -> v.getItem() instanceof IBoardStatsGetter).
                             map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v)).toList();
-                    RefBoardStats stats = RefBoardStats.Average("avg", contextStats);
-                    stats = RefBoardStats.WithRandomStatBoosted(stats, level.getRandom(), 1.25f);
+                    RefBoardStats stats = RefBoardStatsUtils.BoostAvg(
+                            contextStats, level.getRandom(), 1.1f, 1.25f
+                    );
                     output.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
                 }
                 case INVALID -> {
