@@ -53,11 +53,6 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         return new TranslatableComponent("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
-    @Override
-    protected ItemStack getEmptySelfAsBlockItem() {
-        return ItemsInit.SANDING_MACHINE_BLOCK.get().getDefaultInstance();
-    }
-
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player Player) {

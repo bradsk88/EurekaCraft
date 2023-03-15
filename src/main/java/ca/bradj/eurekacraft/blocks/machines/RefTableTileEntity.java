@@ -53,11 +53,6 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
     }
 
-    @Override
-    protected ItemStack getEmptySelfAsBlockItem() {
-        return ItemsInit.REF_TABLE_BLOCK.get().getDefaultInstance();
-    }
-
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory player, Player p_39956_) {
