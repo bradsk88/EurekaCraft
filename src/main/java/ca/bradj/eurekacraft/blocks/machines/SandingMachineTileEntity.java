@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -19,6 +20,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -27,10 +29,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class SandingMachineTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
@@ -199,5 +198,21 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     @Override
     protected ItemStack getItemForCraftingNoise() {
         return getStackInSlot(abrasiveSlot);
+    }
+
+    public ImmutableList<Item> getInputItems() {
+        return ImmutableList.of(getStackInSlot(inputSlots).getItem());
+    }
+
+    public Item getAbrasiveItem() {
+        return getStackInSlot(abrasiveSlot).getItem();
+    }
+
+    public int getInputsSlotIndex() {
+        return inputSlots;
+    }
+
+    public int getAbrasiveSlotIndex() {
+        return abrasiveSlot;
     }
 }

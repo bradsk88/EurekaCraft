@@ -2,18 +2,23 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsModifier;
+import ca.bradj.eurekacraft.interfaces.SandingMachineSlotAware;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.world.NoisyItem;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Random;
 
-public class FlintSandingDiscStackItem extends Item implements NoisyCraftingItem, IBoardStatsModifier {
+public class FlintSandingDiscStackItem extends Item implements NoisyCraftingItem, IBoardStatsModifier, SandingMachineSlotAware {
     private static final double MAX_STAT_BOOST = 0.1;
     private static final Optional<NoisyItem> CRAFTING_SOUND = Optional.of(
-            new NoisyItem(8, SoundEvents.GRAVEL_STEP)
+            new NoisyItem(
+                    8,
+                    SoundEvents.GRAVEL_STEP
+            )
     );
 
     public static final String ITEM_ID = "flint_sanding_disc_stack";
@@ -36,5 +41,13 @@ public class FlintSandingDiscStackItem extends Item implements NoisyCraftingItem
         return stats.
                 WithWeight(stats.weight() - (random.nextDouble() * MAX_STAT_BOOST)).
                 WithSpeed(stats.speed() + (random.nextDouble() * MAX_STAT_BOOST));
+    }
+
+    @Override
+    public Optional<Slot> getIdealSlot(
+            Collection<Item> currentInputs,
+            Item currentGrit
+    ) {
+        return Optional.of(Slot.GRIT);
     }
 }

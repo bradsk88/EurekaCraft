@@ -10,12 +10,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class RefTableContainer extends MachineContainer {
     private final RefTableTileEntity tileEntity;
@@ -105,7 +107,16 @@ public class RefTableContainer extends MachineContainer {
 
     @Override
     protected int getInventorySlotCount() {
-        return tileEntity.getTotalSlotCount();
+        return tileEntity.getTotalSlotCount() - 2;
     }
 
+    @Override
+    protected int getOutputSlotCount() {
+        return tileEntity.getTotalSlotCount() - getInventorySlotCount();
+    }
+
+    @Override
+    protected Optional<Integer> getFirstIndexForItem(Item item) {
+        return Optional.empty(); // TODO: Implement
+    }
 }

@@ -5,10 +5,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
+
+import java.util.Optional;
 
 public abstract class MachineContainer extends AbstractContainerMenu {
     private static final int boxHeight = 18, boxWidth = 18;
@@ -79,13 +82,31 @@ public abstract class MachineContainer extends AbstractContainerMenu {
         // Check if the slot clicked is one of the vanilla container slots
         if (index < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
             // This is a vanilla container slot so merge the stack into the tile inventory
-            if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
+            int firstIndex = getFirstIndexForItem(copyOfSourceStack.getItem())
+                    .map(v -> TE_INVENTORY_FIRST_SLOT_INDEX + v)
+                    .orElse(TE_INVENTORY_FIRST_SLOT_INDEX);
+            if (!moveItemStackTo(sourceStack,
+                    firstIndex, TE_INVENTORY_FIRST_SLOT_INDEX
                     + getInventorySlotCount(), false)) {
                 return ItemStack.EMPTY;  // EMPTY_ITEM
             }
         } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + getInventorySlotCount()) {
             // This is a TE slot so merge the stack into the players inventory
-            if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
+            if (!moveItemStackTo(
+                    sourceStack,
+                    VANILLA_FIRST_SLOT_INDEX,
+                    VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT,
+                    false
+            )) {
+                return ItemStack.EMPTY;
+            }
+        } else if (index < TE_INVENTORY_FIRST_SLOT_INDEX + getInventorySlotCount() + getOutputSlotCount()) {
+            if (!moveItemStackTo(
+                    sourceStack,
+                    VANILLA_FIRST_SLOT_INDEX,
+                    VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT,
+                    false
+            )) {
                 return ItemStack.EMPTY;
             }
         } else {
@@ -102,5 +123,9 @@ public abstract class MachineContainer extends AbstractContainerMenu {
         return copyOfSourceStack;
     }
 
+    protected abstract int getOutputSlotCount();
+
     protected abstract int getInventorySlotCount();
+
+    protected abstract Optional<Integer> getFirstIndexForItem(Item item);
 }
