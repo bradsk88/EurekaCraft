@@ -118,8 +118,8 @@ public class VillagerEvents {
                         1, 8, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
-                        new ItemStack(Items.EMERALD, 4),
-                        new ItemStack(ItemsInit.REFLECTION_FILM.get(), 5),
+                        new ItemStack(Items.EMERALD, 8),
+                        new ItemStack(ItemsInit.REFLECTION_FILM.get(), 2),
                         4, 8, 0.25F
                 ),
                 (trader, rand) -> new MerchantOffer(

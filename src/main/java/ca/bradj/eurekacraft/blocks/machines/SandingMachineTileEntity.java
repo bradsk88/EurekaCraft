@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
+import ca.bradj.eurekacraft.interfaces.IInitializable;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -95,7 +96,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
                 }
             }
 
-            if (!this.hasSandpaper()) {
+            if (!this.hasAbrasive()) {
                 this.sanding = false;
                 this.sandPercent = 0;
                 return;
@@ -111,10 +112,19 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         this.sandPercent = 0;
     }
 
-    private boolean hasSandpaper() {
+    private boolean hasAbrasive() {
         Ingredient.TagValue tags = new Ingredient.TagValue(TagsInit.Items.SANDING_DISCS);
         ItemStack abrasive = getStackInSlot(abrasiveSlot);
-        return tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+        boolean hasSandpaper = tags.getItems()
+                .stream()
+                .anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+
+        tags = new Ingredient.TagValue(TagsInit.Items.AXES);
+        boolean hasAxe = tags.getItems()
+                .stream()
+                .anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+
+        return hasSandpaper || hasAxe;
     }
 
     private void doCook(Optional<SandingMachineRecipe> recipe) {
@@ -127,13 +137,20 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         this.sandPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-            ItemStack output = iRecipe.getResultItem();
+            ItemStack output = iRecipe.getResultItem().copy();
 
             for (int i = 0; i < inputSlots; i++) {
                 extractItem(i, 1);
             }
 
             useExtraIngredient();
+
+            if (output.getItem() instanceof IInitializable) {
+                ((IInitializable) output.getItem()).initialize(
+                        output,
+                        level.getRandom()
+                );
+            }
 
             insertItem(outputSlot, output);
 
@@ -152,9 +169,9 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
 
     private Optional<SandingMachineRecipe> getActiveRecipe() {
         // Shaped
-        Container inv = new SimpleContainer(inputSlots);
+        Container inv = new SimpleContainer(outputSlot);
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
-        for (int i = 0; i < inputSlots; i++) {
+        for (int i = 0; i < outputSlot; i++) {
             ItemStack stackInSlot = getStackInSlot(i);
             inv.setItem(i, stackInSlot);
             if (!stackInSlot.isEmpty()) {
