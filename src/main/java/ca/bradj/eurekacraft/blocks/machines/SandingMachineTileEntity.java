@@ -213,8 +213,8 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     }
 
     @Override
-    protected ItemStack getItemForCraftingNoise() {
-        return getStackInSlot(abrasiveSlot);
+    protected Optional<ItemStack> getItemForCraftingNoise() {
+        return Optional.of(getStackInSlot(abrasiveSlot));
     }
 
     public ImmutableList<Item> getInputItems() {

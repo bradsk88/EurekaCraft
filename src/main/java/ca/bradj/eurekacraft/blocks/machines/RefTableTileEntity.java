@@ -523,8 +523,16 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     }
 
     @Override
-    protected ItemStack getItemForCraftingNoise() {
-        return getStackInSlot(RefTableConsts.techSlot);
+    protected Optional<ItemStack> getItemForCraftingNoise() {
+        Optional<RefTableRecipe> recipe = getActiveRecipe();
+        if (recipe.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (recipe.get().getExtraIngredient().ingredient.test(getStackInSlot(RefTableConsts.techSlot))) {
+            return Optional.of(getStackInSlot(RefTableConsts.techSlot));
+        }
+        return Optional.empty();
     }
 
     public Collection<Item> getInputItems() {
