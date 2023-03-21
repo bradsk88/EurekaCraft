@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#eurekacraft:axes",
+    "#eurekacraft:blueprint",
+    "#eurekacraft:sanding_disc",
+    "#eurekacraft:paint_buckets",
+    "eurekacraft:socket_wrench",
+    "eurekacraft:resin_block",
+    "eurekacraft:red_resin_block"
+  ]
+}

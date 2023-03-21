@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
+import ca.bradj.eurekacraft.interfaces.RefTableSlotAware;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -117,6 +118,26 @@ public class RefTableContainer extends MachineContainer {
 
     @Override
     protected Optional<Integer> getFirstIndexForItem(Item item) {
-        return Optional.empty(); // TODO: Implement
+        if (item instanceof RefTableSlotAware) {
+            Optional<RefTableSlotAware.Slot> slot = ((RefTableSlotAware) item).getIdealSlot(
+                    tileEntity.getInputItems(),
+                    tileEntity.getFuelItem(),
+                    tileEntity.getTechItem()
+            );
+            if (slot.isPresent()) {
+                return switch (slot.get()) {
+                    case INGREDIENT -> Optional.of(tileEntity.getInputsSlotIndex());
+                    case FUEL -> Optional.of(tileEntity.getFuelSlotIndex());
+                    case TECH -> Optional.of(tileEntity.getTechSlotIndex());
+                };
+            }
+        }
+
+        return RefTableSlotPreferences.getIdealSlot(
+                item,
+                tileEntity.getInputItems(),
+                tileEntity.getFuelItem(),
+                tileEntity.getTechItem()
+        );
     }
 }
