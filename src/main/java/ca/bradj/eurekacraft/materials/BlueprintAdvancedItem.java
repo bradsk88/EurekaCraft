@@ -36,6 +36,11 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     }
 
     @Override
+    public int getItemStackLimit(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
     public IBoardStatsFactory getBoardStatsFactory() {
         return FACTORY_INSTANCE;
     }

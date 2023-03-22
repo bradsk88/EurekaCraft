@@ -171,6 +171,10 @@ public class ItemsInit {
 			BlueprintAdvancedItem.ITEM_ID, BlueprintAdvancedItem::new
 	);
 
+	public static final RegistryObject<Item> BLUEPRINT_FOLDER = ITEMS.register(
+			BlueprintFolderItem.ITEM_ID, BlueprintFolderItem::new
+	);
+
 	public static final RegistryObject<Item> POLISHED_OAK_SLAB = ITEMS.register(
 			PolishedOakSlab.ITEM_ID, PolishedOakSlab::new
 	);

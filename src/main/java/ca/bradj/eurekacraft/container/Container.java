@@ -1,6 +1,5 @@
 package ca.bradj.eurekacraft.container;
 
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -13,14 +12,14 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.Optional;
 
-public abstract class MachineContainer extends AbstractContainerMenu {
+public abstract class Container extends AbstractContainerMenu {
     private static final int boxHeight = 18, boxWidth = 18;
     private static final int inventoryLeftX = 8;
     private static final int margin = 4;
 
     private final IItemHandler playerInventory;
 
-    protected MachineContainer(MenuType<?> cType, int windowId, Container pi) {
+    protected Container(MenuType<?> cType, int windowId, net.minecraft.world.Container pi) {
         super(cType, windowId);
         this.playerInventory = new InvWrapper(pi);
     }

@@ -6,7 +6,6 @@ import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
 import ca.bradj.eurekacraft.interfaces.SandingMachineSlotAware;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.DataSlot;
@@ -20,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SandingMachineContainer extends MachineContainer {
+public class SandingMachineContainer extends Container {
     private final SandingMachineTileEntity tileEntity;
     private DataSlot cookProgressSlot;
 
@@ -32,7 +31,7 @@ public class SandingMachineContainer extends MachineContainer {
 
     public SandingMachineContainer(
             int windowId,
-            Container playerInventory,
+            net.minecraft.world.Container playerInventory,
             SandingMachineTileEntity te
     ) {
         super(
