@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.data.recipes;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
+import ca.bradj.eurekacraft.core.init.TagsInit;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
@@ -19,31 +20,39 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public class SandingMachineRecipe implements ISandingMachineRecipe {
 
     private final ResourceLocation id;
+    private final Optional<Ingredient> special;
     private final ItemStack output;
     private final NonNullList<Ingredient> recipeItems;
     private static final int recipeSize = 1;
 
     public SandingMachineRecipe(
-            ResourceLocation id, ItemStack output, NonNullList<Ingredient> recipeItems
+            ResourceLocation id, Optional<Ingredient> special, ItemStack output, NonNullList<Ingredient> recipeItems
     ) {
         this.id = id;
+        this.special = special;
         this.output = output;
         this.recipeItems = recipeItems;
     }
 
     @Override
     public boolean matches(Container inv, Level p_77569_2_) {
-        for (int i = 0; i < recipeItems.size(); i++) {
-            if (!recipeItems.get(i).test(inv.getItem(i))) {
-                return false;
+        Ingredient input = recipeItems.get(0);
+        if (!input.test(inv.getItem(0))) {
+            return false;
+        }
+        if (special.isPresent()) {
+            if (special.get().test(inv.getItem(1))) {
+                return true;
             }
+            return false;
         }
 
-        return true;
+        return Ingredient.of(TagsInit.Items.SANDING_DISCS).test(inv.getItem(1));
     }
 
     @Override
@@ -86,7 +95,12 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
                 inputs.set(i, Ingredient.fromJson(ingredients.get(i)));
             }
 
-            return new SandingMachineRecipe(recipeId, output, inputs);
+            Optional<Ingredient> special = Optional.empty();
+            if (json.has("special")) {
+                special = Optional.of(Ingredient.fromJson(json.get("special")));
+            }
+
+            return new SandingMachineRecipe(recipeId, special, output, inputs);
         }
 
         @Nullable
@@ -100,7 +114,9 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
 
             ItemStack output = buffer.readItem();
 
-            return new SandingMachineRecipe(recipeId, output, inputs);
+            Optional<Ingredient> special = Optional.of(Ingredient.of(buffer.readItem()));
+
+            return new SandingMachineRecipe(recipeId, special, output, inputs);
         }
 
         @Override
@@ -112,7 +128,12 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
                 i++;
             }
             buffer.writeItem(recipe.getResultItem());
+            buffer.writeItem(recipe.getSpecialInput().map(v -> v.getItems()[0]).orElse(ItemStack.EMPTY));
         }
+    }
+
+    public Optional<Ingredient> getSpecialInput() {
+        return special;
     }
 
     public static class Type implements RecipeType<SandingMachineRecipe> {

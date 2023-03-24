@@ -59,8 +59,10 @@ public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMach
         int leftEdge = SandingMachineContainer.inventoryLeftX + SandingMachineContainer.boxWidth - 1;
         int topEdge = SandingMachineContainer.titleBarHeight + SandingMachineContainer.margin - 1;
         int boxSize = SandingMachineContainer.boxWidth;
+
         recipeLayout.addSlot(RecipeIngredientRole.INPUT, leftEdge + boxSize, topEdge + boxSize).addIngredients(recipe.getIngredients().get(0));
-        recipeLayout.addSlot(RecipeIngredientRole.INPUT, leftEdge + (4 * boxSize), topEdge + boxSize).addIngredients(Ingredient.of(SANDING_DISCS));
+        Ingredient abSlot = recipe.getSpecialInput().orElse(Ingredient.of(SANDING_DISCS));
+        recipeLayout.addSlot(RecipeIngredientRole.INPUT, leftEdge + (4 * boxSize), topEdge + boxSize).addIngredients(abSlot);
         recipeLayout.addSlot(RecipeIngredientRole.OUTPUT, leftEdge + (6 * boxSize), topEdge + boxSize).addItemStack(recipe.getResultItem());
         ;
     }

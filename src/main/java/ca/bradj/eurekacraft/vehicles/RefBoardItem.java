@@ -35,7 +35,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     private static Map<Player, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
-    private final RefBoardStats baseStats;
+    protected final RefBoardStats baseStats;
     private BoardType board;
     private final StatsGetter statsGetter;
     protected boolean canFly = true;
@@ -49,16 +49,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     public BoardType getBoardType() {
         return board;
-    }
-
-    public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
-        if (!(itemStack.getItem() instanceof RefBoardItem)) {
-            throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");
-        }
-        if (itemStack.getTag() != null && itemStack.getTag().contains(NBT_KEY_STATS)) {
-            return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
-        }
-        return ((RefBoardItem) itemStack.getItem()).baseStats;
     }
 
     @Override
@@ -215,7 +205,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    RefBoardStats getStatsForStack(ItemStack stack, RandomSource rand) {
+    public RefBoardStats getStatsForStack(ItemStack stack, RandomSource rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             storeStatsOnStack(stack, s);

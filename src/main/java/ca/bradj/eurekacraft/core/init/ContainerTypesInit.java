@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.core.init;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineTileEntity;
+import ca.bradj.eurekacraft.container.FolderContainer;
 import ca.bradj.eurekacraft.container.PhotoContainer;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
@@ -24,6 +25,9 @@ public class ContainerTypesInit {
         );
         public static final RegistryObject<MenuType<SandingMachineContainer>> SANDING_MACHINE = TYPES.register(
                 SandingMachineTileEntity.ENTITY_ID, () -> IForgeMenuType.create(SandingMachineContainer::new)
+        );
+        public static final RegistryObject<MenuType<FolderContainer>> FOLDER = TYPES.register(
+                "folder_container", () -> IForgeMenuType.create(FolderContainer::new)
         );
 
         public static final RegistryObject<MenuType<PhotoContainer>> PHOTO = TYPES.register(

@@ -1,0 +1,33 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:blueprint_folder"
+  },
+  "extra": {
+    "item": "minecraft:string",
+    "consume": true
+  },
+  "experience": 5.0,
+  "cookingTime": 20
+}

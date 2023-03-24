@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -70,7 +71,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return this.handler.cast();
         }
         return super.getCapability(cap, side);
@@ -133,8 +134,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
         recipe.ifPresent((r) -> {
 
-            ItemStack stackInSlot = getItemForCraftingNoise();
-            Item item = stackInSlot.getItem();
+            Optional<ItemStack> stackInSlot = getItemForCraftingNoise();
+            if (stackInSlot.isEmpty()) {
+                return;
+            }
+            Item item = stackInSlot.get().getItem();
             if (!(item instanceof NoisyCraftingItem)) {
                 return;
             }
@@ -151,5 +155,5 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
     }
 
-    protected abstract ItemStack getItemForCraftingNoise();
+    protected abstract Optional<ItemStack> getItemForCraftingNoise();
 }

@@ -1,0 +1,16 @@
+{
+  "type": "eurekacraft:sanding_machine",
+  "ingredients": [
+    {
+      "item": "eurekacraft:broken_ref_board"
+    }
+  ],
+  "special": [
+    {
+      "tag": "eurekacraft:axes"
+    }
+  ],
+  "result": {
+    "item": "eurekacraft:blueprint_poor"
+  }
+}

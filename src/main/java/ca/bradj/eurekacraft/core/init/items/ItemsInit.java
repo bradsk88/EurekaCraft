@@ -158,12 +158,21 @@ public class ItemsInit {
 			RefBoardCoreItem.ITEM_ID, RefBoardCoreItem::new
 	);
 
+	public static final RegistryObject<Item> BLUEPRINT_POOR = ITEMS.register(
+			BlueprintPoorItem.ITEM_ID, BlueprintPoorItem::new
+	);
+
+
 	public static final RegistryObject<Item> BLUEPRINT = ITEMS.register(
 			BlueprintItem.ITEM_ID, BlueprintItem::new
 	);
 
 	public static final RegistryObject<Item> BLUEPRINT_ADVANCED = ITEMS.register(
 			BlueprintAdvancedItem.ITEM_ID, BlueprintAdvancedItem::new
+	);
+
+	public static final RegistryObject<Item> BLUEPRINT_FOLDER = ITEMS.register(
+			BlueprintFolderItem.ITEM_ID, BlueprintFolderItem::new
 	);
 
 	public static final RegistryObject<Item> POLISHED_OAK_SLAB = ITEMS.register(

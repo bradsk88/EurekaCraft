@@ -7,9 +7,10 @@ import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
-import ca.bradj.eurekacraft.interfaces.IPaintable;
-import ca.bradj.eurekacraft.interfaces.ITechAffected;
-import ca.bradj.eurekacraft.interfaces.IWrenchable;
+import ca.bradj.eurekacraft.interfaces.*;
+import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import ca.bradj.eurekacraft.vehicles.RefBoardStatsUtils;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -33,6 +34,8 @@ import net.minecraftforge.common.ForgeHooks;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static ca.bradj.eurekacraft.materials.BlueprintItem.NBT_KEY_BOARD_STATS;
+
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
@@ -43,8 +46,16 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     private int lastFireAmount = 1;
 
 
-    public RefTableTileEntity(BlockPos p_155229_, BlockState p_155230_) {
-        super(TilesInit.REF_TABLE.get(), p_155229_, p_155230_, RefTableConsts.totalSlots);
+    public RefTableTileEntity(
+            BlockPos p_155229_,
+            BlockState p_155230_
+    ) {
+        super(
+                TilesInit.REF_TABLE.get(),
+                p_155229_,
+                p_155230_,
+                RefTableConsts.totalSlots
+        );
     }
 
     @Override
@@ -52,11 +63,18 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         return Component.translatable("container." + EurekaCraft.MODID + ".ref_table");
     }
 
-
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory player, Player p_39956_) {
-        return new RefTableContainer(id, player, this);
+    public AbstractContainerMenu createMenu(
+            int id,
+            Inventory player,
+            Player p_39956_
+    ) {
+        return new RefTableContainer(
+                id,
+                player,
+                this
+        );
     }
 
     @Override
@@ -67,17 +85,26 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
 
     @Override
     protected ItemStack getSelfAsItemStack() {
-        return ItemsInit.REF_TABLE_BLOCK.get().getDefaultInstance();
+        return ItemsInit.REF_TABLE_BLOCK.get()
+                .getDefaultInstance();
     }
 
     protected CompoundTag store(CompoundTag tag) {
         tag = super.store(tag);
-        tag.putInt("cooked", this.craftPercent);
+        tag.putInt(
+                "cooked",
+                this.craftPercent
+        );
         return tag;
     }
 
     // Crafting
-    public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, RefTableTileEntity entity) {
+    public static <T extends BlockEntity> void tick(
+            Level level,
+            BlockPos pos,
+            BlockState state,
+            RefTableTileEntity entity
+    ) {
         if (level.isClientSide) {
             throw new IllegalStateException("Ticker should not be instantiated on client side");
         }
@@ -93,7 +120,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         Optional<RefTableRecipe> activeRecipe = entity.getActiveRecipe();
         entity.updateCookingStatus(activeRecipe);
         if (entity.cooking) {
-            entity.doCook(activeRecipe, level);
+            entity.doCook(
+                    activeRecipe,
+                    level
+            );
         }
     }
 
@@ -102,22 +132,31 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
 
             ItemStack outSlot = getStackInSlot(RefTableConsts.outputSlot);
             if (!outSlot.isEmpty()) {
-                if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
+                if (!outSlot.getItem()
+                        .getDefaultInstance()
+                        .sameItemStackIgnoreDurability(active.get()
+                                .getResultItem())) {
                     return;
                 }
-                if (!active.get().getResultItem().isStackable()) {
+                if (!active.get()
+                        .getResultItem()
+                        .isStackable()) {
                     return;
                 }
             }
 
-            if (active.get().requiresCooking()) {
+            if (active.get()
+                    .requiresCooking()) {
                 if (!this.hasFuel()) {
                     if (!this.hasCoal()) {
                         this.cooking = false;
                         this.craftPercent = 0;
                         return;
                     }
-                    ItemStack item = extractItem(RefTableConsts.fuelSlot, 1);
+                    ItemStack item = extractItem(
+                            RefTableConsts.fuelSlot,
+                            1
+                    );
                     this.fireRemaining = item.getBurnTime(RecipeType.SMELTING);
                     if (this.fireRemaining < 0) {
                         this.fireRemaining = 500;
@@ -144,11 +183,17 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
 
     private boolean hasCoal() {
         ItemStack stackInSlot = this.getStackInSlot(RefTableConsts.fuelSlot);
-        int burnTime = ForgeHooks.getBurnTime(stackInSlot, RecipeType.SMELTING);
+        int burnTime = ForgeHooks.getBurnTime(
+                stackInSlot,
+                RecipeType.SMELTING
+        );
         return burnTime > 0;
     }
 
-    private void doCook(Optional<RefTableRecipe> recipe, Level level) {
+    private void doCook(
+            Optional<RefTableRecipe> recipe,
+            Level level
+    ) {
         if (craftPercent < 100) {
             this.craftPercent++;
             this.makeCraftingNoise(recipe);
@@ -158,16 +203,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         this.craftPercent = 0;
 
         recipe.ifPresent(iRecipe -> {
-            ItemStack output = iRecipe.getResultItem();
-
-            if (new Random().nextFloat() < iRecipe.getSecondaryResultItem().chance) {
-                ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
-                if (sOutput.sameItemStackIgnoreDurability(WheelItemsInit.WHEEL_PLACEHOLDER_ITEM.get().getDefaultInstance())) {
-                    EurekaCraft.LOGGER.debug("Not outputting placeholder secondary");
-                } else {
-                    insertItem(RefTableConsts.secondaryOutputSlot, sOutput);
-                }
-            }
+            // FIXME: This causes us to lose the NBT from the input item
+            ItemStack output = iRecipe.getResultItem()
+                    .copy();
 
             Collection<ItemStack> inputs = new ArrayList<>();
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
@@ -178,48 +216,171 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 inputs.add(stackInSlot);
             }
 
+            if (output.getItem() instanceof IBoardStatsCraftable) {
+                ((IBoardStatsCraftable) output.getItem()).generateNewBoardStats(
+                        output,
+                        inputs,
+                        level.getRandom()
+                );
+            }
+
+            if (level.getRandom()
+                    .nextFloat() < iRecipe.getSecondaryResultItem().chance) {
+                ItemStack sOutput = iRecipe.getSecondaryResultItem().output.copy();
+                if (sOutput.sameItemStackIgnoreDurability(WheelItemsInit.WHEEL_PLACEHOLDER_ITEM.get()
+                        .getDefaultInstance())) {
+                    EurekaCraft.LOGGER.debug("Not outputting placeholder secondary");
+                } else {
+
+                    if (iRecipe.getSecondaryResultItem().initialize) {
+                        if (!(sOutput.getItem() instanceof IInitializable)) {
+                            EurekaCraft.LOGGER.error("Recipe calls for init but item does not support it:" + sOutput.getItem());
+                        }
+                        ((IInitializable) sOutput.getItem()).initialize(
+                                sOutput,
+                                level.getRandom()
+                        );
+                    }
+
+                    insertItem(
+                            RefTableConsts.secondaryOutputSlot,
+                            sOutput
+                    );
+                }
+            }
+
             for (int i = 0; i < RefTableConsts.inputSlots; i++) {
-                extractItem(i, 1);
+                extractItem(
+                        i,
+                        1
+                );
             }
 
             if (!iRecipe.getExtraIngredient().ingredient.isEmpty()) {
-                useExtraIngredient(iRecipe, inputs, output, level);
+                useExtraIngredient(
+                        iRecipe,
+                        inputs,
+                        output,
+                        level
+                );
             }
 
-            insertItem(RefTableConsts.outputSlot, output.copy());
+            switch (iRecipe.getOutputConstructStatsPolicy()) {
+                case NEW -> {
+                    if (!(iRecipe.getResultItem()
+                            .getItem() instanceof IInitializable)) {
+                        EurekaCraft.LOGGER.error(
+                                "Recipe calls for init but item does not support it:" + iRecipe.getResultItem()
+                                        .getItem()
+                        );
+                    }
+                    ((IInitializable) iRecipe.getResultItem()
+                            .getItem()).initialize(
+                            iRecipe.getResultItem(),
+                            level.getRandom()
+                    );
+                }
+                case BOOST_AVG -> {
+                    Collection<RefBoardStats> contextStats = inputs.stream().
+                            filter(v -> v.getItem() instanceof IBoardStatsGetter).
+                            map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v))
+                            .toList();
+                    RefBoardStats stats = RefBoardStatsUtils.BoostAvg(
+                            contextStats,
+                            level.getRandom(),
+                            1.1f,
+                            1.25f
+                    );
+                    output.getOrCreateTag()
+                            .put(
+                                    NBT_KEY_BOARD_STATS,
+                                    RefBoardStats.serializeNBT(stats)
+                            );
+                }
+                case INVALID -> {
+                    // TODO: Is this ok?
+                }
+            }
+
+            insertItem(
+                    RefTableConsts.outputSlot,
+                    output
+            );
 
             setChanged();
         });
     }
 
     private void useExtraIngredient(
-            RefTableRecipe iRecipe, Collection<ItemStack> inputs, ItemStack craftedOutput, Level level
+            RefTableRecipe iRecipe,
+            Collection<ItemStack> inputs,
+            ItemStack craftedOutput,
+            Level level
     ) {
         ItemStack techStack = getStackInSlot(RefTableConsts.techSlot);
-        techStack.hurt(1, level.getRandom(), null);
+        techStack.hurt(
+                1,
+                level.getRandom(),
+                null
+        );
         if (iRecipe.getExtraIngredient().consumeOnUse) {
-            extractItem(RefTableConsts.techSlot, 1);
+            extractItem(
+                    RefTableConsts.techSlot,
+                    1
+            );
         } else if (techStack.getDamageValue() > techStack.getMaxDamage()) {
-            level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
-            extractItem(RefTableConsts.techSlot, 1);
+            level.playSound(
+                    null,
+                    this.getBlockPos(),
+                    SoundEvents.ITEM_BREAK,
+                    SoundSource.BLOCKS,
+                    1.0f,
+                    1.0f
+            );
+            extractItem(
+                    RefTableConsts.techSlot,
+                    1
+            );
         }
 
-        if (iRecipe.getResultItem().getItem() instanceof ITechAffected) {
-            ((ITechAffected) iRecipe.getResultItem().getItem()).applyTechItem(inputs, techStack, craftedOutput, level.getRandom());
+        if (iRecipe.getResultItem()
+                .getItem() instanceof ITechAffected) {
+            ((ITechAffected) iRecipe.getResultItem()
+                    .getItem()).applyTechItem(
+                    inputs,
+                    techStack,
+                    craftedOutput,
+                    level.getRandom()
+            );
         }
 
-        if (iRecipe.getResultItem().getItem() instanceof IPaintable) {
-            ((IPaintable) iRecipe.getResultItem().getItem()).applyPaint(inputs, techStack, craftedOutput);
+        if (iRecipe.getResultItem()
+                .getItem() instanceof IPaintable) {
+            ((IPaintable) iRecipe.getResultItem()
+                    .getItem()).applyPaint(
+                    inputs,
+                    techStack,
+                    craftedOutput
+            );
         }
 
-        if (getStackInSlot(RefTableConsts.techSlot).sameItem(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
-            if (iRecipe.getResultItem().getItem() instanceof IWrenchable) {
-                Optional<ItemStack> removedPart = ((IWrenchable) iRecipe.getResultItem().getItem()).applyWrench(inputs, craftedOutput);
+        if (getStackInSlot(RefTableConsts.techSlot).sameItem(WheelItemsInit.SOCKET_WRENCH.get()
+                .getDefaultInstance())) {
+            if (iRecipe.getResultItem()
+                    .getItem() instanceof IWrenchable) {
+                Optional<ItemStack> removedPart = ((IWrenchable) iRecipe.getResultItem()
+                        .getItem()).applyWrench(
+                        inputs,
+                        craftedOutput
+                );
                 if (removedPart.isPresent()) {
                     if (!getStackInSlot(RefTableConsts.secondaryOutputSlot).isEmpty()) {
                         throw new IllegalStateException("Expected output slot to be empty for part removal recipe");
                     }
-                    insertItem(RefTableConsts.secondaryOutputSlot, removedPart.get());
+                    insertItem(
+                            RefTableConsts.secondaryOutputSlot,
+                            removedPart.get()
+                    );
                 }
             }
         }
@@ -228,8 +389,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     private Optional<RefTableRecipe> getActiveRecipe() {
         Optional<RefTableRecipe> recipe = getActivePrimaryRecipe();
         if (recipe.isPresent()) {
-            RefTableRecipe.ExtraInput extra = recipe.get().getExtraIngredient();
-            RefTableRecipe.Secondary secondary = recipe.get().getSecondaryResultItem();
+            RefTableRecipe.ExtraInput extra = recipe.get()
+                    .getExtraIngredient();
+            RefTableRecipe.Secondary secondary = recipe.get()
+                    .getSecondaryResultItem();
             if (!extra.ingredient.isEmpty()) {
                 ItemStack techItem = getStackInSlot(RefTableConsts.techSlot);
                 if (!extra.ingredient.test(techItem)) {
@@ -262,12 +425,18 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             inputs.add(stackInSlot);
         }
 
-        if (!techItem.sameItemStackIgnoreDurability(WheelItemsInit.SOCKET_WRENCH.get().getDefaultInstance())) {
+        if (!techItem.sameItemStackIgnoreDurability(WheelItemsInit.SOCKET_WRENCH.get()
+                .getDefaultInstance())) {
             return false;
         }
-        for (Item i : inputs.stream().map(ItemStack::getItem).toList()) {
+        for (Item i : inputs.stream()
+                .map(ItemStack::getItem)
+                .toList()) {
             if (i instanceof IWrenchable) {
-                if (((IWrenchable) i).canApplyWrench(inputs, techItem)) {
+                if (((IWrenchable) i).canApplyWrench(
+                        inputs,
+                        techItem
+                )) {
                     return false;
                 }
             }
@@ -281,18 +450,26 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         List<ItemStack> shapeless = new ArrayList<ItemStack>();
         for (int i = 0; i < RefTableConsts.inputSlots; i++) {
             ItemStack stackInSlot = getStackInSlot(i);
-            inv.setItem(i, stackInSlot);
+            inv.setItem(
+                    i,
+                    stackInSlot
+            );
             if (!stackInSlot.isEmpty()) {
                 shapeless.add(stackInSlot);
             }
         }
         ItemStack techItem = getStackInSlot(RefTableConsts.techSlot);
-        inv.setItem(RefTableConsts.inputSlots, techItem);
+        inv.setItem(
+                RefTableConsts.inputSlots,
+                techItem
+        );
         shapeless.add(techItem);
 
         RecipeManager recipeManager = level.getRecipeManager();
         Optional<RefTableRecipe> recipe = recipeManager.getRecipeFor(
-                RecipesInit.REF_TABLE, inv, level
+                RecipesInit.REF_TABLE,
+                inv,
+                level
         );
 
         if (recipe.isPresent()) {
@@ -304,11 +481,16 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         inv = new SimpleContainer(shapeless.size());
         for (int i = 0; i < shapeless.size(); i++) {
             ItemStack stackInSlot = shapeless.get(i);
-            inv.setItem(i, stackInSlot);
+            inv.setItem(
+                    i,
+                    stackInSlot
+            );
         }
 
         recipe = recipeManager.getRecipeFor(
-                RecipesInit.REF_TABLE, inv, level
+                RecipesInit.REF_TABLE,
+                inv,
+                level
         );
 
         return recipe;
@@ -340,7 +522,43 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     }
 
     @Override
-    protected ItemStack getItemForCraftingNoise() {
-        return getStackInSlot(RefTableConsts.techSlot);
+    protected Optional<ItemStack> getItemForCraftingNoise() {
+        Optional<RefTableRecipe> recipe = getActiveRecipe();
+        if (recipe.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (recipe.get().getExtraIngredient().ingredient.test(getStackInSlot(RefTableConsts.techSlot))) {
+            return Optional.of(getStackInSlot(RefTableConsts.techSlot));
+        }
+        return Optional.empty();
+    }
+
+    public Collection<Item> getInputItems() {
+        List<Item> items = new ArrayList<>();
+        for (int i = 0; i < RefTableConsts.inputSlots; i++) {
+            items.add(getStackInSlot(i).getItem());
+        }
+        return ImmutableList.copyOf(items);
+    }
+
+    public Item getFuelItem() {
+        return getStackInSlot(RefTableConsts.fuelSlot).getItem();
+    }
+
+    public Item getTechItem() {
+        return getStackInSlot(RefTableConsts.techSlot).getItem();
+    }
+
+    public int getInputsSlotIndex() {
+        return 0;
+    }
+
+    public int getFuelSlotIndex() {
+        return RefTableConsts.fuelSlot;
+    }
+
+    public int getTechSlotIndex() {
+        return RefTableConsts.techSlot;
     }
 }

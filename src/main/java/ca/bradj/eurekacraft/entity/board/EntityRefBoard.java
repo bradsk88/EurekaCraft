@@ -92,7 +92,7 @@ public class EntityRefBoard extends Entity {
 
     private static final float runSpeed = 0.13f;
     private static final float runEquivalent = 0.25f;
-    private static final float maxFlySpeed = 2.0f;
+    private static final float maxFlySpeed = 1.0f;
     private static final float minSurfSpeed = runSpeed * 1.5f;
     private static final float surfLift = 0.05f;
     private ItemStack boardItemStack;
@@ -128,17 +128,17 @@ public class EntityRefBoard extends Entity {
             return;
         }
 
-        ItemStack item = boardItem.copy();
-        if (!(item.getItem() instanceof RefBoardItem)) {
+        ItemStack itemStack = boardItem.copy();
+        if (!(itemStack.getItem() instanceof RefBoardItem)) {
             logger.error("Item in InteractionHand was not ref board. Killing entity");
             this.kill();
             return;
         }
 
-        damaged = ((RefBoardItem) item.getItem()).isDamagedBoard();
-        canFly = ((RefBoardItem) item.getItem()).canFly();
-        boardStats = RefBoardItem.GetStatsFromNBT(item);
-        wheelStats = WheelStats.GetStatsFromNBT(item);
+        damaged = ((RefBoardItem) itemStack.getItem()).isDamagedBoard();
+        canFly = ((RefBoardItem) itemStack.getItem()).canFly();
+        boardStats = ((RefBoardItem) itemStack.getItem()).getStatsForStack(itemStack, level.getRandom());
+        wheelStats = WheelStats.GetStatsFromNBT(itemStack);
 
         this.playerOrNull = player;
 
@@ -323,7 +323,7 @@ public class EntityRefBoard extends Entity {
             applyDamagedEffect = true;
         }
 
-        double turnSpeed = boardStats.agility() * 15; // 15 is effectively "turn on a dime"
+        double turnSpeed = TurnSpeed.ForStats(boardStats);
 
         float lookYRot = this.playerOrNull.getViewYRot(1.0F);
         initializeRotation(lookYRot);
@@ -439,6 +439,10 @@ public class EntityRefBoard extends Entity {
         Vec3 go = this.lastDirection.multiply(flightSpeed, 1.0, flightSpeed);
 //        logger.debug("[Flightspeed " + flightSpeed + "] Go: " + go);
 
+        if (liftFactor < 0.005) {
+            liftOrFall = defaultFall;
+        }
+
         this.playerOrNull.setDeltaMovement(go.x, liftOrFall, go.z);
         this.playerOrNull.hurtMarked = true;
         this.playerOrNull.fallDistance = 0; // To not die!
@@ -458,7 +462,7 @@ public class EntityRefBoard extends Entity {
         double maxHeightAboveFloor = maxHeight - floorY;
         double percentToMaxHeight = Math.max(0.1, (1 - (heightAboveFloor / maxHeightAboveFloor)));
         blockLift *= (float) percentToMaxHeight;
-        EurekaCraft.LOGGER.trace("Percent to max height: " + percentToMaxHeight + ", blockLift: " + blockLift);
+        EurekaCraft.LOGGER.trace("Percent to max height: " + percentToMaxHeight + ", blockLift: " + blockLift + ", liftFactor: " + liftFactor);
         liftOrFall = blockLift * liftFactor;
         return liftOrFall;
     }
@@ -475,9 +479,9 @@ public class EntityRefBoard extends Entity {
 
     private float calculateYRot(int turnDir, float turnSpeed) {
         if (turnDir > 0) {
-            this.lastYRot += turnSpeed;
+            this.lastYRot += (1 + (5 * turnSpeed));
         } else if (turnDir < 0) {
-            this.lastYRot -= turnSpeed;
+            this.lastYRot -= (1 + (5 * turnSpeed));
         }
         return this.lastYRot;
     }
