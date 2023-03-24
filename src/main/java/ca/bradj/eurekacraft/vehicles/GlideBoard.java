@@ -13,7 +13,7 @@ public class GlideBoard extends RefBoardItem {
     }
 
     @Override
-    RefBoardStats getStatsForStack(
+    public RefBoardStats getStatsForStack(
             ItemStack stack,
             Random rand
     ) {

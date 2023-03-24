@@ -137,7 +137,7 @@ public class EntityRefBoard extends Entity {
 
         damaged = ((RefBoardItem) itemStack.getItem()).isDamagedBoard();
         canFly = ((RefBoardItem) itemStack.getItem()).canFly();
-        boardStats = RefBoardItem.GetStatsFromNBT(itemStack);
+        boardStats = ((RefBoardItem) itemStack.getItem()).getStatsForStack(itemStack, level.getRandom());
         wheelStats = WheelStats.GetStatsFromNBT(itemStack);
 
         this.playerOrNull = player;

@@ -52,16 +52,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         return board;
     }
 
-    public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
-        if (!(itemStack.getItem() instanceof RefBoardItem)) {
-            throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");
-        }
-        if (itemStack.getTag() != null && itemStack.getTag().contains(NBT_KEY_STATS)) {
-            return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
-        }
-        return ((RefBoardItem) itemStack.getItem()).baseStats;
-    }
-
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack defaultInstance = super.getDefaultInstance();
@@ -216,7 +206,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+    public RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             storeStatsOnStack(stack, s);
