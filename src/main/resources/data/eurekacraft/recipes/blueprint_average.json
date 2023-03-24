@@ -3,14 +3,15 @@
   "ingredients": [
     {
       "item": "eurekacraft:blueprint"
+    },
+    {
+      "item": "eurekacraft:blueprint"
     }
-  ], "extra": {
-    "item": "eurekacraft:blueprint",
-    "consume": true
-  },
+  ],
   "cook": false,
   "output": {
-    "item": "eurekacraft:blueprint"
+    "item": "eurekacraft:blueprint",
+    "stats": "boost_avg"
   },
   "experience": 5.0,
   "cookingTime": 20

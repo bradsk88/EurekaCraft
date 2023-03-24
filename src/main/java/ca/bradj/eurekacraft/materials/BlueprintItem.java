@@ -2,9 +2,7 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
-import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
-import ca.bradj.eurekacraft.interfaces.IBoardStatsFactoryProvider;
-import ca.bradj.eurekacraft.interfaces.ITechAffected;
+import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +23,7 @@ import java.util.Random;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected {
+public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable, IBoardStatsCraftable, IBoardStatsGetter {
 
     public static boolean debuggerReleaseControl() {
         GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -58,14 +56,21 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         return FACTORY_INSTANCE;
     }
 
+
+    @Override
+    public RefBoardStats getBoardStats(ItemStack stack) {
+        return RefBoardStats.deserializeNBT(stack.getOrCreateTag().getCompound(NBT_KEY_BOARD_STATS));
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
-        if (!stack.getOrCreateTag().contains(NBT_KEY_BOARD_STATS)) {
-            if (world != null) {
-                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.StandardBoard, world.getRandom());
-            }
-        }
-        RefBoardStats stats = RefBoardStats.deserializeNBT(stack.getTag().getCompound(NBT_KEY_BOARD_STATS));
+        // FIXME: This is causing stats to get overridden every time we add and remove them from an inventory
+//        if (!stack.getOrCreateTag().contains(NBT_KEY_BOARD_STATS)) {
+//            if (world != null) {
+//                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.StandardBoard, world.getRandom());
+//            }
+//        }
+        RefBoardStats stats = getBoardStats(stack);
         tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
         tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
@@ -95,6 +100,34 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         RefBoardStats existingStats = RefBoardStats.Average("blueprint", inputStats);
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(existingStats, random);
         target.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
+    }
+
+    @Override
+    public void initialize(
+            ItemStack target,
+            Random random
+    ) {
+        RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
+        target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
+    }
+
+    @Override
+    public void generateNewBoardStats(
+            ItemStack target,
+            Collection<ItemStack> context,
+            Random random
+    ) {
+        Collection<RefBoardStats> contextStats = context.stream().
+                filter(v -> v.getItem() instanceof IBoardStatsGetter).
+                map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v)).toList();
+        RefBoardStats stats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
+        if (contextStats.size() != 0) {
+            stats = RefBoardStats.Average(
+                    "avg",
+                    contextStats
+            );
+        }
+        target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
     }
 
     public static class BoardStatsFactory implements IBoardStatsFactory {

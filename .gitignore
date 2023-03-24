@@ -4,3 +4,5 @@ bin
 .gradle
 .idea
 /mcmodsrepo/ca/bradj/eurekacraft/EurekaCraft/
+out
+logs

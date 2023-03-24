@@ -1,0 +1,16 @@
+{
+  "type": "eurekacraft:glide_board",
+  "ingredients": [
+    {
+      "item": "eurekacraft:paint_bucket_blue"
+    },
+    {
+      "item": "eurekacraft:paint_bucket_yellow"
+    }
+  ],
+  "cook": false,
+  "output": {
+    "item": "eurekacraft:paint_bucket_green",
+    "quantity": 2
+  }
+}

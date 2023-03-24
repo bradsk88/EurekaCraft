@@ -3,6 +3,8 @@ package ca.bradj.eurekacraft.data.recipes;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
+import ca.bradj.eurekacraft.interfaces.IInitializable;
+import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
@@ -21,12 +23,29 @@ import java.util.Optional;
 
 public class RefTableRecipe implements IGlideBoardRecipe {
 
+    public enum ConstructStats {
+        INVALID(""),
+        NEW("new"),
+        BOOST_AVG("boost_avg");
+
+        private final String val;
+
+        ConstructStats(String val) {
+            this.val = val;
+        }
+
+        public String toJSONString() {
+            return this.val;
+        }
+    }
+
     private final ResourceLocation id;
     private final ItemStack output;
     private final NonNullList<Ingredient> recipeItems;
     private final boolean cook;
     private final Secondary secondaryOutput;
     private final int outputQuantity;
+    private final ConstructStats constructStats;
     private ExtraInput extraIngredient;
 
     public RefTableRecipe(
@@ -36,7 +55,8 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             boolean cook,
             ExtraInput extraIngredient,
             Secondary secondary,
-            int outputQuantity
+            int outputQuantity,
+            ConstructStats constructStats
     ) {
         this.id = id;
         this.output = output;
@@ -45,6 +65,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         this.extraIngredient = extraIngredient;
         this.secondaryOutput = secondary;
         this.outputQuantity = outputQuantity;
+        this.constructStats = constructStats;
     }
 
     private boolean findMatchAndRemove(
@@ -157,6 +178,11 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         return outputQuantity;
     }
 
+    @Override
+    public ConstructStats getOutputConstructStatsPolicy() {
+        return this.constructStats;
+    }
+
     public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<RefTableRecipe> {
 
         @Override
@@ -164,15 +190,34 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             JsonObject outputJSON = GsonHelper.getAsJsonObject(json, "output");
             ItemStack output = ShapedRecipe.itemFromJson(outputJSON).getDefaultInstance();
             int outputQty = 1;
+            boolean initializeMain = false;
             if (outputJSON.has("quantity")) {
                 outputQty = outputJSON.get("quantity").getAsInt();
+            }
+            ConstructStats outputStats = ConstructStats.INVALID;
+            if (outputJSON.has("stats")) {
+                String outputStatsStr = outputJSON.get("stats").getAsString();
+                if ("new".equals(outputStatsStr)) {
+                    outputStats = ConstructStats.NEW;
+                } else if ("boost_avg".equals(outputStatsStr)) {
+                    outputStats = ConstructStats.BOOST_AVG;
+                } else {
+                    throw new IllegalArgumentException("Unexpected value for \"stats\": " + outputStatsStr);
+                }
             }
             Secondary secondary;
             if (json.has("secondary")) {
                 JsonObject j = json.getAsJsonObject("secondary");
                 ItemStack secondaryOutput = ShapedRecipe.itemFromJson(j.getAsJsonObject("output")).getDefaultInstance();
-                double secondaryChance = j.get("chance").getAsDouble();
-                secondary = RefTableRecipe.Secondary.of(secondaryOutput, secondaryChance);
+                double secondaryChance = 0.0;
+                if (j.has("chance")) {
+                    secondaryChance = j.get("chance").getAsDouble();
+                }
+                boolean initialize = false;
+                if (j.has("initialize")) {
+                    initialize = j.get("initialize").getAsBoolean();
+                }
+                secondary = RefTableRecipe.Secondary.of(secondaryOutput, secondaryChance, initialize);
             } else {
                 secondary = RefTableRecipe.Secondary.none();
             }
@@ -197,7 +242,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             boolean cook = json.get("cook").getAsBoolean();
 
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQty);
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQty, outputStats);
         }
 
         @Nullable
@@ -217,12 +262,24 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             output = output.getItem().getDefaultInstance();
 
             int outputQuantity = buffer.readInt();
+            String outputStatsStr = buffer.readUtf();
 
             ItemStack secondaryItem = buffer.readItem();
             double secondaryChance = buffer.readDouble();
-            Secondary secondary = Secondary.of(secondaryItem, secondaryChance);
+            boolean initialize = buffer.readBoolean();
 
-            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity);
+            Secondary secondary = Secondary.of(secondaryItem, secondaryChance, initialize);
+
+            RefTableRecipe.ConstructStats outputStats;
+            if ("new".equals(outputStatsStr)) {
+                outputStats = ConstructStats.NEW;
+            } else if ("boost_avg".equals(outputStatsStr)) {
+                outputStats = ConstructStats.BOOST_AVG;
+            } else {
+                throw new IllegalArgumentException("Unexpected value for \"stats\": " + outputStatsStr);
+            }
+
+            return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity, outputStats);
         }
 
         @Override
@@ -236,8 +293,10 @@ public class RefTableRecipe implements IGlideBoardRecipe {
             buffer.writeBoolean(recipe.requiresCooking());
             buffer.writeItem(recipe.getResultItem());
             buffer.writeInt(recipe.getOutputQuantity());
+            buffer.writeUtf(recipe.constructStats.toJSONString());
             buffer.writeItem(recipe.getSecondaryResultItem().output);
             buffer.writeDouble(recipe.getSecondaryResultItem().chance);
+            buffer.writeBoolean(recipe.getSecondaryResultItem().initialize);
         }
     }
 
@@ -254,20 +313,22 @@ public class RefTableRecipe implements IGlideBoardRecipe {
     public static class Secondary {
         public final ItemStack output;
         public final double chance;
+        public boolean initialize;
 
         public static Secondary none() {
-            return new Secondary(ItemStack.EMPTY, 0);
+            return new Secondary(ItemStack.EMPTY, 0, false);
         }
 
         public static Secondary of(
-                ItemStack secondaryOutput, double secondaryChance
+                ItemStack secondaryOutput, double secondaryChance, boolean initialize
         ) {
-            return new Secondary(secondaryOutput, secondaryChance);
+            return new Secondary(secondaryOutput, secondaryChance, initialize);
         }
 
-        private Secondary(ItemStack secondaryOutput, double secondaryChance) {
+        private Secondary(ItemStack secondaryOutput, double secondaryChance, boolean initialize) {
             this.output = secondaryOutput;
             this.chance = secondaryChance;
+            this.initialize = initialize;
         }
     }
 

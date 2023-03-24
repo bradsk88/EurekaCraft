@@ -62,7 +62,7 @@ public class SandingMachineRecipeCategory implements IRecipeCategory<SandingMach
     public void setIngredients(SandingMachineRecipe recipe, IIngredients ingredients) {
         NonNullList<Ingredient> i = NonNullList.withSize(2, Ingredient.EMPTY);
         i.set(0, recipe.getIngredients().get(0));
-        i.set(1, Ingredient.of(TagsInit.Items.SANDING_DISCS));
+        i.set(1, recipe.getSpecialInput().orElse(Ingredient.of(TagsInit.Items.SANDING_DISCS)));
         ingredients.setInputIngredients(i);
         ingredients.setOutput(VanillaTypes.ITEM, recipe.getResultItem()); // TODO: Show secondary
     }
