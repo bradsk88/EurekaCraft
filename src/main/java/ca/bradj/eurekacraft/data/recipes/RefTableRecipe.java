@@ -270,13 +270,11 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance, initialize);
 
-            RefTableRecipe.ConstructStats outputStats;
+            RefTableRecipe.ConstructStats outputStats = ConstructStats.INVALID;
             if ("new".equals(outputStatsStr)) {
                 outputStats = ConstructStats.NEW;
             } else if ("boost_avg".equals(outputStatsStr)) {
                 outputStats = ConstructStats.BOOST_AVG;
-            } else {
-                throw new IllegalArgumentException("Unexpected value for \"stats\": " + outputStatsStr);
             }
 
             return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity, outputStats);
