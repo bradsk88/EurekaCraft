@@ -1,10 +1,10 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.client.ClientAccess;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
-import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import net.minecraft.nbt.CompoundTag;
@@ -24,8 +24,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 
 public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable, IBoardStatsGetterProvider {
 
@@ -61,13 +63,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
         EurekaCraft.LOGGER.debug("Using " + s.getItem());
-        boolean serverSide = !world.isClientSide;
-        if (serverSide) {
-            if (player.isOnGround()) {
-                EurekaCraft.LOGGER.debug("Not deploying because player is on ground:");
-                return InteractionResultHolder.pass(s);
-            }
-
+        if (!world.isClientSide()) {
             ItemStack boardItem = player.getItemInHand(hand);
             EntityRefBoard.toggleFromInventory(
                     player, (ServerLevel) player.level, boardItem, this.board

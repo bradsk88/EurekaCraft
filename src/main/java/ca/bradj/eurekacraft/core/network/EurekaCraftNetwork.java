@@ -1,10 +1,7 @@
 package ca.bradj.eurekacraft.core.network;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.core.network.msg.BoardControlMessage;
-import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
-import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
-import ca.bradj.eurekacraft.core.network.msg.TraparStormMessage;
+import ca.bradj.eurekacraft.core.network.msg.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -43,6 +40,11 @@ public class EurekaCraftNetwork {
                 encoder(ChunkWavesMessage::encode).
                 decoder(ChunkWavesMessage::decode).
                 consumer(ChunkWavesMessage::handle).
+                add();
+        registerMessage(OnGroundMessage.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(OnGroundMessage::encode).
+                decoder(OnGroundMessage::decode).
+                consumer(OnGroundMessage::handle).
                 add();
     }
 
