@@ -19,7 +19,6 @@ import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -50,14 +49,10 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.*;
-
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
 // TODO: Destroy ref board on player disconnect
 
@@ -190,21 +185,29 @@ public class EntityRefBoard extends Entity {
         ser.deserializeNBT(nbt);
     }
 
-    @Nullable
-    public static EntityRefBoard spawnFromInventory(
+    public static void toggleFromInventory(
             Entity player, ServerLevel level, ItemStack boardItem, BoardType board
     ) {
         if (level.isClientSide()) {
-            return null;
+            return;
         }
         if (deployedBoards.containsKey(player.getUUID())) {
-            EntityRefBoard oldBoard = deployedBoards.remove(player.getUUID());
-            if (!oldBoard.isRemoved()) {
-                logger.warn("Tried to spawn new. But there was already a deployed board");
+            EntityRefBoard oldBoard = deployedBoards.get(player.getUUID());
+            long spawnTick = level.getGameTime();
+            EurekaCraft.LOGGER.debug("De-spawn attempted on tick " + spawnTick);
+            EurekaCraft.LOGGER.debug("Old board was created on tick " + oldBoard.getCreatedAtTick());
+            long bufferMs = 150;
+            long bufferTicks = bufferMs / 50;
+            boolean tooSoon = spawnTick - oldBoard.getCreatedAtTick() < bufferTicks;
+            if (tooSoon) {
+                EurekaCraft.LOGGER.warn("Ignoring board de-spawn request because board was created too recently");
+            } else if (!oldBoard.isRemoved()) {
                 oldBoard.remove(RemovalReason.DISCARDED);
+                deployedBoards.remove(player.getUUID());
                 PlayerDeployedBoard.DeployedBoard.RemoveFromStack(boardItem);
-                return null;
+                PlayerDeployedBoardProvider.removeBoardFor(player);
             }
+            return;
         }
 
         EntityRefBoard.ensureBoardUUID(boardItem);
@@ -217,7 +220,6 @@ public class EntityRefBoard extends Entity {
         glider.setPos(position.x, position.y, position.z);
         spawn(player, level, glider, board, c, wheel);
         PlayerDeployedBoard.DeployedBoard.AddToStack(boardItem);
-        return glider;
     }
 
     private static void ensureBoardUUID(ItemStack boardItem) {

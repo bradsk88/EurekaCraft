@@ -70,7 +70,7 @@ public class RefBoardDataLoader {
             UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
             if (handBoardUUID.get().equals(entityBoardUUID)) {
                 BoardType boardType = mainHandBoardItem.getBoardType();
-                EntityRefBoard.spawnFromInventory(
+                EntityRefBoard.toggleFromInventory(
                         event.getPlayer(), world, mainHandItem, boardType
                 );
             }

@@ -379,7 +379,7 @@ public class JudgeEntity extends PathfinderMob {
 //            logger.debug("Starting goal " + this);
             this.landTarget = LandRandomPos.getPos(this.self, 15, 7);
 
-            EntityRefBoard.spawnFromInventory(
+            EntityRefBoard.toggleFromInventory(
                     this.self,
                     (ServerLevel) this.self.level,
                     ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
@@ -507,7 +507,7 @@ public class JudgeEntity extends PathfinderMob {
     }
 
     private void spawnRefBoard() {
-        EntityRefBoard.spawnFromInventory(
+        EntityRefBoard.toggleFromInventory(
                 this,
                 (ServerLevel) this.level,
                 new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {

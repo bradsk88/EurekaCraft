@@ -7,7 +7,6 @@ import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
-import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -33,7 +32,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     private static final String NBT_KEY_STATS = "stats";
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private static Map<Player, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
     protected final RefBoardStats baseStats;
@@ -62,46 +60,21 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
-
+        EurekaCraft.LOGGER.debug("Using " + s.getItem());
         boolean serverSide = !world.isClientSide;
         if (serverSide) {
             if (player.isOnGround()) {
+                EurekaCraft.LOGGER.debug("Not deploying because player is on ground:");
                 return InteractionResultHolder.pass(s);
             }
 
-            EntityRefBoard glider = spawnedGlidersMap.get(player);
-            if (glider != null) {
-                long bufferMs = 150;
-                long spawnTick = world.getGameTime();
-                long bufferTicks = bufferMs / 50;
-                if (spawnTick - glider.getCreatedAtTick() < bufferTicks) {
-                    EurekaCraft.LOGGER.warn("Ignoring board de-spawn request because board was created too recently");
-                    EurekaCraft.LOGGER.debug("Old board created on tick " + glider.getCreatedAtTick());
-                    EurekaCraft.LOGGER.debug("De-spawn attempted on tick " + spawnTick);
-                } else {
-                    despawnGlider(player, world, glider);
-                }
-            } else {
-                ItemStack boardItem = player.getItemInHand(hand);
-                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(
-                        player, (ServerLevel) player.level, boardItem, this.board
-                );
-                if (spawned == null) {
-                    spawnedGlidersMap.remove(player);
-                } else {
-                    spawnedGlidersMap.put(player, spawned);
-                }
-            }
+            ItemStack boardItem = player.getItemInHand(hand);
+            EntityRefBoard.toggleFromInventory(
+                    player, (ServerLevel) player.level, boardItem, this.board
+            );
         }
 
         return InteractionResultHolder.success(s);
-    }
-
-    // Server Side only
-    private static void despawnGlider(Player player, Level world, EntityRefBoard glider) {
-        glider.kill();
-        spawnedGlidersMap.remove(player);
-        PlayerDeployedBoardProvider.removeBoardFor(player);
     }
 
     public boolean isDamagedBoard() {
