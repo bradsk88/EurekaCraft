@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -14,6 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
@@ -59,21 +61,17 @@ public class RefBoardDataLoader {
         );
         if (board.isAlive()) {
             ItemStack mainHandItem = event.getPlayer().getMainHandItem();
-            if (mainHandItem.isEmpty()) {
+            RefBoardItem mainHandBoardItem = (RefBoardItem) mainHandItem.getItem();
+
+            Optional<UUID> handBoardUUID = EntityRefBoard.getItemStackBoardUUID(mainHandItem);
+            if (handBoardUUID.isEmpty()) {
                 return;
             }
-            CompoundTag tag = mainHandItem.getOrCreateTag();
-            if (!tag.hasUUID(EntityRefBoard.NBT_KEY_BOARD_UUID)) {
-                return;
-            }
-            UUID handBoardUUID = tag.getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
             UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
-            if (handBoardUUID.equals(entityBoardUUID)) {
+            if (handBoardUUID.get().equals(entityBoardUUID)) {
+                BoardType boardType = mainHandBoardItem.getBoardType();
                 EntityRefBoard.spawnFromInventory(
-                        event.getPlayer(),
-                        world,
-                        mainHandItem,
-                        ((RefBoardItem) mainHandItem.getItem()).getBoardType()
+                        event.getPlayer(), world, mainHandItem, boardType
                 );
             }
         }

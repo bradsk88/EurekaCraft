@@ -220,6 +220,18 @@ public class EntityRefBoard extends Entity {
         return b.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID);
     }
 
+    public static Optional<UUID> getItemStackBoardUUID(ItemStack mainHandItem) {
+        if (mainHandItem.isEmpty()) {
+            return Optional.empty();
+        }
+        CompoundTag tag = mainHandItem.getOrCreateTag();
+        if (!tag.hasUUID(EntityRefBoard.NBT_KEY_BOARD_UUID)) {
+            return Optional.empty();
+        }
+        UUID handBoardUUID = tag.getUUID(EntityRefBoard.NBT_KEY_BOARD_UUID);
+        return Optional.of(handBoardUUID);
+    }
+
     static void spawn(
             Entity player, ServerLevel level, EntityRefBoard board,
             BoardType bt, Color c, Optional<? extends IWheel> wheelItem
