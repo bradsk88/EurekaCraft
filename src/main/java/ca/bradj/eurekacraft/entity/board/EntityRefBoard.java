@@ -19,6 +19,7 @@ import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import ca.bradj.eurekacraft.vehicles.wheels.WheelStats;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -49,13 +50,14 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
 // TODO: Destroy ref board on player disconnect
 
@@ -95,6 +97,12 @@ public class EntityRefBoard extends Entity {
     private static final float maxFlySpeed = 1.0f;
     private static final float minSurfSpeed = runSpeed * 1.5f;
     private static final float surfLift = 0.05f;
+
+    public long getCreatedAtTick() {
+        return createdAtTick;
+    }
+
+    private final long createdAtTick;
     private ItemStack boardItemStack;
 
     private float initialSpeed;
@@ -112,15 +120,18 @@ public class EntityRefBoard extends Entity {
 
     public EntityRefBoard(EntityType<? extends Entity> entity, Level world) {
         super(entity, world);
+        this.createdAtTick = world.getGameTime();
     }
 
     EntityRefBoard(Entity player, Level world) {
         super(EntitiesInit.REF_BOARD.get(), world);
         this.playerOrNull = player;
+        this.createdAtTick = world.getGameTime();
     }
 
     public EntityRefBoard(Entity player, Level world, ItemStack boardItem) {
         super(EntitiesInit.REF_BOARD.get(), world);
+        this.createdAtTick = world.getGameTime();
 
         this.boardItemStack = boardItem;
 
@@ -179,6 +190,7 @@ public class EntityRefBoard extends Entity {
         ser.deserializeNBT(nbt);
     }
 
+    @Nullable
     public static EntityRefBoard spawnFromInventory(
             Entity player, ServerLevel level, ItemStack boardItem, BoardType board
     ) {

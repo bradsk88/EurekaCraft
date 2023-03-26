@@ -70,11 +70,17 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
             }
 
             EntityRefBoard glider = spawnedGlidersMap.get(player);
-            if (glider != null && !glider.isAlive()) {
-                despawnGlider(player, world, glider);
-            }
-            if (glider != null && glider.isAlive()) {
-                despawnGlider(player, world, glider);
+            if (glider != null) {
+                long bufferMs = 150;
+                long spawnTick = world.getGameTime();
+                long bufferTicks = bufferMs / 50;
+                if (spawnTick - glider.getCreatedAtTick() < bufferTicks) {
+                    EurekaCraft.LOGGER.warn("Ignoring board de-spawn request because board was created too recently");
+                    EurekaCraft.LOGGER.debug("Old board created on tick " + glider.getCreatedAtTick());
+                    EurekaCraft.LOGGER.debug("De-spawn attempted on tick " + spawnTick);
+                } else {
+                    despawnGlider(player, world, glider);
+                }
             } else {
                 ItemStack boardItem = player.getItemInHand(hand);
                 EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(
