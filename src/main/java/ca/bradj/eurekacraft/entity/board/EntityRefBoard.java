@@ -7,6 +7,9 @@ import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
+import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
+import ca.bradj.eurekacraft.core.network.msg.OnGroundMessage;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.Control;
@@ -47,6 +50,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -191,6 +195,14 @@ public class EntityRefBoard extends Entity {
         if (level.isClientSide()) {
             return;
         }
+        if (player.isOnGround()) {
+            EurekaCraftNetwork.CHANNEL.send(
+                    PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), // TODO: Consider limiting reach
+                    new OnGroundMessage()
+            );
+            return;
+        }
+
         if (deployedBoards.containsKey(player.getUUID())) {
             EntityRefBoard oldBoard = deployedBoards.get(player.getUUID());
             long spawnTick = level.getGameTime();
