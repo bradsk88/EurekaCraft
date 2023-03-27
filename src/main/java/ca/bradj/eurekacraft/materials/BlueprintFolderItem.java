@@ -101,15 +101,15 @@ public class BlueprintFolderItem extends Item implements MenuProvider {
         int size = nbt.contains(STACK_ITEMS_NBT) && nbt.getCompound(STACK_ITEMS_NBT).contains(
                 "Items"
         ) ? nbt.getCompound(STACK_ITEMS_NBT).getList("Items", Tag.TAG_COMPOUND).size() : 0;
-        tooltip.add(
-                // TODO: Translate
-                new TextComponent("Contains " + size + " blueprints")
-        );
 
         tooltip.add(
                 new TranslatableComponent(
                         "item." + EurekaCraft.MODID + "." + ITEM_ID + ".subtitle"
                 ).withStyle(ChatFormatting.GRAY)
+        );
+        tooltip.add(
+                // TODO: Translate
+                new TextComponent("Contains " + size + " blueprints")
         );
     }
 
