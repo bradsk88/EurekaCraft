@@ -12,16 +12,34 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class PhotoScreen extends AbstractContainerScreen<PhotoContainer> {
 
-    int leftPos = 30;
-    int topPos = 30;
+    private final ResourceLocation gui;
+    int leftPos = 60;
+    int topPos = 0;
     int imageWidth = 256;
     int imageHeight = 256;
 
-    // TODO: Choose image based on item's NBT
-    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/polaroid_1.png");
-
     public PhotoScreen(PhotoContainer container, Inventory playerInv, Component title) {
         super(container, playerInv, title);
+        this.gui = new ResourceLocation(EurekaCraft.MODID, "textures/screens/polaroid_" + container.GetPhotoId() + ".png");
+    }
+
+    @Override
+    protected void renderLabels(
+            PoseStack p_97808_,
+            int p_97809_,
+            int p_97810_
+    ) {
+        this.font.draw(p_97808_, this.title, (float)this.titleLabelX, (float)this.titleLabelY, 4210752);
+    }
+
+    @Override
+    public boolean mouseClicked(
+            double p_97748_,
+            double p_97749_,
+            int p_97750_
+    ) {
+        this.onClose();
+        return true;
     }
 
     @Override
@@ -35,7 +53,7 @@ public class PhotoScreen extends AbstractContainerScreen<PhotoContainer> {
     protected void renderBg(PoseStack stack, float p_97788_, int p_97789_, int p_97790_) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, GUI);
+        RenderSystem.setShaderTexture(0, gui);
         this.blit(stack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
     }
 
