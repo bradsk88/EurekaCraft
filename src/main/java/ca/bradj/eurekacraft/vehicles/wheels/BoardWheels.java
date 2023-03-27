@@ -2,14 +2,17 @@ package ca.bradj.eurekacraft.vehicles.wheels;
 
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
+import ca.bradj.eurekacraft.vehicles.RefBoardStats;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.List;
 
 public class BoardWheels {
 
@@ -82,5 +85,22 @@ public class BoardWheels {
             return Color.WHITE;
         }
         return wheel.getColor();
+    }
+
+    public static Collection<net.minecraft.network.chat.Component> getTooltips(
+            WheelStats stats
+    ) {
+        List<Component> tooltip = new ArrayList<>();
+        tooltip.add(new TranslatableComponent("item.eurekacraft.wheels.subtitle").withStyle(ChatFormatting.GRAY));
+        tooltip.add(prefix("braking", stats.braking));
+        tooltip.add(prefix("acceleration", stats.acceleration));
+        return tooltip;
+    }
+
+    private static TranslatableComponent prefix(String name, double stat) {
+        return new TranslatableComponent(
+                "item.eurekacraft.wheel_stats." + name + "_prefix",
+                (int) (stat)
+        );
     }
 }
