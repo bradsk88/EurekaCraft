@@ -1,10 +1,14 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Collection;
 import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
@@ -22,6 +26,16 @@ public class EliteRefBoard extends RefBoardItem {
 
     public EliteRefBoard() {
         super(RefBoardStats.EliteBoard, ID);
+    }
+
+    @Override
+    protected Collection<Component> getSubtitles() {
+        Collection<Component> subtitles = super.getSubtitles();
+        subtitles.add(
+                new TranslatableComponent("item.eurekacraft.ref_boards.subtitle").
+                        withStyle(ChatFormatting.GRAY)
+        );
+        return subtitles;
     }
 
     public static ItemStack getWithRandomStats(Random rand) {

@@ -1,12 +1,12 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
-import ca.bradj.eurekacraft.client.ClientAccess;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -24,10 +24,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable, IBoardStatsGetterProvider {
 
@@ -91,18 +89,21 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         return 1;
     }
 
+    protected Collection<Component> getSubtitles() {
+        Collection<Component> tooltip = new ArrayList<>();
+        tooltip.add(new TranslatableComponent("item.eurekacraft.boards.subtitle").withStyle(ChatFormatting.GRAY));
+        return tooltip;
+    }
+
     @Override
     public void appendHoverText(
             ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn
     ) {
-        RefBoardStats stats = baseStats;
-        if (world != null) {
-            stats = getStatsForStack(stack, world.getRandom());
-        }
+        tooltip.addAll(getSubtitles());
 
-        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        CompoundTag nbt = stack.getOrCreateTag().getCompound(NBT_KEY_STATS);
+        Optional<RefBoardStats> stats = RefBoardStats.deserializeNBT(nbt);
+        tooltip.addAll(RefBoardStatsUtils.getTooltips(stats, baseStats));
 
         Optional<Wheel> wheel = BoardWheels.FromStack(stack);
         if (wheel.isEmpty()) {
