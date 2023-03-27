@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.world.loot;
 
+import ca.bradj.eurekacraft.interfaces.IInitializable;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -40,11 +41,18 @@ public class BlueprintsAdditionModifier extends LootModifier {
             return generatedLoot;
         }
 
-        generatedLoot.add(new ItemStack(addition, 1));
+        ItemStack stack = new ItemStack(addition, 1);
+        if (addition instanceof IInitializable) {
+            ((IInitializable) addition).initialize(stack, context.getRandom());
+        }
+        generatedLoot.add(stack);
         return generatedLoot;
     }
 
     private boolean shouldAdd(LootContext context) {
+        if (true) {
+            return true;
+        }
         Random random = context.getRandom();
         float rolled1 = random.nextFloat();
         float rolled2 = random.nextFloat();

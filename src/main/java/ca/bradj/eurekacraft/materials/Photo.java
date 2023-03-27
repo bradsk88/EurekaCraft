@@ -15,34 +15,46 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-public class Photo extends Item implements MenuProvider {
+public class Photo extends Item {
 
     public static final String ITEM_ID = "photo";
+
+    private static final String NBT_KEY_PHOTO_ID = "photo_id";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
+
+    private static int getPhotoId(ItemStack stack) {
+        return stack.getOrCreateTag().getInt(NBT_KEY_PHOTO_ID);
+    }
 
     public Photo() {
         super(PROPS);
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand p_41434_) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand p_41434_) {
         if (level.isClientSide()) {
             return InteractionResultHolder.consume(player.getItemInHand(p_41434_));
         }
-        NetworkHooks.openGui((ServerPlayer) player, this);
+        ItemStack stack = player.getItemInHand(p_41434_);
+        int photoId = getPhotoId(stack);
+
+        NetworkHooks.openGui((ServerPlayer) player, new MenuProvider() {
+            @Override
+            public @NotNull Component getDisplayName() {
+                return TextComponent.EMPTY;
+            }
+
+            @Override
+            public @NotNull AbstractContainerMenu createMenu(
+                    int windowId,
+                    @NotNull Inventory inv,
+                    @NotNull Player p
+            ) {
+                return new PhotoContainer(windowId, photoId);
+            }
+        }, data -> data.writeInt(photoId));
         return InteractionResultHolder.success(player.getItemInHand(p_41434_));
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return TextComponent.EMPTY;
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int windowId, Inventory p_39955_, Player p_39956_) {
-        return new PhotoContainer(windowId, p_39955_, null);
     }
 }

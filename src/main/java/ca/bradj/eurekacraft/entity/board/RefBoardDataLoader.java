@@ -49,34 +49,37 @@ public class RefBoardDataLoader {
 
     @SubscribeEvent
     public static void PlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getPlayer().level instanceof ServerLevel)) {
+        if (!(event.getPlayer().level instanceof ServerLevel world)) {
             return;
         }
-        ServerLevel world = (ServerLevel) event.getPlayer().level;
 
         EntityRefBoard board = new EntityRefBoard(event.getPlayer(), world);
         world.getDataStorage().get(
                 (CompoundTag t) ->  new EntityRefBoard.Data(event.getPlayer().getUUID(), board, t),
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
-        if (board.isAlive()) {
-            ItemStack mainHandItem = event.getPlayer().getMainHandItem();
-            RefBoardItem mainHandBoardItem = (RefBoardItem) mainHandItem.getItem();
+        if (!board.isAlive()) {
+            return;
+        }
+        ItemStack mainHandItem = event.getPlayer().getMainHandItem();
 
-            Optional<UUID> handBoardUUID = EntityRefBoard.getItemStackBoardUUID(mainHandItem);
-            if (handBoardUUID.isEmpty()) {
-                return;
-            }
-            Optional<UUID> entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
-            if (entityBoardUUID.isEmpty()) {
-                return;
-            }
-            if (handBoardUUID.get().equals(entityBoardUUID.get())) {
-                BoardType boardType = mainHandBoardItem.getBoardType();
-                EntityRefBoard.toggleFromInventory(
-                        event.getPlayer(), world, mainHandItem, boardType
-                );
-            }
+        if (!(mainHandItem.getItem() instanceof RefBoardItem mainHandBoardItem)) {
+            return;
+        }
+
+        Optional<UUID> handBoardUUID = EntityRefBoard.getItemStackBoardUUID(mainHandItem);
+        if (handBoardUUID.isEmpty()) {
+            return;
+        }
+        Optional<UUID> entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
+        if (entityBoardUUID.isEmpty()) {
+            return;
+        }
+        if (handBoardUUID.get().equals(entityBoardUUID.get())) {
+            BoardType boardType = mainHandBoardItem.getBoardType();
+            EntityRefBoard.toggleFromInventory(
+                    event.getPlayer(), world, mainHandItem, boardType
+            );
         }
     }
 

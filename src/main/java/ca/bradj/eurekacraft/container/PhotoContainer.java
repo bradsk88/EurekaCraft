@@ -8,12 +8,26 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 public class PhotoContainer extends AbstractContainerMenu {
 
-    public PhotoContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
+    private final int photoId;
+
+    public PhotoContainer(
+            int windowId,
+            int photoId
+    ) {
         super(ContainerTypesInit.PHOTO.get(), windowId);
+        this.photoId = photoId;
+    }
+
+    public PhotoContainer(int windowId, Inventory inv, FriendlyByteBuf data) {
+        this(windowId, data.readInt());
     }
 
     @Override
     public boolean stillValid(Player p_38874_) {
         return true;
+    }
+
+    public int GetPhotoId() {
+        return this.photoId;
     }
 }
