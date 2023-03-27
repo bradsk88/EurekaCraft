@@ -13,12 +13,21 @@ import ca.bradj.eurekacraft.materials.*;
 import ca.bradj.eurekacraft.materials.paint.PaintItem;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.wearables.ScubGoggles;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ItemsInit {
 	private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EurekaCraft.MODID);
@@ -48,14 +57,44 @@ public class ItemsInit {
 			() -> new BlockItem(
 					BlocksInit.RESIN.get(),
 					ResinBlock.ITEM_PROPS
-			)
+			) {
+				@Override
+				public void appendHoverText(
+						ItemStack p_40572_,
+						@Nullable Level p_40573_,
+						List<Component> p_40574_,
+						TooltipFlag p_40575_
+				) {
+					p_40574_.add(
+							new TranslatableComponent("item.eurekacraft.resins.subtitle").
+									withStyle(ChatFormatting.GRAY)
+					);
+				}
+			}
 	);
 	public static final RegistryObject<Item> RED_RESIN_BLOCK = ITEMS.register(
 			RedResinBlock.ITEM_ID,
 			() -> new BlockItem(
 					BlocksInit.RED_RESIN.get(),
 					RedResinBlock.ITEM_PROPS
-			)
+			) {
+				@Override
+				public void appendHoverText(
+						ItemStack p_40572_,
+						@Nullable Level p_40573_,
+						List<Component> p_40574_,
+						TooltipFlag p_40575_
+				) {
+					p_40574_.add(
+							new TranslatableComponent("item.eurekacraft.resins.subtitle").
+									withStyle(ChatFormatting.GRAY)
+					);
+					p_40574_.add(
+							new TranslatableComponent("item.eurekacraft.red_resins.subtitle").
+									withStyle(ChatFormatting.GRAY)
+					);
+				}
+			}
 	);
 	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
 			"trapar_wood", // TODO: Add const
