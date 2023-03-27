@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.container.PhotoContainer;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.interfaces.IInitializable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
-public class Photo extends Item {
+import java.util.Random;
+
+public class Photo extends Item implements IInitializable {
 
     public static final String ITEM_ID = "photo";
 
@@ -56,5 +59,13 @@ public class Photo extends Item {
             }
         }, data -> data.writeInt(photoId));
         return InteractionResultHolder.success(player.getItemInHand(p_41434_));
+    }
+
+    @Override
+    public void initialize(
+            ItemStack target,
+            Random random
+    ) {
+        target.getOrCreateTag().putInt(NBT_KEY_PHOTO_ID, random.nextInt(9) + 1);
     }
 }
