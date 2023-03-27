@@ -17,6 +17,6 @@ public class GlideBoard extends RefBoardItem {
             ItemStack stack,
             Random rand
     ) {
-        return baseStats;
+        return super.getStatsForStack(stack, rand).WithLift(0);
     }
 }

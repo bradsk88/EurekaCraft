@@ -113,7 +113,7 @@ public class RefBoardStats {
     }
 
     public static double offset(double val, double random) {
-        return val + 0.15 - (0.25 * random);
+        return Math.max(0, val + 0.15 - (0.25 * random));
     }
 
     public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, Random rand) {
