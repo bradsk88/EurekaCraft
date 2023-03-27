@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Random;
 
-public class BlueprintsAdditionModifier extends LootModifier {
+public class LootAdditionModifier extends LootModifier {
 
     private final Item addition;
     private final float chance;
@@ -26,7 +26,7 @@ public class BlueprintsAdditionModifier extends LootModifier {
      *
      * @param conditionsIn the ILootConditions that need to be matched before the loot is modified.
      */
-    protected BlueprintsAdditionModifier(
+    protected LootAdditionModifier(
             LootItemCondition[] conditionsIn, Item addition, float chance
     ) {
         super(conditionsIn);
@@ -50,9 +50,6 @@ public class BlueprintsAdditionModifier extends LootModifier {
     }
 
     private boolean shouldAdd(LootContext context) {
-        if (true) {
-            return true;
-        }
         Random random = context.getRandom();
         float rolled1 = random.nextFloat();
         float rolled2 = random.nextFloat();
@@ -67,22 +64,22 @@ public class BlueprintsAdditionModifier extends LootModifier {
         return passed1;
     }
 
-    public static class Serializer extends GlobalLootModifierSerializer<BlueprintsAdditionModifier> {
+    public static class Serializer extends GlobalLootModifierSerializer<LootAdditionModifier> {
 
         @Override
-        public BlueprintsAdditionModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] ailootcondition) {
+        public LootAdditionModifier read(ResourceLocation location, JsonObject object, LootItemCondition[] ailootcondition) {
             Item addition = ForgeRegistries.ITEMS.getValue(
                     new ResourceLocation(GsonHelper.getAsString(object, "addition"))
             );
             float chance = GsonHelper.getAsFloat(object, "chance");
 
-            return new BlueprintsAdditionModifier(
+            return new LootAdditionModifier(
                     ailootcondition, addition, chance
             );
         }
 
         @Override
-        public JsonObject write(BlueprintsAdditionModifier instance) {
+        public JsonObject write(LootAdditionModifier instance) {
             JsonObject json = makeConditions(instance.conditions);
             json.addProperty("addition", ForgeRegistries.ITEMS.getKey(instance.addition).toString());
             json.addProperty("chance", instance.chance);

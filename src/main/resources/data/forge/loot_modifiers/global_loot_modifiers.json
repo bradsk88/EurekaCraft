@@ -8,6 +8,14 @@
     "eurekacraft:blueprint_from_village_weaponsmith_chest",
     "eurekacraft:blueprint_from_village_savanna_chest",
     "eurekacraft:blueprint_from_village_snowy_chest",
-    "eurekacraft:blueprint_from_village_taiga_chest"
+    "eurekacraft:blueprint_from_village_taiga_chest",
+    "eurekacraft:photo_from_village_plains_chest",
+    "eurekacraft:photo_from_village_cartographer",
+    "eurekacraft:photo_from_village_desert_chest",
+    "eurekacraft:photo_from_village_toolsmith_chest",
+    "eurekacraft:photo_from_village_weaponsmith_chest",
+    "eurekacraft:photo_from_village_savanna_chest",
+    "eurekacraft:photo_from_village_snowy_chest",
+    "eurekacraft:photo_from_village_taiga_chest"
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/village/village_desert_house"
+    }
+  ],
+  "addition": "eurekacraft:photo",
+  "chance": 0.4,
+  "type": "eurekacraft:photo_from_village_desert_chest"
+}

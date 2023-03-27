@@ -1,0 +1,11 @@
+{
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/village/village_plains_house"
+    }
+  ],
+  "addition": "eurekacraft:photo",
+  "chance": 0.40,
+  "type": "eurekacraft:photo_from_village_plains_chest"
+}
