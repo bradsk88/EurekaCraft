@@ -40,4 +40,8 @@ public class WheelStats {
         EurekaCraftItem wheelItem = wheel.get();
         return STATS.get(wheelItem.getItemId());
     }
+
+    public static WheelStats GetStatsForItem(Wheel item) {
+        return STATS.get(item.getItemId());
+    }
 }
