@@ -718,12 +718,7 @@ public class EntityRefBoard extends Entity {
             board.initialSpeed = nbt.getFloat("initial_speed");
             board.damaged = nbt.getBoolean("damaged");
             board.canFly = nbt.getBoolean("can_fly");
-
-            if (board.boardStats == null) {
-                board.boardStats = RefBoardStats.StandardBoard;
-            }
-
-            board.boardStats = RefBoardStats.deserializeNBT(nbt.getCompound("stats"));
+            board.boardStats = RefBoardStats.deserializeNBT(nbt.getCompound("stats")).orElse(RefBoardStats.StandardBoard);
             board.lastYRot = nbt.getFloat("last_yrot");
             board.lastDirection = deserializePos(nbt.getCompound("last_dir"));
             board.lastLift = nbt.getDouble("last_lift");

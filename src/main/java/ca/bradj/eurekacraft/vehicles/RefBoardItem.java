@@ -184,11 +184,12 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     public RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
+            // TODO: Do we really need to do this?
             storeStatsOnStack(stack, s);
             return s;
         }
         CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
-        return RefBoardStats.deserializeNBT(nbt);
+        return RefBoardStats.deserializeNBT(nbt).orElse(RefBoardStats.StandardBoard);
     }
 
     @Override
@@ -315,7 +316,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
                 return baseStats;
             }
             CompoundTag nbt = stack.getTag().getCompound(NBT_KEY_STATS);
-            return RefBoardStats.deserializeNBT(nbt);
+            return RefBoardStats.deserializeNBT(nbt).orElse(RefBoardStats.StandardBoard);
         }
     }
 }
