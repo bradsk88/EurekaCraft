@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -93,15 +94,45 @@ public class RefBoardStats {
         this.surf = surf;
     }
 
+    public static RefBoardStats FromReferenceWithWorstOffsets(RefBoardStats creationReference) {
+        return WithBoundedStats(
+                creationReference.copy()
+                        .WithAgility(offset(creationReference.agility(), 1.0)).
+                        WithSpeed(offset(creationReference.speed(), 1.0)).
+                        WithLift(offset(creationReference.lift(), 1.0))
+        );
+    }
+
+    public static RefBoardStats FromReferenceWithBestOffsets(RefBoardStats creationReference) {
+        return WithBoundedStats(
+                creationReference.copy()
+                        .WithAgility(offset(creationReference.agility(), 0.0)).
+                        WithSpeed(offset(creationReference.speed(), 0.0)).
+                        WithLift(offset(creationReference.lift(), 0.0))
+        );
+    }
+
+    public static double offset(double val, double random) {
+        return val + 0.15 - (0.25 * random);
+    }
+
     public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, Random rand) {
         double weight = creationReference.weight();
         double speed = creationReference.speed() + 0.15 - (0.25 * rand.nextDouble());
         double agility = creationReference.agility() + 0.15 - (0.25 * rand.nextDouble());
         double lift = creationReference.lift() + 0.15 - (0.25 * rand.nextDouble());
-        speed = Math.min(MAX_SPEED, speed);
-        agility = Math.min(MAX_AGILITY, agility);
-        lift = Math.min(MAX_LIFT, lift);
-        return new RefBoardStats(creationReference.id, weight, speed, agility, lift, creationReference.landResistance, creationReference.surf);
+        return WithBoundedStats(new RefBoardStats(
+                creationReference.id,
+                weight, speed, agility, lift,
+                creationReference.landResistance, creationReference.surf
+        ));
+    }
+
+    private static RefBoardStats WithBoundedStats(RefBoardStats stats) {
+        return stats.copy()
+                .WithSpeed(Math.min(MAX_SPEED, stats.speed()))
+                .WithAgility(Math.min(MAX_AGILITY, stats.agility()))
+                .WithLift(Math.min(MAX_LIFT, stats.lift()));
     }
 
     public static RefBoardStats Average(String id, Collection<RefBoardStats> inputStats) {
@@ -211,29 +242,37 @@ public class RefBoardStats {
         return nbt;
     }
 
-    public static RefBoardStats deserializeNBT(CompoundTag nbt) {
-        RefBoardStats out = StandardBoard.copy();
+    public static Optional<RefBoardStats> deserializeNBT(CompoundTag nbt) {
+        RefBoardStats base = StandardBoard.copy();
+        boolean foundStats = false;
         if (nbt.contains(NBT_KEY_STATS_WEIGHT)) {
             if (nbt.getDouble(NBT_KEY_STATS_WEIGHT) != 0) {
-                out.boardWeight = nbt.getDouble(NBT_KEY_STATS_WEIGHT);
+                base.boardWeight = nbt.getDouble(NBT_KEY_STATS_WEIGHT);
+                foundStats = true;
             }
         }
         if (nbt.contains(NBT_KEY_STATS_SPEED)) {
             if (nbt.getDouble(NBT_KEY_STATS_SPEED) != 0) {
-                out.boardSpeed = nbt.getDouble(NBT_KEY_STATS_SPEED);
+                base.boardSpeed = nbt.getDouble(NBT_KEY_STATS_SPEED);
+                foundStats = true;
             }
         }
         if (nbt.contains(NBT_KEY_STATS_AGILITY)) {
             if (nbt.getDouble(NBT_KEY_STATS_AGILITY) != 0) {
-                out.turnSpeed = nbt.getDouble(NBT_KEY_STATS_AGILITY);
+                base.turnSpeed = nbt.getDouble(NBT_KEY_STATS_AGILITY);
+                foundStats = true;
             }
         }
         if (nbt.contains(NBT_KEY_STATS_LIFT)) {
             if (nbt.getDouble(NBT_KEY_STATS_LIFT) != 0) {
-                out.liftFactor = nbt.getDouble(NBT_KEY_STATS_LIFT);
+                base.liftFactor = nbt.getDouble(NBT_KEY_STATS_LIFT);
+                foundStats = true;
             }
         }
-        return out;
+        if (!foundStats) {
+            return Optional.empty();
+        }
+        return Optional.of(base);
     }
 
     public RefBoardStats WithWeight(double newWeight) {

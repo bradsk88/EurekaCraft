@@ -7,7 +7,6 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -15,10 +14,7 @@ import net.minecraft.world.level.Level;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
@@ -58,21 +54,18 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
 
     @Override
     public RefBoardStats getBoardStats(ItemStack stack) {
-        return RefBoardStats.deserializeNBT(stack.getOrCreateTag().getCompound(NBT_KEY_BOARD_STATS));
+        return getStats(stack).orElse(RefBoardStats.BadBoard);
+    }
+
+    private Optional<RefBoardStats> getStats(ItemStack stack) {
+        return RefBoardStats.deserializeNBT(
+                stack.getOrCreateTag().getCompound(NBT_KEY_BOARD_STATS)
+        );
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
-        // FIXME: This is causing stats to get overridden every time we add and remove them from an inventory
-//        if (!stack.getOrCreateTag().contains(NBT_KEY_BOARD_STATS)) {
-//            if (world != null) {
-//                FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(stack, RefBoardStats.BadBoard, world.getRandom());
-//            }
-//        }
-        RefBoardStats stats = getBoardStats(stack);
-        tooltip.add(new TextComponent("Speed: " + (int) (stats.speed() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Agility: " + (int) (stats.agility() * 100))); // TODO: Translate
-        tooltip.add(new TextComponent("Lift: " + (int) (stats.lift() * 100))); // TODO: Translate
+        tooltip.addAll(Blueprints.getTooltips(getStats(stack), RefBoardStats.BadBoard));
     }
 
     @Override
@@ -135,7 +128,9 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
                 itemStack.setTag(new CompoundTag());
             }
             if (itemStack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-                return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS));
+                return RefBoardStats.deserializeNBT(
+                        itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS)
+                ).orElse(RefBoardStats.BadBoard);
             }
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(creationReference, rand);
             itemStack.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(s));
