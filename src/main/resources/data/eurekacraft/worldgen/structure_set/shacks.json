@@ -7,6 +7,10 @@
     {
       "structure": "eurekacraft:tall_shack",
       "weight": 1
+    },
+    {
+      "structure": "eurekacraft:hint_shack_bearing_mold",
+      "weight": 1
     }
   ],
   "placement": {

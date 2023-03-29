@@ -6,46 +6,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "eurekacraft:scub_glass_lens",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:scub_goggles",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:blueprint",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.5
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:bucket",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.5
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "eurekacraft:broken_ref_board",
           "conditions": [
             {
@@ -71,75 +31,6 @@
                 "max": 2.0,
                 "type": "minecraft:uniform"
               }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:fresh_seeds",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.125
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:flint_sanding_disc",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.125
-            }
-          ],
-          "functions": [
-            {
-              "function": "set_damage",
-              "damage": {
-                "min": 0.0,
-                "max": 0.9
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:precision_wood",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.25
-            }
-          ],
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0.0,
-                "max": 2.0,
-                "type": "minecraft:uniform"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:glide_board",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:ref_board_core",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.06
             }
           ]
         },
@@ -196,78 +87,6 @@
                 "max": 9.0,
                 "type": "minecraft:uniform"
               }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:oak_slab",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0.0,
-                "max": 5.0,
-                "type": "minecraft:uniform"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "minecraft:dyes",
-          "expand": true,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 0.0,
-                "max": 3.0,
-                "type": "minecraft:uniform"
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "eurekacraft:socket_wrench",
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ]
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "eurekacraft:basic_wheels",
-          "expand": true,
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.05
-            }
-          ]
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "eurekacraft:tier2_wheels",
-          "expand": true,
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.01
-            }
-          ]
-        },
-        {
-          "type": "minecraft:tag",
-          "name": "eurekacraft:paint_buckets",
-          "expand": true,
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.01
             }
           ]
         }

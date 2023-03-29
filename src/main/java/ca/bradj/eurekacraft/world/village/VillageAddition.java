@@ -77,6 +77,11 @@ public class VillageAddition {
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
                 "eurekacraft:plains_ref_dealer_1", 20);
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/plains/houses"),
+                "eurekacraft:hint_shack_bearing_mold", 20);
+        // TODO: Repeat for all hint shacks
+        // TODO: Ground around shack is missing
 
         // TODO: Build dealer in every biome
         //addBuildingToPool(templatePoolRegistry, processorListRegistry,

@@ -96,5 +96,7 @@
 	"key.eurekacraft.flight": "EurekaCraft - Flight",
 	"key.eurekacraft.flight.brake": "Brake",
 	"key.eurekacraft.flight.accelerate": "Accelerate",
-	"entity.minecraft.villager.eurekacraft.ref_dealer": "Ref Dealer"
+	"entity.minecraft.villager.eurekacraft.ref_dealer": "Ref Dealer",
+	"guide.eurekacraft.glide_board.intro": "Priceless to those who pursue great heights. A glide board is the perfect tool for landing with grace.",
+	"guide.eurekacraft.glide_board.intro_2": "While not very fast, the glide board is easy enough to craft with a few simple tools."
 }
