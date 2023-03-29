@@ -67,8 +67,11 @@ public class RefBoardDataLoader {
             if (handBoardUUID.isEmpty()) {
                 return;
             }
-            UUID entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
-            if (handBoardUUID.get().equals(entityBoardUUID)) {
+            Optional<UUID> entityBoardUUID = EntityRefBoard.getEntityBoardUUID(board);
+            if (entityBoardUUID.isEmpty()) {
+                return;
+            }
+            if (handBoardUUID.get().equals(entityBoardUUID.get())) {
                 BoardType boardType = mainHandBoardItem.getBoardType();
                 EntityRefBoard.toggleFromInventory(
                         event.getPlayer(), world, mainHandItem, boardType

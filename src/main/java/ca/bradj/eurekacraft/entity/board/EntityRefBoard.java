@@ -230,8 +230,13 @@ public class EntityRefBoard extends Entity {
         boardItem.getOrCreateTag().putUUID(NBT_KEY_BOARD_UUID, uuid);
     }
 
-    public static UUID getEntityBoardUUID(EntityRefBoard b) {
-        return b.boardItemStack.getOrCreateTag().getUUID(NBT_KEY_BOARD_UUID);
+    public static Optional<UUID> getEntityBoardUUID(EntityRefBoard b) {
+
+        CompoundTag tag = b.boardItemStack.getOrCreateTag();
+        if (tag.hasUUID(NBT_KEY_BOARD_UUID)) {
+            return Optional.of(tag.getUUID(NBT_KEY_BOARD_UUID));
+        }
+        return Optional.empty();
     }
 
     public static Optional<UUID> getItemStackBoardUUID(ItemStack mainHandItem) {
