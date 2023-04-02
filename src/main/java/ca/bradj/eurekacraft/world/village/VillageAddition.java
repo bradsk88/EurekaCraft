@@ -73,18 +73,12 @@ public class VillageAddition {
         Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registry.TEMPLATE_POOL_REGISTRY).orElseThrow();
         Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registry.PROCESSOR_LIST_REGISTRY).orElseThrow();
 
-        // Adds our piece to all village houses pool
-        // Note, the resourcelocation is getting the pool files from the data folder. Not assets folder.
+        // Ref Dealers
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
                 "eurekacraft:plains_ref_dealer_1", EurekaConfig.ref_dealer_village_rate.get()
         );
-        addBuildingToPool(templatePoolRegistry, processorListRegistry,
-                new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:hint_shack_crafting_table", EurekaConfig.hint_shack_village_rate.get());
 
-        // TODO: Build dealer in every biome
-        // TODO: Build hints in every biome
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/snowy/houses"),
                 "eurekacraft:ref_dealer_snowy", EurekaConfig.ref_dealer_village_rate.get()
@@ -94,13 +88,21 @@ public class VillageAddition {
                 new ResourceLocation("minecraft:village/savanna/houses"),
                 "eurekacraft:ref_dealer_savanna", EurekaConfig.ref_dealer_village_rate.get()
         );
-        //addBuildingToPool(templatePoolRegistry, processorListRegistry,
-        //        new ResourceLocation("minecraft:village/taiga/houses"),
-        //        "modid:structure_nbt_resourcelocation", 5);
-        //
+
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/taiga/houses"),
+                "eurekacraft:ref_dealer_taiga", EurekaConfig.ref_dealer_village_rate.get()
+        );
+
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/desert/houses"),
                 "eurekacraft:ref_dealer_desert", EurekaConfig.ref_dealer_village_rate.get()
         );
+
+        // Hint Shacks (Crafting Table)
+        // TODO: Build hints in every biome
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/plains/houses"),
+                "eurekacraft:hint_shack_crafting_table", EurekaConfig.hint_shack_village_rate.get());
     }
 }
