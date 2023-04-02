@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.world.village;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -76,22 +77,22 @@ public class VillageAddition {
         // Note, the resourcelocation is getting the pool files from the data folder. Not assets folder.
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:plains_ref_dealer_1", 20);
+                "eurekacraft:plains_ref_dealer_1", EurekaConfig.ref_dealer_village_rate.get()
+        );
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:hint_shack_crafting_table", 20); // TODO: Make rarer
-        // TODO: Repeat for all hint shacks
-        // TODO: Ground around shack is missing
+                "eurekacraft:hint_shack_crafting_table", EurekaConfig.hint_shack_village_rate.get());
 
         // TODO: Build dealer in every biome
+        // TODO: Build hints in every biome
         //addBuildingToPool(templatePoolRegistry, processorListRegistry,
         //        new ResourceLocation("minecraft:village/snowy/houses"),
         //        "modid:structure_nbt_resourcelocation", 5);
         //
-        //addBuildingToPool(templatePoolRegistry, processorListRegistry,
-        //        new ResourceLocation("minecraft:village/savanna/houses"),
-        //        "modid:structure_nbt_resourcelocation", 5);
-        //
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/savanna/houses"),
+                "eurekacraft:ref_dealer_savanna", EurekaConfig.ref_dealer_village_rate.get()
+        );
         //addBuildingToPool(templatePoolRegistry, processorListRegistry,
         //        new ResourceLocation("minecraft:village/taiga/houses"),
         //        "modid:structure_nbt_resourcelocation", 5);

@@ -1,7 +1,7 @@
 {
   "type": "minecraft:village",
   "config": {
-    "start_pool": "eurekacraft:hint_shack_crafting_table/start_pool",
+    "start_pool": "eurekacraft:hint_shack_crafting_table_world/start_pool",
     "size": 1
   },
   "biomes": "#eurekacraft:has_structure/shack_biomes",
