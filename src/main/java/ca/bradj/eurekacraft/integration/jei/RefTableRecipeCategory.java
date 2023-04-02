@@ -7,25 +7,36 @@ import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.drawable.IDrawable;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ca.bradj.eurekacraft.core.init.TagsInit.Items.ITEMS_THAT_BURN;
 
 public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
-    public final static ResourceLocation TEXTURE = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
+    public final static ResourceLocation TEXTURE = new ResourceLocation(
+            EurekaCraft.MODID,
+            "textures/screens/ref_table_screen.png"
+    );
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -33,7 +44,8 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
     public RefTableRecipeCategory(
             IGuiHelper helper
     ) {
-        this.background = helper.createDrawable(TEXTURE, 0, 0, 176, SandingMachineContainer.titleBarHeight + (4 * SandingMachineContainer.boxHeight));
+        int bgPos = SandingMachineContainer.titleBarHeight + (4 * SandingMachineContainer.boxHeight);
+        this.background = helper.createDrawable(TEXTURE, 0, 0, 176, bgPos);
         this.icon = helper.createDrawableIngredient(new ItemStack(ItemsInit.REF_TABLE_BLOCK.get()));
     }
 
@@ -63,7 +75,10 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
     }
 
     @Override
-    public void setIngredients(RefTableRecipe recipe, IIngredients ingredients) {
+    public void setIngredients(
+            RefTableRecipe recipe,
+            IIngredients ingredients
+    ) {
         NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
         for (int j = 0; j < 8; j++) {
             if (j < recipe.getIngredients().size()) {
@@ -97,7 +112,11 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, RefTableRecipe recipe, IIngredients ingredients) {
+    public void setRecipe(
+            IRecipeLayout recipeLayout,
+            RefTableRecipe recipe,
+            IIngredients ingredients
+    ) {
         int leftEdge = RefTableContainer.inventoryLeftX;
         int topEdge = RefTableContainer.topOfInputs;
         int boxSize = RefTableContainer.boxWidth;
@@ -115,7 +134,71 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
         recipeLayout.getItemStacks().set(ingredients);
     }
 
-    private void init(IRecipeLayout recipeLayout, int idx, boolean isInput, int leftEdge, int topEdge) {
+    private void init(
+            IRecipeLayout recipeLayout,
+            int idx,
+            boolean isInput,
+            int leftEdge,
+            int topEdge
+    ) {
         recipeLayout.getItemStacks().init(idx, isInput, leftEdge - 1, topEdge - 1);
+    }
+
+    @Override
+    public void draw(
+            RefTableRecipe recipe,
+            IRecipeSlotsView recipeSlotsView,
+            PoseStack stack,
+            double mouseX,
+            double mouseY
+    ) {
+        IRecipeCategory.super.draw(recipe, recipeSlotsView, stack, mouseX, mouseY);
+        Font font = Minecraft.getInstance().font;
+        double chance = recipe.getSecondaryResultItem().chance;
+        EurekaCraft.LOGGER.trace(String.format("Recipe secondary chance %f", chance));
+        if (chance >= 1 || chance <= 0) {
+            return;
+        }
+
+        font.drawShadow(
+                stack,
+                String.format("%d%%", (int) (chance * 100)),
+                RefTableContainer.leftOfSecondary,
+                RefTableContainer.topOfSecondary + RefTableContainer.boxHeight,
+                0xFFFFFFFF
+        );
+    }
+
+    @Override
+    public List<Component> getTooltipStrings(
+            RefTableRecipe recipe,
+            IRecipeSlotsView recipeSlotsView,
+            double mouseX,
+            double mouseY
+    ) {
+        if (mouseX < RefTableContainer.leftOfSecondary) {
+            return ImmutableList.of();
+        }
+        if (mouseX >= RefTableContainer.leftOfSecondary + RefTableContainer.boxWidth) {
+            return ImmutableList.of();
+        }
+        if (mouseY < RefTableContainer.topOfSecondary + RefTableContainer.boxHeight) {
+            return ImmutableList.of();
+        }
+        if (mouseY >= RefTableContainer.topOfSecondary + RefTableContainer.boxHeight + RefTableContainer.boxHeight) {
+            return ImmutableList.of();
+        }
+        double chance = recipe.getSecondaryResultItem().chance;
+        if (chance == 1 || chance <= 0) {
+            return ImmutableList.of();
+        }
+        List<Component> strs = new ArrayList<>(IRecipeCategory.super.getTooltipStrings(
+                recipe,
+                recipeSlotsView,
+                mouseX,
+                mouseY
+        ));
+        strs.add(new TranslatableComponent("items.chance", (int) (chance * 100)));
+        return strs;
     }
 }

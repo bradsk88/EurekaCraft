@@ -1,5 +1,6 @@
 {
 	"itemGroup.eurekaCraftTab": "EurekaCraft",
+	"items.chance": "This recipe has a %d%% chance of producing an extra output",
 	"item.eurekacraft.ref_board_stats.speed_prefix": "Speed: %d",
 	"item.eurekacraft.ref_board_stats.speed_range": "Speed: %d to %d",
 	"item.eurekacraft.ref_board_stats.agility_prefix": "Agility: %d",

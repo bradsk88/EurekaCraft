@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "P"
+  ],
+  "key": {
+    "P": {
+      "item": "eurekacraft:photo"
+    }
+  },
+  "result": {
+    "item": "minecraft:paper"
+  }
+}
