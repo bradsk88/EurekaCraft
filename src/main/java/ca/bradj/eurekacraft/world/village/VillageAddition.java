@@ -97,8 +97,9 @@ public class VillageAddition {
         //        new ResourceLocation("minecraft:village/taiga/houses"),
         //        "modid:structure_nbt_resourcelocation", 5);
         //
-        //addBuildingToPool(templatePoolRegistry, processorListRegistry,
-        //        new ResourceLocation("minecraft:village/desert/houses"),
-        //        "modid:structure_nbt_resourcelocation", 5);
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/desert/houses"),
+                "eurekacraft:ref_dealer_desert", EurekaConfig.ref_dealer_village_rate.get()
+        );
     }
 }
