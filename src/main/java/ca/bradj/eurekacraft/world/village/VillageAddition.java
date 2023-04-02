@@ -26,19 +26,22 @@ public class VillageAddition {
     /**
      * Adds the building to the targeted pool.
      * We will call this in addNewVillageBuilding method further down to add to every village.
-     *
+     * <p>
      * Note: This is an additive operation which means multiple mods can do this and they stack with each other safely.
      */
-    private static void addBuildingToPool(Registry<StructureTemplatePool> templatePoolRegistry,
-                                          Registry<StructureProcessorList> processorListRegistry,
-                                          ResourceLocation poolRL,
-                                          String nbtPieceRL,
-                                          int weight) {
+    private static void addBuildingToPool(
+            Registry<StructureTemplatePool> templatePoolRegistry,
+            Registry<StructureProcessorList> processorListRegistry,
+            ResourceLocation poolRL,
+            String nbtPieceRL,
+            int weight
+    ) {
 
         // Grabs the processor list we want to use along with our piece.
         // This is a requirement as using the ProcessorLists.EMPTY field will cause the game to throw errors.
         // The reason why is the empty processor list in the world's registry is not the same instance as in that field once the world is started up.
-        Holder<StructureProcessorList> emptyProcessorList = processorListRegistry.getHolderOrThrow(EMPTY_PROCESSOR_LIST_KEY);
+        Holder<StructureProcessorList> emptyProcessorList = processorListRegistry.getHolderOrThrow(
+                EMPTY_PROCESSOR_LIST_KEY);
 
         // Grab the pool we want to add to
         StructureTemplatePool pool = templatePoolRegistry.get(poolRL);
@@ -46,8 +49,10 @@ public class VillageAddition {
 
         // Grabs the nbt piece and creates a SinglePoolElement of it that we can add to a structure's pool.
         // Use .legacy( for villages/outposts and .single( for everything else
-        SinglePoolElement piece = SinglePoolElement.legacy(nbtPieceRL,
-                emptyProcessorList).apply(StructureTemplatePool.Projection.RIGID);
+        SinglePoolElement piece = SinglePoolElement.legacy(
+                nbtPieceRL,
+                emptyProcessorList
+        ).apply(StructureTemplatePool.Projection.RIGID);
 
         // Use AccessTransformer or Accessor Mixin to make StructureTemplatePool's templates field public for us to see.
         // Weight is handled by how many times the entry appears in this list.
@@ -70,30 +75,32 @@ public class VillageAddition {
      */
     @SubscribeEvent
     public static void addNewVillageBuilding(final ServerAboutToStartEvent event) {
-        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registry.TEMPLATE_POOL_REGISTRY).orElseThrow();
-        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registry.PROCESSOR_LIST_REGISTRY).orElseThrow();
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer()
+                .registryAccess()
+                .registry(Registry.TEMPLATE_POOL_REGISTRY)
+                .orElseThrow();
+        Registry<StructureProcessorList> processorListRegistry = event.getServer()
+                .registryAccess()
+                .registry(Registry.PROCESSOR_LIST_REGISTRY)
+                .orElseThrow();
 
         // Ref Dealers
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
                 "eurekacraft:plains_ref_dealer_1", EurekaConfig.ref_dealer_village_rate.get()
         );
-
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/snowy/houses"),
                 "eurekacraft:ref_dealer_snowy", EurekaConfig.ref_dealer_village_rate.get()
         );
-
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/savanna/houses"),
                 "eurekacraft:ref_dealer_savanna", EurekaConfig.ref_dealer_village_rate.get()
         );
-
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/taiga/houses"),
                 "eurekacraft:ref_dealer_taiga", EurekaConfig.ref_dealer_village_rate.get()
         );
-
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/desert/houses"),
                 "eurekacraft:ref_dealer_desert", EurekaConfig.ref_dealer_village_rate.get()
@@ -103,6 +110,15 @@ public class VillageAddition {
         // TODO: Build hints in every biome
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:hint_shack_crafting_table", EurekaConfig.hint_shack_village_rate.get());
+                "eurekacraft:hint_shack_crafting_table", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/taiga/houses"),
+                "eurekacraft:hint_shack_crafting_table_taiga", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/desert/houses"),
+                "eurekacraft:hint_shack_crafting_table_desert", EurekaConfig.hint_shack_village_rate.get()
+        );
     }
 }
