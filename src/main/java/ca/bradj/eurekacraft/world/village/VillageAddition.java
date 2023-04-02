@@ -79,7 +79,7 @@ public class VillageAddition {
                 "eurekacraft:plains_ref_dealer_1", 20);
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:hint_shack_bearing_mold", 20);
+                "eurekacraft:hint_shack_crafting_table", 20); // TODO: Make rarer
         // TODO: Repeat for all hint shacks
         // TODO: Ground around shack is missing
 

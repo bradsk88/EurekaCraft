@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft;
 
+import ca.bradj.eurekacraft.blocks.PosterSpawnBlock;
 import ca.bradj.eurekacraft.client.BoardItemRendering;
 import ca.bradj.eurekacraft.client.KeyInit;
 import ca.bradj.eurekacraft.client.TraparStormRendering;
@@ -46,6 +47,7 @@ public class EurekaCraft {
         TilesInit.TILES.register(bus);
         BlocksInit.BLOCKS.register(bus);
         ItemsInit.register(bus);
+        PosterSpawnBlock.initRecipes();
         AdvancementsInit.registerIconItems(bus);
         EntitiesInit.ENTITIES.register(bus);
         VillagersInit.register(bus);

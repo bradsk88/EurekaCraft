@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.PosterSpawnBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.blocks.machines.SandingMachineTileEntity;
@@ -29,6 +30,12 @@ public class TilesInit {
     public static final RegistryObject<BlockEntityType<SandingMachineTileEntity>> SANDING_MACHINE = TILES.register(
             SandingMachineTileEntity.ENTITY_ID, () -> BlockEntityType.Builder.of(
                     SandingMachineTileEntity::new, BlocksInit.SANDING_MACHINE.get()
+            ).build(null)
+    );
+
+    public static final RegistryObject<BlockEntityType<PosterSpawnBlock.Entity>> POSTER_BLOCK = TILES.register(
+            PosterSpawnBlock.Entity.ID, () -> BlockEntityType.Builder.of(
+                    PosterSpawnBlock.Entity::new, BlocksInit.POSTER_SPAWN_BLOCK.get()
             ).build(null)
     );
 

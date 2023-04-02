@@ -1,11 +1,11 @@
 {
-  "name": "eurekacraft:hint_shack_bearing_mold/start_pool",
+  "name": "eurekacraft:hint_shack_crafting_table/start_pool",
   "fallback": "minecraft:empty",
   "elements": [
     {
       "weight": 1,
       "element": {
-        "location": "eurekacraft:hint_shack_bearing_mold",
+        "location": "eurekacraft:hint_shack_crafting_table",
         "processors": "minecraft:empty",
         "projection": "rigid",
         "element_type": "minecraft:single_pool_element"

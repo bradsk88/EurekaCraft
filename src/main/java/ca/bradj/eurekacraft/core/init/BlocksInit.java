@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.init;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.blocks.PosterSpawnBlock;
 import ca.bradj.eurekacraft.blocks.RedResinBlock;
 import ca.bradj.eurekacraft.blocks.ResinBlock;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
@@ -77,6 +78,9 @@ public class BlocksInit {
 	);
 	public static final RegistryObject<Block> SANDING_MACHINE = BLOCKS.register(
 			SandingMachineBlock.ITEM_ID, SandingMachineBlock::new
+	);
+	public static final RegistryObject<Block> POSTER_SPAWN_BLOCK = BLOCKS.register(
+			PosterSpawnBlock.ITEM_ID, PosterSpawnBlock::new
 	);
 
 	public static void RegisterTextures() {

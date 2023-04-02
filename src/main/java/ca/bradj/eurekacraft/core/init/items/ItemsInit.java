@@ -96,6 +96,13 @@ public class ItemsInit {
 				}
 			}
 	);
+	public static final RegistryObject<Item> POSTER_SPAWN_BLACK = ITEMS.register(
+			"poster_spawn_block",
+			() -> new BlockItem(
+					BlocksInit.POSTER_SPAWN_BLOCK.get(),
+					new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP)
+			)
+	);
 	public static final RegistryObject<Item> TRAPAR_WOOD_BLOCK = ITEMS.register(
 			"trapar_wood", // TODO: Add const
 			() -> new BlockItem(
