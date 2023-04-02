@@ -85,10 +85,11 @@ public class VillageAddition {
 
         // TODO: Build dealer in every biome
         // TODO: Build hints in every biome
-        //addBuildingToPool(templatePoolRegistry, processorListRegistry,
-        //        new ResourceLocation("minecraft:village/snowy/houses"),
-        //        "modid:structure_nbt_resourcelocation", 5);
-        //
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/snowy/houses"),
+                "eurekacraft:ref_dealer_snowy", EurekaConfig.ref_dealer_village_rate.get()
+        );
+
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/savanna/houses"),
                 "eurekacraft:ref_dealer_savanna", EurekaConfig.ref_dealer_village_rate.get()
