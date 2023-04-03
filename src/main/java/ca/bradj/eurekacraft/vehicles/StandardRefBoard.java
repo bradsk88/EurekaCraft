@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.Collection;
 import java.util.Random;
 
-import static ca.bradj.eurekacraft.materials.BlueprintItem.NBT_KEY_BOARD_STATS;
+import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 

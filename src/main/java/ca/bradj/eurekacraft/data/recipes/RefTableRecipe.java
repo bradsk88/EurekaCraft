@@ -332,13 +332,19 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
     public static class ExtraInput {
 
-        public static final ExtraInput EMPTY = new ExtraInput(Ingredient.EMPTY, false);
+        public static final ExtraInput EMPTY = new ExtraInput(Ingredient.EMPTY, false, true);
         public final Ingredient ingredient;
         public final boolean consumeOnUse;
+        public final boolean isEmpty;
 
         public ExtraInput(Ingredient ingredient, boolean consumeOnUse) {
+            this(ingredient, consumeOnUse, false);
+        }
+
+        public ExtraInput(Ingredient ingredient, boolean consumeOnUse, boolean isEmpty) {
             this.ingredient = ingredient;
             this.consumeOnUse = consumeOnUse;
+            this.isEmpty = isEmpty;
         }
     }
 }

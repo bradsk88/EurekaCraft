@@ -16,6 +16,7 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
@@ -26,8 +27,8 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
         return true;
     }
 
-    public static final String NBT_KEY_BOARD_STATS = "board_stats";
-    private static final IBoardStatsFactory FACTORY_INSTANCE = new BoardStatsFactory();
+    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.
+            WithFallback(RefBoardStats.StandardBoard);
 
     public static final String ITEM_ID = "blueprint";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
@@ -119,24 +120,5 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
             );
         }
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
-    }
-
-    public static class BoardStatsFactory implements IBoardStatsFactory {
-        @Override
-        public RefBoardStats getBoardStatsFromNBTOrCreate(
-                ItemStack itemStack, RefBoardStats creationReference, Random rand
-        ) {
-            if (itemStack.getTag() == null) {
-                itemStack.setTag(new CompoundTag());
-            }
-            if (itemStack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-                return RefBoardStats.deserializeNBT(
-                        itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS)
-                ).orElse(RefBoardStats.StandardBoard);
-            }
-            RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(creationReference, rand);
-            itemStack.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(s));
-            return s;
-        }
     }
 }

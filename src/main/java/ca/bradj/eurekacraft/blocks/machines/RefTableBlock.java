@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.wrappers.EntityBlock;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,6 +39,9 @@ import java.util.List;
 public class RefTableBlock extends EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ANCIENT = BooleanProperty.create("ancient");
+    public static final IntegerProperty SPAWNED_WITH_RECIPE = IntegerProperty.create(
+            RefTableConsts.NBT_SPAWNED_WITH_RECIPE, 0, RefTableConsts.spawnRecipes.size()
+    );
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -59,17 +64,23 @@ public class RefTableBlock extends EntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         ItemStack itemInHand = ctx.getItemInHand();
         boolean ancient = false;
-        if (itemInHand.getOrCreateTag().contains("ancient")) {
-            ancient = itemInHand.getTag().getBoolean("ancient");
+        CompoundTag tag = itemInHand.getOrCreateTag();
+        if (tag.contains("ancient")) {
+            ancient = tag.getBoolean("ancient");
+        }
+        int spawnRecipeIndex = 0;
+        if (tag.contains(RefTableConsts.NBT_SPAWNED_WITH_RECIPE)) {
+            spawnRecipeIndex = tag.getInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE);
         }
         return this.defaultBlockState().
                 setValue(FACING, ctx.getHorizontalDirection().getOpposite()).
-                setValue(ANCIENT, ancient);
+                setValue(ANCIENT, ancient).
+                setValue(SPAWNED_WITH_RECIPE, spawnRecipeIndex);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING).add(ANCIENT);
+        builder.add(FACING).add(ANCIENT).add(SPAWNED_WITH_RECIPE);
     }
 
     @Nullable

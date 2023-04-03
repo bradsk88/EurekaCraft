@@ -12,6 +12,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.RefBoardStatsUtils;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -26,6 +27,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -36,7 +38,7 @@ import net.minecraftforge.common.ForgeHooks;
 import javax.annotation.Nullable;
 import java.util.*;
 
-import static ca.bradj.eurekacraft.materials.BlueprintItem.NBT_KEY_BOARD_STATS;
+import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
@@ -62,6 +64,44 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         );
         if (p_155230_.hasProperty(RefTableBlock.ANCIENT)) {
             this.ancient = p_155230_.getValue(RefTableBlock.ANCIENT);
+        }
+        if (p_155230_.hasProperty(RefTableBlock.SPAWNED_WITH_RECIPE)) {
+            int spawnRecipeNum = p_155230_.getValue(RefTableBlock.SPAWNED_WITH_RECIPE);
+            int spawnRecipeIndex = spawnRecipeNum - 1;
+            if (spawnRecipeNum > RefTableConsts.spawnRecipes.size()) {
+                EurekaCraft.LOGGER.error(String.format("Out of bounds spawn recipe index %d", spawnRecipeIndex));
+                return;
+            }
+            if (spawnRecipeIndex >= 0) {
+                initializeSpawnRecipe(RefTableConsts.spawnRecipes.get(spawnRecipeIndex));
+            }
+        }
+    }
+
+    private void initializeSpawnRecipe(RefTableConsts.RecipeProvider recipeProvider) {
+        // FIXME: Move this to a ticker so we can access non-null level
+        RefTableRecipe recipe = recipeProvider.get(this.level.getRandom());
+        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        for (int i = 0; i < ingredients.size(); i++) {
+            this.insertItem(RefTableConsts.inputSlotIndex + i, ingredients.get(i).getItems()[0]);
+        }
+        if (!recipe.getExtraIngredient().isEmpty) {
+            this.insertItem(RefTableConsts.techSlot, recipe.getExtraIngredient().ingredient.getItems()[0]);
+        }
+        if (recipe.requiresCooking()) {
+            // TODO: Randomize fuel?
+            this.insertItem(RefTableConsts.fuelSlot, Items.COAL.getDefaultInstance().copy());
+        }
+        if (!recipe.getResultItem().isEmpty()) {
+            this.insertItem(RefTableConsts.outputSlot, recipe.getResultItem());
+        }
+        RefTableRecipe.Secondary secondary = recipe.getSecondaryResultItem();
+        if (!secondary.output.isEmpty()) {
+            ItemStack output = secondary.output;
+            if (secondary.initialize && output.getItem() instanceof IInitializable) {
+                ((IInitializable) output.getItem()).initialize(output, level.getRandom());
+            }
+            this.insertItem(RefTableConsts.secondaryOutputSlot, output);
         }
     }
 

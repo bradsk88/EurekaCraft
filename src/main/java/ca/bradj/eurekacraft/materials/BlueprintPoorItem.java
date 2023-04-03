@@ -26,8 +26,8 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
         return true;
     }
 
-    public static final String NBT_KEY_BOARD_STATS = "board_stats";
-    private static final IBoardStatsFactory FACTORY_INSTANCE = new BoardStatsFactory();
+    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.
+            WithFallback(RefBoardStats.BadBoard);
 
     public static final String ITEM_ID = "blueprint_poor";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
@@ -59,7 +59,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
 
     private Optional<RefBoardStats> getStats(ItemStack stack) {
         return RefBoardStats.deserializeNBT(
-                stack.getOrCreateTag().getCompound(NBT_KEY_BOARD_STATS)
+                stack.getOrCreateTag().getCompound(Blueprints.NBT_KEY_BOARD_STATS)
         );
     }
 
@@ -91,13 +91,13 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
 
         RefBoardStats existingStats = RefBoardStats.Average("blueprint", inputStats);
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(existingStats, random);
-        target.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
+        target.getTag().put(Blueprints.NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
     }
 
     @Override
     public void initialize(ItemStack target, Random random) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, random);
-        target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
+        target.getOrCreateTag().put(Blueprints.NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
     }
 
     @Override
@@ -116,25 +116,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
                     contextStats
             );
         }
-        target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
+        target.getOrCreateTag().put(Blueprints.NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
     }
 
-    public static class BoardStatsFactory implements IBoardStatsFactory {
-        @Override
-        public RefBoardStats getBoardStatsFromNBTOrCreate(
-                ItemStack itemStack, RefBoardStats creationReference, Random rand
-        ) {
-            if (itemStack.getTag() == null) {
-                itemStack.setTag(new CompoundTag());
-            }
-            if (itemStack.getTag().contains(NBT_KEY_BOARD_STATS)) {
-                return RefBoardStats.deserializeNBT(
-                        itemStack.getTag().getCompound(NBT_KEY_BOARD_STATS)
-                ).orElse(RefBoardStats.BadBoard);
-            }
-            RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(creationReference, rand);
-            itemStack.getTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(s));
-            return s;
-        }
-    }
 }

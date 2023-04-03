@@ -16,11 +16,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static ca.bradj.eurekacraft.materials.BlueprintItem.NBT_KEY_BOARD_STATS;
+import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 
 public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryProvider, IInitializable, IBoardStatsCraftable, IBoardStatsGetter {
 
-    private static final IBoardStatsFactory FACTORY_INSTANCE = new BoardStatsFactory();
+    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.
+            WithFallback(RefBoardStats.EliteBoard);
 
     public static final String ITEM_ID = "blueprint_advanced";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
@@ -85,16 +86,5 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
             );
         }
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
-    }
-
-    public static class BoardStatsFactory extends BlueprintItem.BoardStatsFactory {
-        @Override
-        public RefBoardStats getBoardStatsFromNBTOrCreate(ItemStack itemStack, RefBoardStats creationReference, Random rand) {
-            RefBoardStats boostedReference = creationReference.WithAllIncreased(0.25);
-            if (RefBoardStats.isElite(creationReference)) {
-                boostedReference = creationReference;
-            }
-            return super.getBoardStatsFromNBTOrCreate(itemStack, boostedReference, rand);
-        }
     }
 }
