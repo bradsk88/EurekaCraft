@@ -25,6 +25,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -45,6 +46,8 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     private int craftPercent = 0;
     private int fireRemaining = 0;
     private int lastFireAmount = 1;
+    private boolean ancient;
+    private boolean spent;
 
 
     public RefTableTileEntity(
@@ -57,10 +60,16 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 p_155230_,
                 RefTableConsts.totalSlots
         );
+        if (p_155230_.hasProperty(RefTableBlock.ANCIENT)) {
+            this.ancient = p_155230_.getValue(RefTableBlock.ANCIENT);
+        }
     }
 
     @Override
     public Component getDisplayName() {
+        if (this.ancient) {
+            return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table.ancient");
+        }
         return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
     }
 
@@ -82,12 +91,40 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     public void load(CompoundTag nbt) {
         super.load(nbt);
         this.craftPercent = nbt.getInt("cooked");
+        this.ancient = nbt.getBoolean("ancient");
+        this.spent = nbt.getBoolean("spent");
     }
 
     @Override
-    protected ItemStack getSelfAsItemStack() {
-        return ItemsInit.REF_TABLE_BLOCK.get()
-                .getDefaultInstance();
+    protected Collection<ItemStack> getSelfAsItemStacks() {
+        if (this.ancient) {
+            ArrayList<ItemStack> ingredients = new ArrayList<>();
+            Random rand = this.level.getRandom();
+
+            // Top
+            boolean gotLuckyWood = rand.nextBoolean();
+            if (gotLuckyWood) {
+                ingredients.add(new ItemStack(ItemsInit.PRECISION_WOOD.get(), rand.nextInt(3)));
+            } else {
+                ingredients.add(new ItemStack(ItemsInit.POLISHED_OAK_SLAB.get(), rand.nextInt(3)));
+            }
+
+            // Resin
+            ingredients.add(new ItemStack(ItemsInit.RESINOUS_DUST.get(), rand.nextInt(3)));
+
+            // Base
+            boolean gotLuckyBase = rand.nextBoolean();
+            if (gotLuckyBase) {
+                ingredients.add(new ItemStack(Items.IRON_NUGGET, rand.nextInt(32)));
+            } else {
+                ingredients.add(new ItemStack(Items.IRON_INGOT, rand.nextInt(8)));
+            }
+            return ingredients;
+        }
+
+        return ImmutableList.of(
+                ItemsInit.REF_TABLE_BLOCK.get().getDefaultInstance()
+        );
     }
 
     protected CompoundTag store(CompoundTag tag) {
@@ -96,6 +133,8 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                 "cooked",
                 this.craftPercent
         );
+        tag.putBoolean("ancient", this.ancient);
+        tag.putBoolean("spent", this.spent);
         return tag;
     }
 
@@ -116,6 +155,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
 
         if (entity.fireRemaining > 0) {
             entity.fireRemaining--;
+        }
+
+        if (entity.spent) {
+            return;
         }
 
         Optional<RefTableRecipe> activeRecipe = entity.getActiveRecipe();
@@ -307,6 +350,10 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                     RefTableConsts.outputSlot,
                     output
             );
+
+            if (this.ancient) {
+                getTileData().putBoolean("spent", true);
+            }
 
             setChanged();
         });

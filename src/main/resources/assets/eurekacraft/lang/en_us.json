@@ -89,6 +89,7 @@
 	"block.eurekacraft.trapar_leaves": "Fresh-Smelling Tree Leaves",
 	"block.eurekacraft.fresh_sapling": "Fresh-Smelling Tree Sapling",
 	"container.eurekacraft.ref_table": "Ref Table",
+	"container.eurekacraft.ref_table.ancient": "Ref Table (Ancient)",
 	"container.eurekacraft.sanding_machine": "Sanding Machine",
 	"container.eurekacraft.folder": "Blueprint Folder",
 	"message.board.clicked_on_ground": "Right click after jumping",

@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -35,6 +36,7 @@ import java.util.List;
 
 public class RefTableBlock extends EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    public static final BooleanProperty ANCIENT = BooleanProperty.create("ancient");
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -55,12 +57,19 @@ public class RefTableBlock extends EntityBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+        ItemStack itemInHand = ctx.getItemInHand();
+        boolean ancient = false;
+        if (itemInHand.getOrCreateTag().contains("ancient")) {
+            ancient = itemInHand.getTag().getBoolean("ancient");
+        }
+        return this.defaultBlockState().
+                setValue(FACING, ctx.getHorizontalDirection().getOpposite()).
+                setValue(ANCIENT, ancient);
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING).add(ANCIENT);
     }
 
     @Nullable

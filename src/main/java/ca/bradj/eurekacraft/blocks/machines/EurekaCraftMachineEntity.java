@@ -20,6 +20,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,11 +86,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             }
             items.add(iStack);
         }
-        items.add(getSelfAsItemStack());
+        items.addAll(getSelfAsItemStacks());
         return items;
     }
 
-    protected abstract ItemStack getSelfAsItemStack();
+    protected abstract Collection<ItemStack> getSelfAsItemStacks();
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());
