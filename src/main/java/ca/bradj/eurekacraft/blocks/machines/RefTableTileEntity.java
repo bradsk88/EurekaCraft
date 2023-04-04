@@ -43,6 +43,7 @@ import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
+    private int spawnRecipeIndex;
 
     private boolean cooking = false;
     private int craftPercent = 0;
@@ -65,22 +66,24 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         if (p_155230_.hasProperty(RefTableBlock.ANCIENT)) {
             this.ancient = p_155230_.getValue(RefTableBlock.ANCIENT);
         }
-        if (p_155230_.hasProperty(RefTableBlock.SPAWNED_WITH_RECIPE)) {
-            int spawnRecipeNum = p_155230_.getValue(RefTableBlock.SPAWNED_WITH_RECIPE);
-            int spawnRecipeIndex = spawnRecipeNum - 1;
-            if (spawnRecipeNum > RefTableConsts.spawnRecipes.size()) {
-                EurekaCraft.LOGGER.error(String.format("Out of bounds spawn recipe index %d", spawnRecipeIndex));
-                return;
-            }
-            if (spawnRecipeIndex >= 0) {
-                initializeSpawnRecipe(RefTableConsts.spawnRecipes.get(spawnRecipeIndex));
-            }
-        }
+        this.spawnRecipeIndex = determineSpawnIndex(p_155230_);
     }
 
-    private void initializeSpawnRecipe(RefTableConsts.RecipeProvider recipeProvider) {
-        // FIXME: Move this to a ticker so we can access non-null level
-        RefTableRecipe recipe = recipeProvider.get(this.level.getRandom());
+    private static int determineSpawnIndex(BlockState bs) {
+        if (bs.hasProperty(RefTableBlock.SPAWNED_WITH_RECIPE)) {
+            int spawnRecipeNum = bs.getValue(RefTableBlock.SPAWNED_WITH_RECIPE);
+            int i = spawnRecipeNum - 1;
+            if (spawnRecipeNum > RefTableConsts.spawnRecipes.size()) {
+                EurekaCraft.LOGGER.error(String.format("Out of bounds spawn recipe index %d", i));
+                return -1;
+            }
+            return i;
+        }
+        return -1;
+    }
+
+    private void initializeSpawnRecipe(Random random, RefTableConsts.RecipeProvider recipeProvider) {
+        RefTableRecipe recipe = recipeProvider.get(random);
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
         for (int i = 0; i < ingredients.size(); i++) {
             this.insertItem(RefTableConsts.inputSlotIndex + i, ingredients.get(i).getItems()[0]);
@@ -187,6 +190,12 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     ) {
         if (level.isClientSide) {
             throw new IllegalStateException("Ticker should not be instantiated on client side");
+        }
+
+        if (entity.spawnRecipeIndex >= 0) {
+            RefTableConsts.RecipeProvider recipe = RefTableConsts.spawnRecipes.get(entity.spawnRecipeIndex);
+            entity.initializeSpawnRecipe(level.getRandom(), recipe);
+            entity.spawnRecipeIndex = -1;
         }
 
 //        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));

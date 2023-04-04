@@ -35,15 +35,17 @@ public class RefTableConsts {
                         getBoardStatsFromNBTOrCreate(
                                 bp, RefBoardStats.BadBoard, random
                         );
+                NonNullList<Ingredient> inputs = NonNullList.createWithCapacity(4);
+                inputs.addAll(ImmutableList.of(
+                        Ingredient.of(new ItemStack(Items.OAK_PLANKS, 1)),
+                        Ingredient.of(new ItemStack(ItemsInit.RESINOUS_DUST.get())),
+                        Ingredient.of(new ItemStack(Items.OAK_PLANKS, 1)),
+                        Ingredient.of(new ItemStack(Items.OAK_PLANKS, 1))
+                ));
                 return new RefTableRecipe(
                         null,
                         Items.COBWEB.getDefaultInstance(),
-                        NonNullList.of(
-                                Ingredient.of(Items.OAK_PLANKS.getDefaultInstance()),
-                                Ingredient.of(ItemsInit.RESINOUS_DUST.get().getDefaultInstance()),
-                                Ingredient.of(Items.OAK_PLANKS.getDefaultInstance()),
-                                Ingredient.of(Items.OAK_PLANKS.getDefaultInstance())
-                        ),
+                        inputs,
                         true,
                         new RefTableRecipe.ExtraInput(
                                 Ingredient.of(bp), true

@@ -27,6 +27,7 @@ public class RefBoardStats {
     private static final double MAX_SURF = 1.0;
     public static final double MAX_SURF_FOREVER = 1.1;
 
+    public static final RefBoardStats TerribleBoard;
     public static final RefBoardStats BadBoard;
     public static final RefBoardStats HeavyBoard;
     public static final RefBoardStats GlideBoard;
@@ -36,6 +37,7 @@ public class RefBoardStats {
     public static final RefBoardStats EliteBoard;
 
     static {
+        TerribleBoard = new RefBoardStats("terrible", 1.0, 0.10, 0.10, 0.10, 0, 0);
         BadBoard = new RefBoardStats("bad", 1.0, 0.25, 0.25, 0.25, 0, 0);
         HeavyBoard = new RefBoardStats("heavy", 1.0, 0.5, 0.25, 0.25, 0, 0);
         GlideBoard = new RefBoardStats("glide", 0.25, 0.25, 0.10, NO_LIFT, 0, 0).
