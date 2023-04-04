@@ -43,7 +43,7 @@ import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 public class RefTableTileEntity extends EurekaCraftMachineEntity implements MenuProvider {
 
     public static final String ENTITY_ID = "ref_table_tile_entity";
-    private int spawnRecipeIndex;
+    private int spawnRecipeIndex = -1;
 
     private boolean cooking = false;
     private int craftPercent = 0;
@@ -86,6 +86,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         RefTableRecipe recipe = recipeProvider.get(random);
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
         for (int i = 0; i < ingredients.size(); i++) {
+            if (ingredients.get(0).isEmpty()) {
+                continue;
+            }
             this.insertItem(RefTableConsts.inputSlotIndex + i, ingredients.get(i).getItems()[0]);
         }
         if (!recipe.getExtraIngredient().isEmpty) {
@@ -193,9 +196,11 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         }
 
         if (entity.spawnRecipeIndex >= 0) {
+            // FIXME: This is happening multiple times when you savequit/reload
             RefTableConsts.RecipeProvider recipe = RefTableConsts.spawnRecipes.get(entity.spawnRecipeIndex);
             entity.initializeSpawnRecipe(level.getRandom(), recipe);
             entity.spawnRecipeIndex = -1;
+            level.getBlockState(pos).setValue(RefTableBlock.SPAWNED_WITH_RECIPE, 0);
         }
 
 //        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
