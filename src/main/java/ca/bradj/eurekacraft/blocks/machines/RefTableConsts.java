@@ -27,6 +27,7 @@ public class RefTableConsts {
         RefTableRecipe get(Random random);
     }
 
+    // TODO: Add all ref table recipes
     public static final ImmutableList<RecipeProvider> spawnRecipes = ImmutableList.copyOf(new RecipeProvider[]{
             // Bearing mold
             (random) -> {

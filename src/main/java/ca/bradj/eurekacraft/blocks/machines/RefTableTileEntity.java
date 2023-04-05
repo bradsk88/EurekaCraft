@@ -105,7 +105,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         if (!secondary.output.isEmpty()) {
             ItemStack output = secondary.output;
             if (secondary.initialize && output.getItem() instanceof IInitializable) {
-                ((IInitializable) output.getItem()).initialize(output, level.getRandom());
+                ((IInitializable) output.getItem()).initialize(output, random);
             }
             this.insertItem(RefTableConsts.secondaryOutputSlot, output);
         }
@@ -139,14 +139,13 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         this.craftPercent = nbt.getInt("cooked");
         this.ancient = nbt.getBoolean("ancient");
         this.spent = nbt.getBoolean("spent");
+        this.spawnRecipeIndex = nbt.getInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE) - 1;
     }
 
     @Override
-    protected Collection<ItemStack> getSelfAsItemStacks() {
+    protected Collection<ItemStack> getSelfAsItemStacks(Random rand) {
         if (this.ancient) {
             ArrayList<ItemStack> ingredients = new ArrayList<>();
-            Random rand = this.level.getRandom();
-
             // Top
             boolean gotLuckyWood = rand.nextBoolean();
             if (gotLuckyWood) {
@@ -181,6 +180,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         );
         tag.putBoolean("ancient", this.ancient);
         tag.putBoolean("spent", this.spent);
+        tag.putInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE, this.spawnRecipeIndex + 1);
         return tag;
     }
 
@@ -195,13 +195,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             throw new IllegalStateException("Ticker should not be instantiated on client side");
         }
 
-        if (entity.spawnRecipeIndex >= 0) {
-            // FIXME: This is happening multiple times when you savequit/reload
-            RefTableConsts.RecipeProvider recipe = RefTableConsts.spawnRecipes.get(entity.spawnRecipeIndex);
-            entity.initializeSpawnRecipe(level.getRandom(), recipe);
-            entity.spawnRecipeIndex = -1;
-            level.getBlockState(pos).setValue(RefTableBlock.SPAWNED_WITH_RECIPE, 0);
-        }
+        tryInitializeSpawnRecipe(level, entity);
 
 //        logger.debug("item in tech slot [" + techSlot + "] " + this.itemHandler.getStackInSlot(techSlot));
 //        logger.debug("item in fuel slot [" + fuelSlot + "] " + this.itemHandler.getStackInSlot(fuelSlot));
@@ -222,6 +216,26 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
                     activeRecipe,
                     level
             );
+        }
+    }
+
+    private static void tryInitializeSpawnRecipe(
+            Level level,
+            RefTableTileEntity entity
+    ) {
+        for (Player p : level.players()) {
+            if (p.isCreative()) {
+                return;
+            }
+        }
+        if (ItemsInit.POSTER_SPAWN_BLACK.get().equals(entity.getTechItem())) {
+            entity.spawnRecipeIndex = level.getRandom().nextInt(RefTableConsts.spawnRecipes.size());
+            entity.extractItem(RefTableConsts.techSlot, 1);
+        }
+        if (entity.spawnRecipeIndex >= 0) {
+            RefTableConsts.RecipeProvider recipe = RefTableConsts.spawnRecipes.get(entity.spawnRecipeIndex);
+            entity.initializeSpawnRecipe(level.getRandom(), recipe);
+            entity.spawnRecipeIndex = -1;
         }
     }
 

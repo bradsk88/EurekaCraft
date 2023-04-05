@@ -66,7 +66,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     }
 
     @Override
-    protected Collection<ItemStack> getSelfAsItemStacks() {
+    protected Collection<ItemStack> getSelfAsItemStacks(Random random) {
         return ImmutableList.of(ItemsInit.SANDING_MACHINE_BLOCK.get().getDefaultInstance());
     }
 

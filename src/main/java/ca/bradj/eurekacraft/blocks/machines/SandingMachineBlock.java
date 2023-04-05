@@ -13,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -85,6 +84,6 @@ public class SandingMachineBlock extends EntityBlock {
 
     @Override
     public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder p_60538_) {
-        return this.entity.getItemsStacksForDrop();
+        return this.entity.getItemsStacksForDrop(p_60538_.getLevel().getRandom());
     }
 }

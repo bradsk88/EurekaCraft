@@ -120,5 +120,27 @@ public class VillageAddition {
                 new ResourceLocation("minecraft:village/desert/houses"),
                 "eurekacraft:hint_shack_crafting_table_desert", EurekaConfig.hint_shack_village_rate.get()
         );
+
+        // Hint Shacks (Ref Table)
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/plains/houses"),
+                "eurekacraft:hint_shack_plains", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/snowy/houses"),
+                "eurekacraft:hint_shack_snowy", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/savanna/houses"),
+                "eurekacraft:hint_shack_savanna", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/taiga/houses"),
+                "eurekacraft:hint_shack_taiga", EurekaConfig.hint_shack_village_rate.get()
+        );
+        addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                new ResourceLocation("minecraft:village/desert/houses"),
+                "eurekacraft:hint_shack_desert", EurekaConfig.hint_shack_village_rate.get()
+        );
     }
 }

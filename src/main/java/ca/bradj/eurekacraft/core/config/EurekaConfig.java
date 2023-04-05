@@ -73,29 +73,29 @@ public class EurekaConfig {
         empty_shack_worldgen_rate = BUILDER.comment(
                 "The rate at which empty shacks generate in the world. (Higher number means more often)"
         ).defineInRange(
-                KEY_EMPTY_SHACK_WORLDGEN_RATE, 10, 0, Integer.MAX_VALUE
+                KEY_EMPTY_SHACK_WORLDGEN_RATE, 5, 0, Integer.MAX_VALUE
         );
         tall_shack_worldgen_rate = BUILDER.comment(
                 "The rate at which tall shacks generate in the world. (Higher number means more often)"
         ).defineInRange(
-                KEY_TALL_SHACK_WORLDGEN_RATE, 10, 0, Integer.MAX_VALUE
+                KEY_TALL_SHACK_WORLDGEN_RATE, 5, 0, Integer.MAX_VALUE
         );
         hint_shack_worldgen_rate = BUILDER.comment(
                 "The rate at which hint shacks generate in the world. (Higher number means more often)"
         ).defineInRange(
-                KEY_HINT_SHACK_WORLDGEN_RATE, 10, 0, Integer.MAX_VALUE
+                KEY_HINT_SHACK_WORLDGEN_RATE, 5, 0, Integer.MAX_VALUE
         );
 
         hint_shack_village_rate = BUILDER.comment(
                 "The rate at which hint shacks generate in villages. (Higher number means more often)"
         ).defineInRange(
-                KEY_HINT_SHACK_VILLAGE_RATE, 10, 0, Integer.MAX_VALUE
+                KEY_HINT_SHACK_VILLAGE_RATE, 5, 0, Integer.MAX_VALUE
         );
 
         ref_dealer_village_rate = BUILDER.comment(
                 "The rate at which ref dealer buildings generate in villages. (Higher number means more often)"
         ).defineInRange(
-                KEY_REF_DEALER_VILLAGE_RATE, 15, 0, Integer.MAX_VALUE
+                KEY_REF_DEALER_VILLAGE_RATE, 10, 0, Integer.MAX_VALUE
         );
 
         BUILDER.pop();

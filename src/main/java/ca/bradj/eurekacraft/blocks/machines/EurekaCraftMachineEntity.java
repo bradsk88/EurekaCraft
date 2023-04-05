@@ -19,10 +19,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
@@ -77,7 +74,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         return super.getCapability(cap, side);
     }
 
-    public List<ItemStack> getItemsStacksForDrop() {
+    public List<ItemStack> getItemsStacksForDrop(Random random) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < this.itemHandler.getSlots(); i++) {
             ItemStack iStack = itemHandler.getStackInSlot(i);
@@ -86,11 +83,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             }
             items.add(iStack);
         }
-        items.addAll(getSelfAsItemStacks());
+        items.addAll(getSelfAsItemStacks(random));
         return items;
     }
 
-    protected abstract Collection<ItemStack> getSelfAsItemStacks();
+    protected abstract Collection<ItemStack> getSelfAsItemStacks(Random random);
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());
