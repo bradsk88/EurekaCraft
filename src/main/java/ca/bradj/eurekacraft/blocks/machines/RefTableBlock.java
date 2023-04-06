@@ -40,7 +40,7 @@ public class RefTableBlock extends EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty ANCIENT = BooleanProperty.create("ancient");
     public static final IntegerProperty SPAWNED_WITH_RECIPE = IntegerProperty.create(
-            RefTableConsts.NBT_SPAWNED_WITH_RECIPE, 0, RefTableConsts.spawnRecipes.size()
+            RefTableHintRecipes.NBT_SPAWNED_WITH_RECIPE, 0, RefTableHintRecipes.spawnRecipes.size()
     );
 
     private Logger logger = LogManager.getLogger(EurekaCraft.MODID);
@@ -69,8 +69,13 @@ public class RefTableBlock extends EntityBlock {
             ancient = tag.getBoolean("ancient");
         }
         int spawnRecipeIndex = 0;
-        if (tag.contains(RefTableConsts.NBT_SPAWNED_WITH_RECIPE)) {
-            spawnRecipeIndex = tag.getInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE);
+        if (tag.contains(RefTableHintRecipes.NBT_SPAWNED_WITH_RECIPE)) {
+            spawnRecipeIndex = tag.getInt(RefTableHintRecipes.NBT_SPAWNED_WITH_RECIPE);
+            EurekaCraft.LOGGER.debug("Ref Table SpawnRecipeIndex " + spawnRecipeIndex);
+            if (spawnRecipeIndex >= RefTableHintRecipes.spawnRecipes.size()) {
+                spawnRecipeIndex = 0;
+                EurekaCraft.LOGGER.error("SpawnRecipeIndex was too high. Ignoring");
+            }
         }
         return this.defaultBlockState().
                 setValue(FACING, ctx.getHorizontalDirection().getOpposite()).

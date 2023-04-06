@@ -87,7 +87,7 @@ public class VillageAddition {
         // Ref Dealers
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/plains/houses"),
-                "eurekacraft:plains_ref_dealer_1", EurekaConfig.ref_dealer_village_rate.get()
+                "eurekacraft:ref_dealer_plains", EurekaConfig.ref_dealer_village_rate.get()
         );
         addBuildingToPool(templatePoolRegistry, processorListRegistry,
                 new ResourceLocation("minecraft:village/snowy/houses"),

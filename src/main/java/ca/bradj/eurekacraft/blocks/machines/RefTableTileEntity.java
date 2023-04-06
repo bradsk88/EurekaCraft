@@ -73,7 +73,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         if (bs.hasProperty(RefTableBlock.SPAWNED_WITH_RECIPE)) {
             int spawnRecipeNum = bs.getValue(RefTableBlock.SPAWNED_WITH_RECIPE);
             int i = spawnRecipeNum - 1;
-            if (spawnRecipeNum > RefTableConsts.spawnRecipes.size()) {
+            if (spawnRecipeNum > RefTableHintRecipes.spawnRecipes.size()) {
                 EurekaCraft.LOGGER.error(String.format("Out of bounds spawn recipe index %d", i));
                 return -1;
             }
@@ -82,7 +82,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         return -1;
     }
 
-    private void initializeSpawnRecipe(Random random, RefTableConsts.RecipeProvider recipeProvider) {
+    private void initializeSpawnRecipe(Random random, RefTableHintRecipes.RecipeProvider recipeProvider) {
         RefTableRecipe recipe = recipeProvider.get(random);
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
         for (int i = 0; i < ingredients.size(); i++) {
@@ -139,7 +139,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         this.craftPercent = nbt.getInt("cooked");
         this.ancient = nbt.getBoolean("ancient");
         this.spent = nbt.getBoolean("spent");
-        this.spawnRecipeIndex = nbt.getInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE) - 1;
+        this.spawnRecipeIndex = nbt.getInt(RefTableHintRecipes.NBT_SPAWNED_WITH_RECIPE) - 1;
     }
 
     @Override
@@ -180,7 +180,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         );
         tag.putBoolean("ancient", this.ancient);
         tag.putBoolean("spent", this.spent);
-        tag.putInt(RefTableConsts.NBT_SPAWNED_WITH_RECIPE, this.spawnRecipeIndex + 1);
+        tag.putInt(RefTableHintRecipes.NBT_SPAWNED_WITH_RECIPE, this.spawnRecipeIndex + 1);
         return tag;
     }
 
@@ -229,11 +229,11 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
             }
         }
         if (ItemsInit.POSTER_SPAWN_BLACK.get().equals(entity.getTechItem())) {
-            entity.spawnRecipeIndex = level.getRandom().nextInt(RefTableConsts.spawnRecipes.size());
+            entity.spawnRecipeIndex = level.getRandom().nextInt(RefTableHintRecipes.spawnRecipes.size());
             entity.extractItem(RefTableConsts.techSlot, 1);
         }
         if (entity.spawnRecipeIndex >= 0) {
-            RefTableConsts.RecipeProvider recipe = RefTableConsts.spawnRecipes.get(entity.spawnRecipeIndex);
+            RefTableHintRecipes.RecipeProvider recipe = RefTableHintRecipes.spawnRecipes.get(entity.spawnRecipeIndex);
             entity.initializeSpawnRecipe(level.getRandom(), recipe);
             entity.spawnRecipeIndex = -1;
         }

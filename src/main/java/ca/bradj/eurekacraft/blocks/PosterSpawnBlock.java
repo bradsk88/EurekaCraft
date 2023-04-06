@@ -96,6 +96,28 @@ public class PosterSpawnBlock extends EntityBlock {
                                 () -> Items.AIR, () -> Items.LAVA_BUCKET, () -> Items.AIR,
                         }
                 },
+                {
+                        new ItemProvider[]{
+                                () -> Items.IRON_INGOT, () -> Items.AIR, () -> Items.AIR,
+                        },
+                        new ItemProvider[]{
+                                () -> Items.AIR, ItemsInit.PRECISION_WOOD_STICK::get, () -> Items.AIR,
+                        },
+                        new ItemProvider[]{
+                                () -> Items.AIR, () -> Items.AIR, () -> Items.AIR,
+                        }
+                },
+                {
+                        new ItemProvider[]{
+                                ItemsInit.PRECISION_WOOD::get, () -> Items.AIR, () -> Items.AIR,
+                        },
+                        new ItemProvider[]{
+                                () -> Items.AIR, ItemsInit.PRECISION_WOOD::get, () -> Items.AIR,
+                        },
+                        new ItemProvider[]{
+                                () -> Items.AIR, () -> Items.AIR, () -> Items.AIR,
+                        }
+                },
         });
     }
 
