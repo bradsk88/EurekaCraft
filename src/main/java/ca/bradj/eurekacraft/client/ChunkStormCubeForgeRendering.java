@@ -9,6 +9,7 @@ import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +31,7 @@ public class ChunkStormCubeForgeRendering {
 
     @SubscribeEvent
     public static void handleRenderEvent(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SKY) {
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             return;
         }
 
@@ -49,7 +50,7 @@ public class ChunkStormCubeForgeRendering {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(false); // FIXME: This makes land invisible 🤔
 
-        RenderSystem.setShaderTexture(0, new ResourceLocation(EurekaCraft.MODID, "textures/blocks/trapar_wave_block_25.png"));
+        RenderSystem.setShaderTexture(0, STORM_LOCATION);
 
         ChunkPos cp = new ChunkPos(event.getCamera().getBlockPosition());
         for (int i = -radius; i <= radius; i++) {

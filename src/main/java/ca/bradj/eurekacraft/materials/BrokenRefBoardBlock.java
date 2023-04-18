@@ -1,8 +1,12 @@
 package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -24,6 +28,21 @@ public class BrokenRefBoardBlock extends HorizontalDirectionalBlock {
 
     public BrokenRefBoardBlock() {
         super(PROPS);
+    }
+
+    @Override
+    public void animateTick(
+            BlockState p_220827_,
+            Level p_220828_,
+            BlockPos p_220829_,
+            RandomSource p_220830_
+    ) {
+        super.animateTick(p_220827_, p_220828_, p_220829_, p_220830_);
+        double d3 = ((double)p_220830_.nextFloat() - 0.5D) * 0.5D;
+        double d4 = ((double)p_220830_.nextFloat() - 0.5D) * 0.5D;
+        int j = p_220830_.nextInt(2) * 2 - 1;
+        double d5 = (double)(p_220830_.nextFloat() * 2.0F * (float)j);
+        p_220828_.addParticle(ParticleTypes.PORTAL, p_220829_.getX(), p_220829_.getY(), p_220829_.getZ(), d3, d4, d5);
     }
 
     @Override
