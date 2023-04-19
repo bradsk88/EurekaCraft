@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.core.init;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.world.waves.ChunkWavesEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -19,12 +20,18 @@ public class EntitiesInit {
     );
 
     private static final String REF_BOARD_ID = new ResourceLocation(EurekaCraft.MODID, EntityRefBoard.ENTITY_ID).toString();
+    private static final String CHUNK_WAVES_ID = new ResourceLocation(EurekaCraft.MODID, ChunkWavesEntity.ENTITY_ID).toString();
 
     public static final RegistryObject<EntityType<EntityRefBoard>> REF_BOARD = ENTITIES.register(
             EntityRefBoard.ENTITY_ID,
             () -> EntityType.Builder.<EntityRefBoard>
                             of(EntityRefBoard::new, MobCategory.MISC).
                     build(REF_BOARD_ID)
+    );
+
+    public static final RegistryObject<EntityType<ChunkWavesEntity>> CHUNK_WAVES = ENTITIES.register(
+            ChunkWavesEntity.ENTITY_ID,
+            () -> EntityType.Builder.<ChunkWavesEntity>of(ChunkWavesEntity::new, MobCategory.MISC).build(CHUNK_WAVES_ID)
     );
 
     public static final RegistryObject<EntityType<JudgeEntity>> JUDGE;

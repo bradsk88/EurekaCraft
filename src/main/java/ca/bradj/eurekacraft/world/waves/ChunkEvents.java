@@ -2,7 +2,6 @@ package ca.bradj.eurekacraft.world.waves;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.ChunkEvent;
@@ -21,7 +20,10 @@ public class ChunkEvents {
         if (world.isClientSide()) {
             return;
         }
-        ChunkWavesDataManager.get(world).initData(evt.getChunk(), world.getRandom());
+        ChunkWavesData waves = ChunkWavesDataManager.get(world).getData(evt.getChunk(), world.getRandom());
+        ChunkWavesDataManager.get(world).initChunkEntity(
+                world.getServer().overworld(), evt.getChunk(), waves.getWaves()
+        );
     }
 
     @SubscribeEvent

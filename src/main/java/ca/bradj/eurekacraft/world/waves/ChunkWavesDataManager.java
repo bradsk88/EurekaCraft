@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.world.waves;
 
+import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
 import com.google.common.collect.ImmutableList;
@@ -10,8 +11,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -21,12 +22,12 @@ import net.minecraftforge.network.PacketDistributor;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
-import java.util.RandomAccess;
+import java.util.Set;
 
 public class ChunkWavesDataManager extends SavedData {
 
     private static Map<ChunkPos, ChunkWavesData> chunkData = new HashMap<>();
+    private static Map<ChunkPos, Entity> chunkEntities = new HashMap<ChunkPos, Entity>();
 
     private static int tickCounter = 10;
 
@@ -132,5 +133,30 @@ public class ChunkWavesDataManager extends SavedData {
 
     public static void updateFromMessage(ChunkWavesMessage msg) {
         chunkData.put(msg.chunkPos, ChunkWavesData.fromCollection(msg.waveBlocks));
+    }
+
+    public void initChunkEntity(
+            ServerLevel world,
+            ChunkAccess chunk,
+            Set<BlockPos> waves
+    ) {
+        if (chunkEntities.containsKey(chunk.getPos())) {
+            return;
+        }
+        // TODO: Consider updating the wave generation to have multiple vertical chunks
+        add(world, chunk, chunk.getPos().getMiddleBlockPosition(80), waves);
+    }
+
+    private void add(
+            ServerLevel world,
+            ChunkAccess chunk,
+            BlockPos mbp,
+            Set<BlockPos> waves
+    ) {
+        Entity spawn = new ChunkWavesEntity(
+                EntitiesInit.CHUNK_WAVES.get(), world, mbp, waves
+        );
+        chunkEntities.put(chunk.getPos(), spawn);
+        world.addFreshEntity(spawn);
     }
 }

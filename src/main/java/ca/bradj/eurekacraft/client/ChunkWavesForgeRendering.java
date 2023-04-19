@@ -33,6 +33,10 @@ public class ChunkWavesForgeRendering {
 
     @SubscribeEvent
     public static void handleRenderEvent(RenderLevelStageEvent evt) {
+        if (true) { // FIXME: Undo
+            return;
+        }
+
         if (evt.getStage() != RenderLevelStageEvent.Stage.AFTER_TRIPWIRE_BLOCKS) {
             return;
         }

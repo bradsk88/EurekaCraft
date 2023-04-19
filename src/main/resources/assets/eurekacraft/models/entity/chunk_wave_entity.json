@@ -1,0 +1,7 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "all": "entity/chunk_wave_entity"
+  },
+  "translucent": true
+}
