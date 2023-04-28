@@ -3,6 +3,8 @@ package ca.bradj.eurekacraft.entity.board;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
+import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
 public class RefBoardDataLoader {
@@ -54,17 +57,28 @@ public class RefBoardDataLoader {
         }
 
         EntityRefBoard board = new EntityRefBoard(event.getPlayer(), world);
+        AtomicBoolean loaded = new AtomicBoolean(false);
         world.getDataStorage().get(
-                (CompoundTag t) ->  new EntityRefBoard.Data(event.getPlayer().getUUID(), board, t),
+                (CompoundTag t) ->  {
+                    loaded.set(true);
+                    return new EntityRefBoard.Data(event.getPlayer().getUUID(), board, t);
+                },
                 EntityRefBoard.Data.ID(event.getPlayer().getUUID())
         );
-        if (!board.isAlive()) {
+        if (!loaded.get()) {
             return;
         }
         ItemStack mainHandItem = event.getPlayer().getMainHandItem();
-
         if (!(mainHandItem.getItem() instanceof RefBoardItem mainHandBoardItem)) {
+            EurekaCraft.LOGGER.error("Found deployed board, but hand does not contain board.");
+            EurekaCraft.LOGGER.info("Resolving discrepancy by killing board");
+            board.kill();
             return;
+        }
+
+        if (event.getPlayer().isOnGround()) {
+            PlayerDeployedBoard.DeployedBoard.RemoveFromStack(mainHandItem);
+            PlayerDeployedBoardProvider.removeBoardFor(event.getPlayer());
         }
 
         Optional<UUID> handBoardUUID = EntityRefBoard.getItemStackBoardUUID(mainHandItem);
