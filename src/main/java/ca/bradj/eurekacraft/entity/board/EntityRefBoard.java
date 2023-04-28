@@ -233,7 +233,7 @@ public class EntityRefBoard extends Entity {
     public static Optional<UUID> getEntityBoardUUID(EntityRefBoard b) {
 
         CompoundTag tag = b.boardItemStack.getOrCreateTag();
-        if (tag.hasUUID(NBT_KEY_BOARD_UUID)) {
+        if (tag.contains(NBT_KEY_BOARD_UUID) && tag.hasUUID(NBT_KEY_BOARD_UUID)) {
             return Optional.of(tag.getUUID(NBT_KEY_BOARD_UUID));
         }
         return Optional.empty();
@@ -244,6 +244,9 @@ public class EntityRefBoard extends Entity {
             return Optional.empty();
         }
         CompoundTag tag = mainHandItem.getOrCreateTag();
+        if (!tag.contains(EntityRefBoard.NBT_KEY_BOARD_UUID)) {
+            return Optional.empty();
+        }
         if (!tag.hasUUID(EntityRefBoard.NBT_KEY_BOARD_UUID)) {
             return Optional.empty();
         }
@@ -702,6 +705,8 @@ public class EntityRefBoard extends Entity {
 
         @Override
         public void deserializeNBT(CompoundTag nbt) {
+            String boardType = nbt.getString("board_type");
+            EurekaCraft.LOGGER.debug("Board Type of Loaded entity: " + boardType);
             if (board.boardItemStack == null) {
                 // TODO: This item stack is throwaway. Is there another way we could store this UUID?
                 StandardRefBoard srb = ItemsInit.STANDARD_REF_BOARD.get();
