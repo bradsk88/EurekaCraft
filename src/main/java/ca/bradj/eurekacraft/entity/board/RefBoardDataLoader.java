@@ -68,6 +68,9 @@ public class RefBoardDataLoader {
         if (!loaded.get()) {
             return;
         }
+        if (!board.isAlive()) {
+            return;
+        }
         ItemStack mainHandItem = event.getPlayer().getMainHandItem();
         if (!(mainHandItem.getItem() instanceof RefBoardItem mainHandBoardItem)) {
             EurekaCraft.LOGGER.error("Found deployed board, but hand does not contain board.");
