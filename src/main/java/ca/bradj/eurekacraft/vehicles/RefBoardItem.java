@@ -7,7 +7,6 @@ import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
-import com.google.common.collect.MapMaker;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
@@ -33,10 +32,9 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     private static final String NBT_KEY_STATS = "stats";
 
     private static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
-    private static Map<Player, EntityRefBoard> spawnedGlidersMap = new MapMaker().weakKeys().weakValues().makeMap();
 
     private static final Item.Properties PROPS = new Item.Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
-    private final RefBoardStats baseStats;
+    protected final RefBoardStats baseStats;
     private BoardType board;
     private final StatsGetter statsGetter;
     protected boolean canFly = true;
@@ -52,16 +50,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         return board;
     }
 
-    public static RefBoardStats GetStatsFromNBT(ItemStack itemStack) {
-        if (!(itemStack.getItem() instanceof RefBoardItem)) {
-            throw new IllegalArgumentException("Expected ItemStack of RefBoardItem");
-        }
-        if (itemStack.getTag() != null && itemStack.getTag().contains(NBT_KEY_STATS)) {
-            return RefBoardStats.deserializeNBT(itemStack.getTag().getCompound(NBT_KEY_STATS));
-        }
-        return ((RefBoardItem) itemStack.getItem()).baseStats;
-    }
-
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack defaultInstance = super.getDefaultInstance();
@@ -72,40 +60,21 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
-
+        EurekaCraft.LOGGER.debug("Using " + s.getItem());
         boolean serverSide = !world.isClientSide;
         if (serverSide) {
             if (player.isOnGround()) {
+                EurekaCraft.LOGGER.debug("Not deploying because player is on ground:");
                 return InteractionResultHolder.pass(s);
             }
 
-            EntityRefBoard glider = spawnedGlidersMap.get(player);
-            if (glider != null && !glider.isAlive()) {
-                despawnGlider(player, world, glider);
-            }
-            if (glider != null && glider.isAlive()) {
-                despawnGlider(player, world, glider);
-            } else {
-                ItemStack boardItem = player.getItemInHand(hand);
-                EntityRefBoard spawned = EntityRefBoard.spawnFromInventory(
-                        player, (ServerLevel) player.level, boardItem, this.board
-                );
-                if (spawned == null) {
-                    spawnedGlidersMap.remove(player);
-                } else {
-                    spawnedGlidersMap.put(player, spawned);
-                }
-            }
+            ItemStack boardItem = player.getItemInHand(hand);
+            EntityRefBoard.toggleFromInventory(
+                    player, (ServerLevel) player.level, boardItem, this.board
+            );
         }
 
         return InteractionResultHolder.success(s);
-    }
-
-    // Server Side only
-    private static void despawnGlider(Player player, Level world, EntityRefBoard glider) {
-        glider.kill();
-        spawnedGlidersMap.remove(player);
-        PlayerDeployedBoardProvider.removeBoardFor(player);
     }
 
     public boolean isDamagedBoard() {
@@ -216,7 +185,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+    public RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             storeStatsOnStack(stack, s);

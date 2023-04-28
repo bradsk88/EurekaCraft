@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "eurekacraft:resin",
+    "eurekacraft:red_resin",
     "eurekacraft:resinous_dust"
   ]
 }

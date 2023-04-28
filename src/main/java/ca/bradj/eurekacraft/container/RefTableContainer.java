@@ -5,19 +5,21 @@ import ca.bradj.eurekacraft.blocks.machines.RefTableTileEntity;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.ContainerTypesInit;
 import ca.bradj.eurekacraft.core.util.FunctionalIntReferenceHolder;
+import ca.bradj.eurekacraft.interfaces.RefTableSlotAware;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 import java.util.Objects;
+import java.util.Optional;
 
-public class RefTableContainer extends MachineContainer {
+public class RefTableContainer extends Container {
     private final RefTableTileEntity tileEntity;
     private FunctionalIntReferenceHolder fireTotalSlot;
     private FunctionalIntReferenceHolder cookProgressSlot;
@@ -38,7 +40,7 @@ public class RefTableContainer extends MachineContainer {
     public static final int topOfSecondary = topOfTech + boxHeight + margin - 1;
     public static final int leftOfSecondary = leftOfTech + (boxWidth * 3);
 
-    public RefTableContainer(int windowId, Container playerInventory, RefTableTileEntity refTableTileEntity) {
+    public RefTableContainer(int windowId, net.minecraft.world.Container playerInventory, RefTableTileEntity refTableTileEntity) {
         super(ContainerTypesInit.REF_TABLE.get(), windowId, playerInventory);
         this.tileEntity = refTableTileEntity;
         layoutPlayerInventorySlots(86);
@@ -105,7 +107,36 @@ public class RefTableContainer extends MachineContainer {
 
     @Override
     protected int getInventorySlotCount() {
-        return tileEntity.getTotalSlotCount();
+        return tileEntity.getTotalSlotCount() - 2;
     }
 
+    @Override
+    protected int getOutputSlotCount() {
+        return tileEntity.getTotalSlotCount() - getInventorySlotCount();
+    }
+
+    @Override
+    protected Optional<Integer> getFirstIndexForItem(Item item) {
+        if (item instanceof RefTableSlotAware) {
+            Optional<RefTableSlotAware.Slot> slot = ((RefTableSlotAware) item).getIdealSlot(
+                    tileEntity.getInputItems(),
+                    tileEntity.getFuelItem(),
+                    tileEntity.getTechItem()
+            );
+            if (slot.isPresent()) {
+                return switch (slot.get()) {
+                    case INGREDIENT -> Optional.of(tileEntity.getInputsSlotIndex());
+                    case FUEL -> Optional.of(tileEntity.getFuelSlotIndex());
+                    case TECH -> Optional.of(tileEntity.getTechSlotIndex());
+                };
+            }
+        }
+
+        return RefTableSlotPreferences.getIdealSlot(
+                item,
+                tileEntity.getInputItems(),
+                tileEntity.getFuelItem(),
+                tileEntity.getTechItem()
+        );
+    }
 }

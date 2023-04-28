@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collection;
@@ -114,6 +115,19 @@ public class RefBoardStats {
         return new RefBoardStats(
                 id, avgWeight, avgSpeed, avgAgility, avgLift, avgLandRes, avgSurf
         );
+    }
+
+    public static RefBoardStats WithRandomStatBoosted(RefBoardStats inputStats, Random random, float multiplier) {
+        switch (random.nextInt(3)) {
+            case 0:
+                return inputStats.WithSpeed(inputStats.speed() * multiplier);
+            case 1:
+                return inputStats.WithAgility(inputStats.agility() * multiplier);
+            case 2:
+                return inputStats.WithLift(inputStats.lift() * multiplier);
+        }
+        EurekaCraft.LOGGER.error("Random stat selection failed. Defaulting to speed. This is a bug!");
+        return inputStats.WithSpeed(inputStats.speed() * multiplier);
     }
 
     public static boolean isElite(RefBoardStats creationReference) {

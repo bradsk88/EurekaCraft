@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "eurekacraft:blueprint",
-    "eurekacraft:blueprint_advanced"
+    "eurekacraft:blueprint_advanced",
+    "eurekacraft:blueprint_poor"
   ]
 }

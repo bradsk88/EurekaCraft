@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.blocks.machines;
 
 public class RefTableConsts {
+    public static final int inputSlotIndex = 0;
     public static final int inputSlots = 6;
     public static final int fuelSlot = inputSlots;
     public static final int techSlot = fuelSlot + 1;

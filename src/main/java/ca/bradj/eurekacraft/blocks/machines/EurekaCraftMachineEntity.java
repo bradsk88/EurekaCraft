@@ -133,8 +133,11 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
         recipe.ifPresent((r) -> {
 
-            ItemStack stackInSlot = getItemForCraftingNoise();
-            Item item = stackInSlot.getItem();
+            Optional<ItemStack> stackInSlot = getItemForCraftingNoise();
+            if (stackInSlot.isEmpty()) {
+                return;
+            }
+            Item item = stackInSlot.get().getItem();
             if (!(item instanceof NoisyCraftingItem)) {
                 return;
             }
@@ -151,5 +154,5 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
     }
 
-    protected abstract ItemStack getItemForCraftingNoise();
+    protected abstract Optional<ItemStack> getItemForCraftingNoise();
 }

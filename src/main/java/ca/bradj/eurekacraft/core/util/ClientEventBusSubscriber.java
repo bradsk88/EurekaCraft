@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.core.util;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.client.gui.FolderScreen;
 import ca.bradj.eurekacraft.client.gui.PhotoScreen;
 import ca.bradj.eurekacraft.client.gui.RefTableScreen;
 import ca.bradj.eurekacraft.client.gui.SandingMachineScreen;
@@ -20,6 +21,7 @@ public class ClientEventBusSubscriber {
         MenuScreens.register(ContainerTypesInit.REF_TABLE.get(), RefTableScreen::new);
         MenuScreens.register(ContainerTypesInit.SANDING_MACHINE.get(), SandingMachineScreen::new);
         MenuScreens.register(ContainerTypesInit.PHOTO.get(), PhotoScreen::new);
+        MenuScreens.register(ContainerTypesInit.FOLDER.get(), FolderScreen::new);
     }
 
 }

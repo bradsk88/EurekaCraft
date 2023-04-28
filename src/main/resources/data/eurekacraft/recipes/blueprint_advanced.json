@@ -22,7 +22,8 @@
   ],
   "cook": false,
   "output": {
-    "item": "eurekacraft:blueprint_advanced"
+    "item": "eurekacraft:blueprint_advanced",
+    "stats": "new"
   },
   "experience": 5.0,
   "cookingTime": 20
