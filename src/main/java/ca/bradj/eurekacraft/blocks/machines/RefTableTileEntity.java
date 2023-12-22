@@ -15,9 +15,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -82,7 +82,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
         return -1;
     }
 
-    private void initializeSpawnRecipe(Random random, RefTableHintRecipes.RecipeProvider recipeProvider) {
+    private void initializeSpawnRecipe(RandomSource random, RefTableHintRecipes.RecipeProvider recipeProvider) {
         RefTableRecipe recipe = recipeProvider.get(random);
         NonNullList<Ingredient> ingredients = recipe.getIngredients();
         for (int i = 0; i < ingredients.size(); i++) {
@@ -114,9 +114,9 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     @Override
     public Component getDisplayName() {
         if (this.ancient) {
-            return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table.ancient");
+            return Component.translatable("container." + EurekaCraft.MODID + ".ref_table.ancient");
         }
-        return new TranslatableComponent("container." + EurekaCraft.MODID + ".ref_table");
+        return Component.translatable("container." + EurekaCraft.MODID + ".ref_table");
     }
 
     @Nullable
@@ -143,7 +143,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     }
 
     @Override
-    protected Collection<ItemStack> getSelfAsItemStacks(Random rand) {
+    protected Collection<ItemStack> getSelfAsItemStacks(RandomSource rand) {
         if (this.ancient) {
             ArrayList<ItemStack> ingredients = new ArrayList<>();
             // Top

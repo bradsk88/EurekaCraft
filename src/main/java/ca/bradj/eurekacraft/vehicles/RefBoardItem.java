@@ -9,8 +9,7 @@ import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -91,7 +90,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
     protected Collection<Component> getSubtitles() {
         Collection<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.boards.subtitle").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.eurekacraft.boards.subtitle").withStyle(ChatFormatting.GRAY));
         return tooltip;
     }
 
@@ -107,15 +106,15 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
         Optional<Wheel> wheel = BoardWheels.FromStack(stack);
         if (wheel.isEmpty()) {
-            tooltip.add(new TextComponent("Wheel: None")); // TODO: Translate
+            tooltip.add(Component.literal("Wheel: None")); // TODO: Translate
         } else {
-            TranslatableComponent wheelName = new TranslatableComponent(wheel.get().getDescriptionId());
-            tooltip.add(new TextComponent("Wheel: " + wheelName.getString()));
+            Component wheelName = Component.translatable(wheel.get().getDescriptionId());
+            tooltip.add(Component.literal("Wheel: " + wheelName.getString()));
         }
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, RandomSource  random) {
 
         ItemStack board = null;
 
@@ -182,7 +181,7 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    public RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+    public RefBoardStats getStatsForStack(ItemStack stack, RandomSource  rand) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             // TODO: Do we really need to do this?

@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.materials;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -29,7 +28,7 @@ public class Resin extends Item {
             TooltipFlag p_41424_
     ) {
         p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.resins.subtitle").
+                Component.translatable("item.eurekacraft.resins.subtitle").
                         withStyle(ChatFormatting.GRAY)
         );
     }

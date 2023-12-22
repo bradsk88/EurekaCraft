@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.materials.Blueprints;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -193,6 +194,6 @@ public class RefTableHintRecipes {
     public static final String NBT_SPAWNED_WITH_RECIPE = "spawned_with_recipe";
 
     public interface RecipeProvider {
-        RefTableRecipe get(Random random);
+        RefTableRecipe get(RandomSource random);
     }
 }

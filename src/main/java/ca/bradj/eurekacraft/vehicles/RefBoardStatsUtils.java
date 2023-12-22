@@ -1,7 +1,6 @@
 package ca.bradj.eurekacraft.vehicles;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.*;
 
@@ -10,7 +9,7 @@ public class RefBoardStatsUtils {
 
     public static RefBoardStats BoostAvg(
             Collection<RefBoardStats> stats,
-            Random random,
+            RandomSource random,
             float baseBoost,
             float randomStatBoost
     ) {
@@ -60,7 +59,7 @@ public class RefBoardStatsUtils {
         return tooltip;
     }
 
-    public static TranslatableComponent Prefix(
+    public static Component Prefix(
             String name,
             double stat
     ) {
@@ -68,18 +67,18 @@ public class RefBoardStatsUtils {
         if (stat < 0) {
             value = "???";
         }
-        return new TranslatableComponent(
+        return Component.translatable(
                 "item.eurekacraft.ref_board_stats." + name + "_prefix",
                 value
         );
     }
 
-    private static TranslatableComponent range(
+    private static Component range(
             String name,
             double lower,
             double upper
     ) {
-        return new TranslatableComponent(
+        return Component.translatable(
                 "item.eurekacraft.ref_board_stats." + name + "_range",
                 (int) (100 * lower), (int) (100 * upper)
         );

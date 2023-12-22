@@ -43,7 +43,7 @@ public class SandingMachineContainer extends Container {
         layoutPlayerInventorySlots(86);
 
         if (tileEntity != null) {
-            tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+            tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
                     .ifPresent(h -> {
 
                         int nextTopY = titleBarHeight + margin + boxHeight;

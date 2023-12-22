@@ -6,7 +6,6 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -91,14 +90,14 @@ public class BoardWheels {
             WheelStats stats
     ) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.wheels.subtitle").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.eurekacraft.wheels.subtitle").withStyle(ChatFormatting.GRAY));
         tooltip.add(prefix("braking", stats.braking));
         tooltip.add(prefix("acceleration", stats.acceleration));
         return tooltip;
     }
 
-    private static TranslatableComponent prefix(String name, double stat) {
-        return new TranslatableComponent(
+    private static Component prefix(String name, double stat) {
+        return Component.translatable(
                 "item.eurekacraft.wheel_stats." + name + "_prefix",
                 (int) (stat)
         );

@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.vehicles.wheels;
 import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -26,7 +25,7 @@ public class SocketWrenchItem extends EurekaCraftItem {
             TooltipFlag p_41424_
     ) {
         p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.socket_wrench.subtitle").
+                Component.translatable("item.eurekacraft.socket_wrench.subtitle").
                         withStyle(ChatFormatting.GRAY)
         );
     }

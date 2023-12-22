@@ -29,7 +29,7 @@ public class TraparLeavesBlock extends LeavesBlock {
     }
 
     @Override
-    public void randomTick(BlockState p_54451_, ServerLevel level, BlockPos pos, Random r) {
+    public void randomTick(BlockState p_54451_, ServerLevel level, BlockPos pos, RandomSource  r) {
         Integer distanceToLog = p_54451_.getValue(DISTANCE);
         if (distanceToLog >= 7) {
             int mustBeThreeToReplaceAllBlocks = 3;

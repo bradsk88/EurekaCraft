@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -140,7 +140,7 @@ public class JudgeEntity extends PathfinderMob {
         player.level.playSound(
                 null, airPos.x, airPos.y, airPos.z, SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0f, 0.5f
         );
-        player.sendMessage(new TextComponent("message.tricks.judge_appeared"), Util.NIL_UUID);
+        player.sendMessage(Component.literal("message.tricks.judge_appeared"), Util.NIL_UUID);
     }
 
     @Nullable
@@ -204,7 +204,7 @@ public class JudgeEntity extends PathfinderMob {
         this.hasAward = false;
         this.awardPos = this.blockPosition();
 
-        player.sendMessage(new TextComponent("message.tricks.congrats"), Util.NIL_UUID);
+        player.sendMessage(Component.literal("message.tricks.congrats"), Util.NIL_UUID);
     }
 
     @Override

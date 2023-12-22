@@ -94,7 +94,7 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     @Override
-    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, Random rand) {
+    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, RandomSource  rand) {
         super.randomTick(p_52292_, level, blockPos, rand);
         if (isMaxAge(p_52292_)) {
             tryChangingToSapling(level, blockPos, rand);
@@ -102,7 +102,7 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     private void tryChangingToSapling(
-            ServerLevel level, BlockPos blockPos, Random rand
+            ServerLevel level, BlockPos blockPos, RandomSource  rand
     ) {
         for (Direction d : Direction.Plane.HORIZONTAL) {
             BlockState blockState = level.getBlockState(blockPos.relative(d));

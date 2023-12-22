@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -68,13 +70,13 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (cap == ForgeCapabilities.ITEM_HANDLER) {
             return this.handler.cast();
         }
         return super.getCapability(cap, side);
     }
 
-    public List<ItemStack> getItemsStacksForDrop(Random random) {
+    public List<ItemStack> getItemsStacksForDrop(RandomSource random) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < this.itemHandler.getSlots(); i++) {
             ItemStack iStack = itemHandler.getStackInSlot(i);
@@ -87,7 +89,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         return items;
     }
 
-    protected abstract Collection<ItemStack> getSelfAsItemStacks(Random random);
+    protected abstract Collection<ItemStack> getSelfAsItemStacks(RandomSource random);
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());

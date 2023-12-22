@@ -19,8 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -61,7 +60,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
 
     @Override
     public Component getTitle() {
-        return new TextComponent(BlocksInit.REF_TABLE_BLOCK.get().getName().getString());
+        return Component.literal(BlocksInit.REF_TABLE_BLOCK.get().getName().getString());
     }
 
     @Override
@@ -198,7 +197,7 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
                 mouseX,
                 mouseY
         ));
-        strs.add(new TranslatableComponent("items.chance", (int) (chance * 100)));
+        strs.add(Component.translatable("items.chance", (int) (chance * 100)));
         return strs;
     }
 }

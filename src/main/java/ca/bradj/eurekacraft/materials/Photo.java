@@ -4,7 +4,7 @@ import ca.bradj.eurekacraft.container.PhotoContainer;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.interfaces.IInitializable;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -64,7 +64,7 @@ public class Photo extends Item implements IInitializable {
     @Override
     public void initialize(
             ItemStack target,
-            Random random
+            RandomSource random
     ) {
         target.getOrCreateTag().putInt(NBT_KEY_PHOTO_ID, random.nextInt(9) + 1);
     }

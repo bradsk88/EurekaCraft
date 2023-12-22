@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -171,7 +171,7 @@ public class PosterSpawnBlock extends EntityBlock {
         int catIdx = entity.getNextRecipeCategoryIndex(level);
         if (level.isClientSide()) {
             Minecraft.getInstance().gui.setOverlayMessage(
-                    new TextComponent("setting recipe category to " + supportedRecipes[catIdx]),
+                    Component.literal("setting recipe category to " + supportedRecipes[catIdx]),
                     false
             );
             return InteractionResult.sidedSuccess(true);

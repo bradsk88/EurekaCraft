@@ -12,7 +12,7 @@ public class TraparTreeGrower extends AbstractTreeGrower {
 
     @Nullable
     @Override
-    protected Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(Random rand, boolean p_204308_) {
+    protected Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource rand, boolean p_204308_) {
         return ConfiguredFeatures.TRAPAR_TREE;
     }
 }

@@ -63,7 +63,7 @@ public class ChunkWavesDataManager extends SavedData {
         );
     }
 
-    public ChunkWavesData getData(ChunkAccess ca, Random rand) {
+    public ChunkWavesData getData(ChunkAccess ca, RandomSource  rand) {
         ChunkWavesData chunkWavesData = chunkData.computeIfAbsent(ca.getPos(), cp -> {
             ChunkWavesData data = ChunkWavesData.generate(ca, rand);
             setDirty();
@@ -75,7 +75,7 @@ public class ChunkWavesDataManager extends SavedData {
         return chunkWavesData;
     }
 
-    public void initData(ChunkAccess ca, Random rand) {
+    public void initData(ChunkAccess ca, RandomSource  rand) {
         getData(ca, rand);
     }
 

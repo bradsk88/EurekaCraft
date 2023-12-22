@@ -15,7 +15,7 @@ public class GlideBoard extends RefBoardItem {
     @Override
     public RefBoardStats getStatsForStack(
             ItemStack stack,
-            Random rand
+            RandomSource rand
     ) {
         return super.getStatsForStack(stack, rand).WithLift(0);
     }

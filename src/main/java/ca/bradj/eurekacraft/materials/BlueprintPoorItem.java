@@ -32,7 +32,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
     public static final String ITEM_ID = "blueprint_poor";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(RandomSource rand) {
         ItemStack i = ItemsInit.BLUEPRINT_POOR.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.BadBoard, rand);
         return i;
@@ -69,7 +69,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, RandomSource  random) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
         if (!(blueprint.getItem() instanceof BlueprintPoorItem)) {
@@ -95,7 +95,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
     }
 
     @Override
-    public void initialize(ItemStack target, Random random) {
+    public void initialize(ItemStack target, RandomSource  random) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, random);
         target.getOrCreateTag().put(Blueprints.NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
     }
@@ -104,7 +104,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
     public void generateNewBoardStats(
             ItemStack target,
             Collection<ItemStack> context,
-            Random random
+            RandomSource random
     ) {
         Collection<RefBoardStats> contextStats = context.stream().
                 filter(v -> v.getItem() instanceof IBoardStatsGetter).

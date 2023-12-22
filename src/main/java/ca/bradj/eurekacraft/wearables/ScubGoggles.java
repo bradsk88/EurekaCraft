@@ -5,7 +5,6 @@ import ca.bradj.eurekacraft.render.wearables.ScubGoggleHelmetModel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +13,8 @@ import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.IItemRenderProperties;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -31,12 +31,14 @@ public class ScubGoggles extends ArmorItem {
     // TODO: Implement rendering
 
     @Override
-    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
-        consumer.accept(new IItemRenderProperties() {
-            @Nullable
+    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+        consumer.accept(new IClientItemExtensions() {
+
             @Override
-            public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                if (EquipmentSlot.HEAD == armorSlot) {
+            public @NotNull HumanoidModel<?> getHumanoidArmorModel(
+                    LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original
+            ) {
+                if (EquipmentSlot.HEAD == equipmentSlot) {
                     return new ScubGoggleHelmetModel();
                 }
                 return null;
@@ -52,7 +54,7 @@ public class ScubGoggles extends ArmorItem {
             TooltipFlag p_41424_
     ) {
         p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.scub_goggles.subtitle").
+                Component.translatable("item.eurekacraft.scub_goggles.subtitle").
                         withStyle(ChatFormatting.GRAY)
         );
     }

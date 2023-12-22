@@ -4,7 +4,6 @@ import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
 
@@ -32,13 +31,13 @@ public class StandardRefBoard extends RefBoardItem {
     protected Collection<Component> getSubtitles() {
         Collection<Component> subtitles = super.getSubtitles();
         subtitles.add(
-                new TranslatableComponent("item.eurekacraft.ref_boards.subtitle").
+                Component.translatable("item.eurekacraft.ref_boards.subtitle").
                         withStyle(ChatFormatting.GRAY)
         );
         return subtitles;
     }
 
-    public static ItemStack getWithRandomStats(Random rand) {
+    public static ItemStack getWithRandomStats(RandomSource rand) {
         ItemStack i = ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance();
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, rand);
         storeStatsOnStack(i, newStats);
@@ -46,7 +45,7 @@ public class StandardRefBoard extends RefBoardItem {
         return i;
     }
 
-    public static ItemStack getWithRandomBadStats(Random rand) {
+    public static ItemStack getWithRandomBadStats(RandomSource rand) {
         ItemStack i = ItemsInit.STANDARD_REF_BOARD.get().getDefaultInstance();
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, rand);
         storeStatsOnStack(i, newStats);

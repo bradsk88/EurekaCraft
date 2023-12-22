@@ -16,7 +16,6 @@ import ca.bradj.eurekacraft.wearables.ScubGoggles;
 import ca.bradj.eurekacraft.world.PosterBlockItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -67,7 +66,7 @@ public class ItemsInit {
 						TooltipFlag p_40575_
 				) {
 					p_40574_.add(
-							new TranslatableComponent("item.eurekacraft.resins.subtitle").
+							Component.translatable("item.eurekacraft.resins.subtitle").
 									withStyle(ChatFormatting.GRAY)
 					);
 				}
@@ -87,11 +86,11 @@ public class ItemsInit {
 						TooltipFlag p_40575_
 				) {
 					p_40574_.add(
-							new TranslatableComponent("item.eurekacraft.resins.subtitle").
+							Component.translatable("item.eurekacraft.resins.subtitle").
 									withStyle(ChatFormatting.GRAY)
 					);
 					p_40574_.add(
-							new TranslatableComponent("item.eurekacraft.red_resins.subtitle").
+							Component.translatable("item.eurekacraft.red_resins.subtitle").
 									withStyle(ChatFormatting.GRAY)
 					);
 				}

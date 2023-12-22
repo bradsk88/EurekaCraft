@@ -6,7 +6,6 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.world.NoisyItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +40,7 @@ public class SoftChiselItem extends Item implements NoisyCraftingItem, IBoardSta
             TooltipFlag p_41424_
     ) {
         p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.soft_chisel.subtitle").
+                Component.translatable("item.eurekacraft.soft_chisel.subtitle").
                         withStyle(ChatFormatting.GRAY)
         );
     }

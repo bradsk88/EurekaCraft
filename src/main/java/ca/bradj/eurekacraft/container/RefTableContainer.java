@@ -46,7 +46,7 @@ public class RefTableContainer extends Container {
         layoutPlayerInventorySlots(86);
 
         if (tileEntity != null) {
-            tileEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(h -> {
+            tileEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
 
                 // Inputs
                 int cols = 2, rows = 3;

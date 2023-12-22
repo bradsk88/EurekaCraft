@@ -5,6 +5,7 @@ import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -24,9 +25,9 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
             WithFallback(RefBoardStats.EliteBoard);
 
     public static final String ITEM_ID = "blueprint_advanced";
-    private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
+    private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP).stacksTo(1);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(RandomSource rand) {
         ItemStack i = ItemsInit.BLUEPRINT_ADVANCED.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.EliteBoard, rand);
         return i;
@@ -34,11 +35,6 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
 
     public BlueprintAdvancedItem() {
         super(PROPS);
-    }
-
-    @Override
-    public int getItemStackLimit(ItemStack stack) {
-        return 1;
     }
 
     @Override
@@ -58,7 +54,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     @Override
     public void initialize(
             ItemStack target,
-            Random random
+            RandomSource random
     ) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.EliteBoard, random);
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
@@ -73,7 +69,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     public void generateNewBoardStats(
             ItemStack target,
             Collection<ItemStack> context,
-            Random random
+            RandomSource random
     ) {
         Collection<RefBoardStats> contextStats = context.stream().
                 filter(v -> v.getItem() instanceof IBoardStatsGetter).

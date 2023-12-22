@@ -3,8 +3,6 @@ package ca.bradj.eurekacraft.data.recipes;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.machines.RefTableConsts;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
-import ca.bradj.eurekacraft.interfaces.IInitializable;
-import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
@@ -13,13 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class RefTableRecipe implements IGlideBoardRecipe {
 
@@ -183,7 +182,7 @@ public class RefTableRecipe implements IGlideBoardRecipe {
         return this.constructStats;
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<RefTableRecipe> {
+    public static class Serializer implements RecipeSerializer<RefTableRecipe> {
 
         @Override
         public RefTableRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
@@ -270,11 +269,13 @@ public class RefTableRecipe implements IGlideBoardRecipe {
 
             Secondary secondary = Secondary.of(secondaryItem, secondaryChance, initialize);
 
-            RefTableRecipe.ConstructStats outputStats = ConstructStats.INVALID;
+            RefTableRecipe.ConstructStats outputStats;
             if ("new".equals(outputStatsStr)) {
                 outputStats = ConstructStats.NEW;
             } else if ("boost_avg".equals(outputStatsStr)) {
                 outputStats = ConstructStats.BOOST_AVG;
+            } else {
+                throw new IllegalArgumentException("Unexpected value for \"stats\": " + outputStatsStr);
             }
 
             return new RefTableRecipe(recipeId, output, inputs, cook, extra, secondary, outputQuantity, outputStats);
@@ -301,11 +302,6 @@ public class RefTableRecipe implements IGlideBoardRecipe {
     public static class Type implements RecipeType<RefTableRecipe> {
         public static final Type INSTANCE = new Type();
         public static final ResourceLocation ID = new ResourceLocation(EurekaCraft.MODID, "glide_board");
-
-        @Override
-        public <C extends Container> Optional<RefTableRecipe> tryMatch(Recipe<C> p_44116_, Level p_44117_, C p_44118_) {
-            return RecipeType.super.tryMatch(p_44116_, p_44117_, p_44118_);
-        }
     }
 
     public static class Secondary {

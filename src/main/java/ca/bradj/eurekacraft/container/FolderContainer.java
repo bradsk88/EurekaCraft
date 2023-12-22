@@ -45,7 +45,7 @@ public class FolderContainer extends Container {
                 .equals(is.getItem())) {
             throw new IllegalStateException("Main hand item is not blueprint folder");
         }
-        is.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        is.getCapability(ForgeCapabilities.ITEM_HANDLER)
                 .ifPresent(h -> {
                     // Inputs
                     int cols = 9, rows = 1;

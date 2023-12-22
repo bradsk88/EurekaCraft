@@ -7,6 +7,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -33,7 +34,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public static final String ITEM_ID = "blueprint";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(RandomSource rand) {
         ItemStack i = ItemsInit.BLUEPRINT.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.StandardBoard, rand);
         return i;
@@ -69,7 +70,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
+    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, RandomSource  random) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
         if (!(blueprint.getItem() instanceof BlueprintItem)) {
@@ -97,7 +98,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     @Override
     public void initialize(
             ItemStack target,
-            Random random
+            RandomSource random
     ) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
@@ -107,7 +108,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public void generateNewBoardStats(
             ItemStack target,
             Collection<ItemStack> context,
-            Random random
+            RandomSource random
     ) {
         Collection<RefBoardStats> contextStats = context.stream().
                 filter(v -> v.getItem() instanceof IBoardStatsGetter).

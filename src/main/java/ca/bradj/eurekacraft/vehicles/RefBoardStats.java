@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.vehicles;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.RandomSource;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -118,7 +119,7 @@ public class RefBoardStats {
         return Math.max(0, val + 0.15 - (0.25 * random));
     }
 
-    public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, Random rand) {
+    public static RefBoardStats FromReferenceWithRandomOffsets(RefBoardStats creationReference, RandomSource rand) {
         double weight = creationReference.weight();
         double speed = creationReference.speed() + 0.15 - (0.25 * rand.nextDouble());
         double agility = creationReference.agility() + 0.15 - (0.25 * rand.nextDouble());
@@ -150,7 +151,7 @@ public class RefBoardStats {
         );
     }
 
-    public static RefBoardStats WithRandomStatBoosted(RefBoardStats inputStats, Random random, float multiplier) {
+    public static RefBoardStats WithRandomStatBoosted(RefBoardStats inputStats, RandomSource  random, float multiplier) {
         switch (random.nextInt(3)) {
             case 0:
                 return inputStats.WithSpeed(inputStats.speed() * multiplier);

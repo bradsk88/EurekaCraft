@@ -9,8 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -60,7 +59,7 @@ public class BlueprintFolderItem extends Item implements MenuProvider {
                     @NotNull Capability<T> cap,
                     @org.jetbrains.annotations.Nullable Direction side
             ) {
-                if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+                if (cap == ForgeCapabilities.ITEM_HANDLER) {
                     return LazyOptional.of(() -> handler)
                             .cast();
                 }
@@ -103,19 +102,19 @@ public class BlueprintFolderItem extends Item implements MenuProvider {
         ) ? nbt.getCompound(STACK_ITEMS_NBT).getList("Items", Tag.TAG_COMPOUND).size() : 0;
 
         tooltip.add(
-                new TranslatableComponent(
+                Component.translatable(
                         "item." + EurekaCraft.MODID + "." + ITEM_ID + ".subtitle"
                 ).withStyle(ChatFormatting.GRAY)
         );
         tooltip.add(
                 // TODO: Translate
-                new TextComponent("Contains " + size + " blueprints")
+                Component.literal("Contains " + size + " blueprints")
         );
     }
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("container." + EurekaCraft.MODID + ".folder").withStyle(ChatFormatting.WHITE);
+        return Component.translatable("container." + EurekaCraft.MODID + ".folder").withStyle(ChatFormatting.WHITE);
     }
 
     @org.jetbrains.annotations.Nullable

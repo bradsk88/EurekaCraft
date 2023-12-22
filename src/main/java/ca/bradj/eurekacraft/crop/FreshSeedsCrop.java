@@ -115,7 +115,7 @@ public class FreshSeedsCrop extends CropBlock {
     }
 
     @Override
-    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, Random rand) {
+    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, RandomSource  rand) {
         super.randomTick(p_52292_, level, blockPos, rand);
         if (isMaxAge(p_52292_)) {
             tryChangingToHardened(level, blockPos, rand);
@@ -123,7 +123,7 @@ public class FreshSeedsCrop extends CropBlock {
     }
 
     private void tryChangingToHardened(
-            ServerLevel level, BlockPos blockPos, Random rand
+            ServerLevel level, BlockPos blockPos, RandomSource  rand
     ) {
         for (Direction d : Direction.Plane.HORIZONTAL) {
             BlockState blockState = level.getBlockState(blockPos.relative(d));

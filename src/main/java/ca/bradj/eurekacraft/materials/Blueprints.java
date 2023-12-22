@@ -6,7 +6,7 @@ import ca.bradj.eurekacraft.vehicles.RefBoardStatsUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
@@ -22,8 +22,8 @@ public class Blueprints {
             RefBoardStats defaults
     ) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.blueprints.subtitle_1").withStyle(ChatFormatting.GRAY));
-        tooltip.add(new TranslatableComponent("item.eurekacraft.blueprints.subtitle_2").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.eurekacraft.blueprints.subtitle_1").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("item.eurekacraft.blueprints.subtitle_2").withStyle(ChatFormatting.GRAY));
         tooltip.addAll(RefBoardStatsUtils.getTooltips(stats, defaults));
         return tooltip;
     }
@@ -41,7 +41,7 @@ public class Blueprints {
 
         @Override
         public RefBoardStats getBoardStatsFromNBTOrCreate(
-                ItemStack itemStack, RefBoardStats creationReference, Random rand
+                ItemStack itemStack, RefBoardStats creationReference, RandomSource rand
         ) {
             if (itemStack.getTag() == null) {
                 itemStack.setTag(new CompoundTag());

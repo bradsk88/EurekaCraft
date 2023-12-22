@@ -156,7 +156,7 @@ FF
 
 R = Ref Board Core
 
-(Random outcome for lift score)
+(RandomSource outcome for lift score)
 
 ### Elite Ref Board (more lift)
 ```

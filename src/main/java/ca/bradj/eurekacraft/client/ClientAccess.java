@@ -3,7 +3,7 @@ package ca.bradj.eurekacraft.client;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public class ClientAccess {
 
@@ -15,7 +15,7 @@ public class ClientAccess {
     }
 
     public static void showBoardHint() {
-        TranslatableComponent tc = new TranslatableComponent(
+        Component tc = Component.translatable(
                 "message.board.clicked_on_ground"
         );
         Minecraft.getInstance().gui.setOverlayMessage(tc, false);

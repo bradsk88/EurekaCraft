@@ -16,7 +16,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -81,7 +80,7 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
         return RecipesInit.SANDING_MACHINE_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SandingMachineRecipe> {
+    public static class Serializer implements RecipeSerializer<SandingMachineRecipe> {
 
         Logger logger = LogManager.getLogger(EurekaCraft.MODID + "/SandingMachine");
 
