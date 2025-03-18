@@ -48,7 +48,6 @@ public class RefTableBlock extends EntityBlock {
     public static final String ITEM_ID = "ref_table_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
             tab(ModItemGroup.EUREKACRAFT_GROUP);
-    private RefTableTileEntity entity;
 
     public RefTableBlock() {
         super(
@@ -91,8 +90,7 @@ public class RefTableBlock extends EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        this.entity = TilesInit.REF_TABLE.get().create(pos, state);
-        return this.entity;
+        return TilesInit.REF_TABLE.get().create(pos, state);
     }
 
     @Nullable
@@ -127,7 +125,15 @@ public class RefTableBlock extends EntityBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder p_60538_) {
-        return this.entity.getItemsStacksForDrop(p_60538_.getLevel().getRandom());
+    public void onRemove(
+            BlockState p_60515_,
+            Level level,
+            BlockPos pos,
+            BlockState p_60518_,
+            boolean p_60519_
+    ) {
+        super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
+        EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) level.getBlockEntity(pos);
+        en.dropItems(level, pos);
     }
 }

@@ -35,7 +35,6 @@ public class SandingMachineBlock extends EntityBlock {
     public static final String ITEM_ID = "sanding_machine_block";
     public static final Item.Properties ITEM_PROPS = new Item.Properties().
             tab(ModItemGroup.EUREKACRAFT_GROUP);
-    private SandingMachineTileEntity entity;
 
     public SandingMachineBlock() {
         super(
@@ -47,8 +46,7 @@ public class SandingMachineBlock extends EntityBlock {
 
     @Override
     public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        this.entity = TilesInit.SANDING_MACHINE.get().create(p_153215_, p_153216_);
-        return this.entity;
+        return TilesInit.SANDING_MACHINE.get().create(p_153215_, p_153216_);
     }
 
     @Nullable
@@ -83,7 +81,15 @@ public class SandingMachineBlock extends EntityBlock {
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState p_60537_, LootContext.Builder p_60538_) {
-        return this.entity.getItemsStacksForDrop(p_60538_.getLevel().getRandom());
+    public void onRemove(
+            BlockState p_60515_,
+            Level p_60516_,
+            BlockPos p_60517_,
+            BlockState p_60518_,
+            boolean p_60519_
+    ) {
+        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
+        EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) p_60516_.getBlockEntity(p_60517_);
+        en.dropItems(p_60516_, p_60517_);
     }
 }

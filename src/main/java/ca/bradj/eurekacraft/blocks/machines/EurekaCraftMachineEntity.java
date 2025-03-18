@@ -5,9 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -27,7 +29,12 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
     private final ItemStackHandler itemHandler;
     private LazyOptional<IItemHandler> handler;
 
-    public EurekaCraftMachineEntity(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_, int totalSlots) {
+    public EurekaCraftMachineEntity(
+            BlockEntityType<?> p_155228_,
+            BlockPos p_155229_,
+            BlockState p_155230_,
+            int totalSlots
+    ) {
         super(p_155228_, p_155229_, p_155230_);
         this.itemHandler = new ItemStackHandler(totalSlots) {
             @Override
@@ -67,14 +74,17 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
 
     @Nonnull
     @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+    public <T> LazyOptional<T> getCapability(
+            @Nonnull Capability<T> cap,
+            @Nullable Direction side
+    ) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return this.handler.cast();
         }
         return super.getCapability(cap, side);
     }
 
-    public List<ItemStack> getItemsStacksForDrop(Random random) {
+    private List<ItemStack> getItemsStacksForDrop(Random random) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < this.itemHandler.getSlots(); i++) {
             ItemStack iStack = itemHandler.getStackInSlot(i);
@@ -109,11 +119,17 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         return itemHandler.getStackInSlot(slot);
     }
 
-    protected void insertItem(int slot, ItemStack stack) {
+    protected void insertItem(
+            int slot,
+            ItemStack stack
+    ) {
         itemHandler.insertItem(slot, stack, false);
     }
 
-    protected ItemStack extractItem(int slot, int amount) {
+    protected ItemStack extractItem(
+            int slot,
+            int amount
+    ) {
         return itemHandler.extractItem(slot, amount, false);
     }
 
@@ -143,9 +159,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             ((NoisyCraftingItem) item).getCraftingSound().ifPresent((s) -> {
                 float volume = 0.5f;
                 float pitch = 0.5f;
-                this.level.playSound(
-                        null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch
-                );
+                this.level.playSound(null, this.getBlockPos(), s.event, SoundSource.BLOCKS, volume, pitch);
                 this.noiseCooldown = s.noiseCooldown;
             });
         });
@@ -153,4 +167,14 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
     }
 
     protected abstract Optional<ItemStack> getItemForCraftingNoise();
+
+    public void dropItems(
+            Level level,
+            BlockPos pos
+    ) {
+        for (ItemStack itemStack : getItemsStacksForDrop(level.random)) {
+            ItemEntity ie = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+            level.addFreshEntity(ie);
+        }
+    }
 }
