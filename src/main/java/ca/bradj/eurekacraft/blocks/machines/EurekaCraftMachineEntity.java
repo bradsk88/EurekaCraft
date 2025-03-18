@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -172,9 +173,12 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
             Level level,
             BlockPos pos
     ) {
-        for (ItemStack itemStack : getItemsStacksForDrop(level.random)) {
-            ItemEntity ie = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), itemStack);
-            level.addFreshEntity(ie);
+        if (!(level instanceof ServerLevel sl)) {
+            return;
+        }
+        for (ItemStack itemStack : getItemsStacksForDrop(sl.random)) {
+            ItemEntity ie = new ItemEntity(sl, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+            sl.addFreshEntity(ie);
         }
     }
 }
