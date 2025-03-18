@@ -88,8 +88,8 @@ public class SandingMachineBlock extends EntityBlock {
             BlockState p_60518_,
             boolean p_60519_
     ) {
-        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
         EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) p_60516_.getBlockEntity(p_60517_);
         en.dropItems(p_60516_, p_60517_);
+        super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
     }
 }

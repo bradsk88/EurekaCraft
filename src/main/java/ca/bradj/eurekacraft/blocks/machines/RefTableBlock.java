@@ -132,8 +132,8 @@ public class RefTableBlock extends EntityBlock {
             BlockState p_60518_,
             boolean p_60519_
     ) {
-        super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
         EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) level.getBlockEntity(pos);
         en.dropItems(level, pos);
+        super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
     }
 }
