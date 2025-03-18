@@ -4,6 +4,7 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.wrappers.EntityBlock;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SandingMachineBlock extends EntityBlock {
@@ -91,5 +93,13 @@ public class SandingMachineBlock extends EntityBlock {
         EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) p_60516_.getBlockEntity(p_60517_);
         en.dropItems(p_60516_, p_60517_);
         super.onRemove(p_60515_, p_60516_, p_60517_, p_60518_, p_60519_);
+    }
+
+    @Override
+    public List<ItemStack> getDrops(
+            BlockState p_60537_,
+            LootContext.Builder p_60538_
+    ) {
+        return new ArrayList<>();
     }
 }

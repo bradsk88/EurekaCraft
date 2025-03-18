@@ -34,6 +34,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RefTableBlock extends EntityBlock {
@@ -135,5 +136,13 @@ public class RefTableBlock extends EntityBlock {
         EurekaCraftMachineEntity en = (EurekaCraftMachineEntity) level.getBlockEntity(pos);
         en.dropItems(level, pos);
         super.onRemove(p_60515_, level, pos, p_60518_, p_60519_);
+    }
+
+    @Override
+    public List<ItemStack> getDrops(
+            BlockState p_60537_,
+            LootContext.Builder p_60538_
+    ) {
+        return new ArrayList<>();
     }
 }
