@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.world.waves;
 
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.ChunkWavesMessage;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +34,11 @@ public class ChunkWavesDataManager extends SavedData {
             throw new RuntimeException("Client side access is not allowed");
         }
         DimensionDataStorage storage = ((ServerLevel) level).getDataStorage();
-        return storage.computeIfAbsent(ChunkWavesDataManager::new, ChunkWavesDataManager::new, "chunk_wave_data_manager");
+        return storage.computeIfAbsent(
+                ChunkWavesDataManager::new,
+                ChunkWavesDataManager::new,
+                "chunk_wave_data_manager"
+        );
     }
 
     public static void tick(ServerLevel world) {
@@ -52,9 +57,13 @@ public class ChunkWavesDataManager extends SavedData {
         }
     }
 
-    private static void updateWavesOnClientSide(ServerLevel world, ServerPlayer p, ChunkPos cp) {
+    private static void updateWavesOnClientSide(
+            ServerLevel world,
+            ServerPlayer p,
+            ChunkPos cp
+    ) {
         ChunkWavesData data = ChunkWavesDataManager.get(world).getData(
-                world.getChunk(cp.x, cp.z), world.getRandom()
+                world.getChunk(cp.x, cp.z), Compat.random(world)
         );
 //                EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
         EurekaCraftNetwork.CHANNEL.send(
@@ -63,19 +72,27 @@ public class ChunkWavesDataManager extends SavedData {
         );
     }
 
-    public ChunkWavesData getData(ChunkAccess ca, Random rand) {
-        ChunkWavesData chunkWavesData = chunkData.computeIfAbsent(ca.getPos(), cp -> {
-            ChunkWavesData data = ChunkWavesData.generate(ca, rand);
-            setDirty();
-            return data;
-        });
+    public ChunkWavesData getData(
+            ChunkAccess ca,
+            Compat.RandomSrc rand
+    ) {
+        ChunkWavesData chunkWavesData = chunkData.computeIfAbsent(
+                ca.getPos(), cp -> {
+                    ChunkWavesData data = ChunkWavesData.generate(ca, rand);
+                    setDirty();
+                    return data;
+                }
+        );
         if (chunkWavesData.generateRavineWaves(ca, rand)) {
             setDirty();
         }
         return chunkWavesData;
     }
 
-    public void initData(ChunkAccess ca, Random rand) {
+    public void initData(
+            ChunkAccess ca,
+            Compat.RandomSrc rand
+    ) {
         getData(ca, rand);
     }
 

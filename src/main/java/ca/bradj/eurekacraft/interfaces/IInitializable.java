@@ -1,9 +1,8 @@
 package ca.bradj.eurekacraft.interfaces;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.Random;
-
 public interface IInitializable {
-    void initialize(ItemStack target, Random random);
+    void initialize(ItemStack target, Compat.RandomSrc random);
 }

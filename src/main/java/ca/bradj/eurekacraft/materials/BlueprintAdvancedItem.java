@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.network.chat.Component;
@@ -58,7 +59,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     @Override
     public void initialize(
             ItemStack target,
-            Random random
+            Compat.RandomSrc random
     ) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.EliteBoard, random);
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));

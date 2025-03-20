@@ -6,18 +6,27 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.*;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.items.IItemHandler;
@@ -38,6 +47,7 @@ import java.util.function.Supplier;
 
 public class Compat {
     public static final Random RANDOM = new Random();
+    public static final ResourceLocation OVERWORLD = Level.OVERWORLD.location();
 
     public static void playNeutralSound(
             ServerLevel serverLevel,
@@ -75,14 +85,14 @@ public class Compat {
     }
 
     public static Component translatable(String key) {
-        return new TranslatableComponent(key);
+        return Component.translatable(key);
     }
 
     public static MutableComponent translatable(
             String key,
             Object... args
     ) {
-        return new TranslatableComponent(key, args);
+        return Component.translatable(key, args);
     }
 
     public static Component translatableStyled(
@@ -96,7 +106,7 @@ public class Compat {
     }
 
     public static Component literal(String x) {
-        return new TextComponent(x);
+        return Component.literal(x);
     }
 
     public static <X> ArrayList<X> shuffle(
@@ -130,7 +140,7 @@ public class Compat {
             SimpleChannel.MessageBuilder<MSG> decoder,
             BiConsumer<MSG, Supplier<NetworkEvent.Context>> consumer
     ) {
-        return decoder.consumer(consumer);
+        return decoder.consumerNetworkThread(consumer);
     }
 
     public static void openScreen(
@@ -138,11 +148,11 @@ public class Compat {
             MenuProvider menuProvider,
             Consumer<FriendlyByteBuf> consumer
     ) {
-        NetworkHooks.openGui(sender, menuProvider, consumer);
+        NetworkHooks.openScreen(sender, menuProvider, consumer);
     }
 
     public static DeferredRegister<MenuType<?>> CreateMenuRegister(String modid) {
-        return DeferredRegister.create(ForgeRegistries.CONTAINERS, modid);
+        return DeferredRegister.create(ForgeRegistries.MENU_TYPES, modid);
     }
 
     public static void enqueueOrLog(
@@ -234,11 +244,48 @@ public class Compat {
             ServerPlayer sender,
             Component message
     ) {
-        sender.sendMessage(message, sender.getUUID());
+        sender.sendSystemMessage(message);
     }
 
     public static void initCommands(IEventBus bus) {
         // Only required in 1.19 or above
         // CommandsInit.register(bus)
     }
+
+    public static float nextFloat(LootContext context) {
+        return context.getRandom().nextFloat();
+    }
+
+    public static RandomSrc random(LevelAccessor level) {
+        RandomSource random = level.getRandom();
+        return new RandomSrc() {
+            @Override
+            public double nextDouble() {
+                return random.nextDouble();
+            }
+
+            @Override
+            public int nextInt(int xRange) {
+                return random.nextInt(xRange);
+            }
+
+            @Override
+            public boolean nextBoolean() {
+                return random.nextBoolean();
+            }
+        };
+    }
+
+    public static LevelAccessor getWorld(LevelEvent evt) {
+        return evt.getLevel();
+    }
+
+    public interface RandomSrc {
+        double nextDouble();
+
+        int nextInt(int xRange);
+
+        boolean nextBoolean();
+    }
+
 }

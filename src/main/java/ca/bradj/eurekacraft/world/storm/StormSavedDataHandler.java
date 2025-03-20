@@ -1,47 +1,50 @@
 package ca.bradj.eurekacraft.world.storm;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID)
 public class StormSavedDataHandler {
 
     @SubscribeEvent
     public static void chunkLoaded(ChunkEvent.Load evt) {
-        if (evt.getWorld() == null) {
+        if (Compat.getWorld(evt) == null) {
             return;
         }
-        if (evt.getWorld().isClientSide()) {
+        if (Compat.getWorld(evt).isClientSide()) {
             return;
         }
-        ServerLevel sw = (ServerLevel) evt.getWorld();
+        ServerLevel sw = (ServerLevel) Compat.getWorld(evt);
         StormSavedData.initChunk(sw.getSeed(), evt.getChunk().getPos());
     }
 
     @SubscribeEvent
     public static void chunkUnloaded(ChunkEvent.Unload evt) {
-        if (evt.getWorld().isClientSide()) {
+        if (Compat.getWorld(evt).isClientSide()) {
             return;
         }
         StormSavedData.removeChunk(evt.getChunk().getPos());
     }
 
     @SubscribeEvent
-    public static void worldTick(TickEvent.WorldTickEvent evt) {
-        if (evt.world.isClientSide()) {
+    public static void worldTick(TickEvent.LevelTickEvent evt) {
+        if (getWorld(evt).isClientSide()) {
             return;
         }
-        if (!evt.world.dimension().location().equals(DimensionType.OVERWORLD_LOCATION.location())) {
+        if (!getWorld(evt).dimension().location().equals(Compat.OVERWORLD)) {
             return;
         }
-        StormSavedData.tick(evt.world);
+        StormSavedData.tick(getWorld(evt));
+    }
+
+    private static Level getWorld(TickEvent.LevelTickEvent evt) {
+        return evt.level;
     }
 
 

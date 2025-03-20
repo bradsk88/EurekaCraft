@@ -1,6 +1,7 @@
 package ca.bradj.eurekacraft.world.waves;
 
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.ChunkPos;
@@ -28,7 +29,7 @@ public class ChunkWavesData {
                 waveBlocks.containsKey(down);
     }
 
-    public static ChunkWavesData generate(ChunkAccess ca, Random rand) {
+    public static ChunkWavesData generate(ChunkAccess ca, Compat.RandomSrc rand) {
         // TODO: Get upper and lower bound from config;
         ChunkPos cp = ca.getPos();
         int upperBound = EurekaConfig.wave_blobs_per_chunk_upper_bound.get();
@@ -42,7 +43,7 @@ public class ChunkWavesData {
         return new ChunkWavesData(wavesMap);
     }
 
-    private static void addLowWaves(ChunkPos cp, Random rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
+    private static void addLowWaves(ChunkPos cp, Compat.RandomSrc rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
         for (int i = 0; i < numWaves; i++) {
             BlockPos bp = new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
@@ -61,7 +62,7 @@ public class ChunkWavesData {
         }
     }
 
-    private static void addHighWaves(ChunkPos cp, Random rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
+    private static void addHighWaves(ChunkPos cp, Compat.RandomSrc rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
         for (int i = 0; i < numWaves / 2; i++) {
             wavesMap.put(new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
