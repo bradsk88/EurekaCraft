@@ -1,15 +1,19 @@
 package ca.bradj.eurekacraft.materials;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.IBoardStatsFactory;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.RefBoardStatsUtils;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class Blueprints {
 
@@ -22,8 +26,9 @@ public class Blueprints {
             RefBoardStats defaults
     ) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.blueprints.subtitle_1").withStyle(ChatFormatting.GRAY));
-        tooltip.add(new TranslatableComponent("item.eurekacraft.blueprints.subtitle_2").withStyle(ChatFormatting.GRAY));
+        Style GRAY = Style.EMPTY.withColor(TextColor.parseColor("GRAY"));
+        tooltip.add(Compat.translatableStyled("item.eurekacraft.blueprints.subtitle_1", GRAY));
+        tooltip.add(Compat.translatableStyled("item.eurekacraft.blueprints.subtitle_2", GRAY));
         tooltip.addAll(RefBoardStatsUtils.getTooltips(stats, defaults));
         return tooltip;
     }
@@ -41,7 +46,9 @@ public class Blueprints {
 
         @Override
         public RefBoardStats getBoardStatsFromNBTOrCreate(
-                ItemStack itemStack, RefBoardStats creationReference, Random rand
+                ItemStack itemStack,
+                RefBoardStats creationReference,
+                Compat.RandomSrc rand
         ) {
             if (itemStack.getTag() == null) {
                 itemStack.setTag(new CompoundTag());

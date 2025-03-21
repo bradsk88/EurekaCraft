@@ -4,18 +4,17 @@ import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import ca.bradj.eurekacraft.vehicles.deployment.IPlayerEntityBoardDeployed;
 import ca.bradj.eurekacraft.world.storm.StormSavedData;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,20 +50,15 @@ public class JudgeEntity extends PathfinderMob {
 
     private static final Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
-    public static final ResourceLocation ENTITY_ID = new ResourceLocation(
-            EurekaCraft.MODID, "judge_entity"
-    );
+    public static final ResourceLocation ENTITY_ID = new ResourceLocation(EurekaCraft.MODID, "judge_entity");
 
-    private static final RefBoardStats BOARD_STATS = RefBoardStats.StandardBoard.
-            WithSpeed(RefBoardStats.MIN_SPEED * 2).
-            WithLift(RefBoardStats.MIN_POSITIVE_LIFT).
-            WithSurf(RefBoardStats.MAX_SURF_FOREVER);
+    private static final RefBoardStats BOARD_STATS = RefBoardStats.StandardBoard.WithSpeed(RefBoardStats.MIN_SPEED * 2)
+                                                                                .WithLift(RefBoardStats.MIN_POSITIVE_LIFT)
+                                                                                .WithSurf(RefBoardStats.MAX_SURF_FOREVER);
 
     private static final IPlayerEntityBoardDeployed deployed = new DeployedBoardCapability();
 
-    private static final LazyOptional<IPlayerEntityBoardDeployed> handler = LazyOptional.of(
-            () -> deployed
-    );
+    private static final LazyOptional<IPlayerEntityBoardDeployed> handler = LazyOptional.of(() -> deployed);
 
     private UUID rewardRecipient;
     private BlockPos vanishDestination;
@@ -76,18 +70,23 @@ public class JudgeEntity extends PathfinderMob {
     private int timeStuck = 0;
     private BlockPos lastPos;
 
-    public JudgeEntity(EntityType<? extends PathfinderMob> entity, Level world) {
+    public JudgeEntity(
+            EntityType<? extends PathfinderMob> entity,
+            Level world
+    ) {
         super(entity, world);
     }
 
-    public JudgeEntity(ServerPlayer rewardRecipient, Level world) {
+    public JudgeEntity(
+            ServerPlayer rewardRecipient,
+            Level world
+    ) {
         this(EntitiesInit.JUDGE.get(), world);
         this.rewardRecipient = rewardRecipient.getUUID();
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().
-                add(Attributes.MAX_HEALTH, 10.0D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 10.0D);
     }
 
     @Override
@@ -138,9 +137,16 @@ public class JudgeEntity extends PathfinderMob {
         judge.setYBodyRot(player.yBodyRot);
         player.level.addFreshEntity(judge);
         player.level.playSound(
-                null, airPos.x, airPos.y, airPos.z, SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.0f, 0.5f
+                null,
+                airPos.x,
+                airPos.y,
+                airPos.z,
+                SoundEvents.FIRE_EXTINGUISH,
+                SoundSource.NEUTRAL,
+                1.0f,
+                0.5f
         );
-        player.sendMessage(new TextComponent("message.tricks.judge_appeared"), Util.NIL_UUID);
+        Compat.sendMessage(player, Compat.translatable("message.tricks.judge_appeared"));
     }
 
     @Nullable
@@ -152,7 +158,9 @@ public class JudgeEntity extends PathfinderMob {
     @org.jetbrains.annotations.Nullable
     @Override
     public SpawnGroupData finalizeSpawn(
-            ServerLevelAccessor acc, DifficultyInstance diff, MobSpawnType spawnType,
+            ServerLevelAccessor acc,
+            DifficultyInstance diff,
+            MobSpawnType spawnType,
             @org.jetbrains.annotations.Nullable SpawnGroupData sgData,
             @org.jetbrains.annotations.Nullable CompoundTag tag
     ) {
@@ -163,7 +171,10 @@ public class JudgeEntity extends PathfinderMob {
     }
 
     @Override
-    protected InteractionResult mobInteract(Player player, InteractionHand p_230254_2_) {
+    protected InteractionResult mobInteract(
+            Player player,
+            InteractionHand p_230254_2_
+    ) {
         Level world = player.level;
         if (world.isClientSide()) {
             this.hasAward = false;
@@ -174,9 +185,7 @@ public class JudgeEntity extends PathfinderMob {
 
         if (!this.rewardRecipient.equals(player.getUUID()) || !this.hasAward) {
             logger.debug("RewardRecipient " + rewardRecipient + " player " + player.getUUID() + " [hasAward:" + hasAward + "]");
-            this.level.playSound(
-                    null, ownPos, SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.5f, 1.2f
-            );
+            this.level.playSound(null, ownPos, SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.5f, 1.2f);
             return InteractionResult.CONSUME;
         }
 
@@ -187,24 +196,20 @@ public class JudgeEntity extends PathfinderMob {
 
     private void giveAwardToPlayer(Player player) {
         BlockPos ownPos = blockPosition();
-        this.level.playSound(
-                null, ownPos, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.5f, 1.2f
-        );
-        this.level.playSound(
-                null, ownPos, SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 0.5f, 0.2f
-        );
+        this.level.playSound(null, ownPos, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 0.5f, 1.2f);
+        this.level.playSound(null, ownPos, SoundEvents.NOTE_BLOCK_CHIME, SoundSource.NEUTRAL, 0.5f, 0.2f);
 
         // TODO: Give award instead of film
         ItemStack awardStack = new ItemStack(ItemsInit.REFLECTION_FILM::get, 1);
-        ItemEntity awardEntity = new ItemEntity(
-                level, ownPos.getX(), ownPos.getY() + 2, ownPos.getZ(), awardStack
-        );
+        ItemEntity awardEntity = new ItemEntity(level, ownPos.getX(), ownPos.getY() + 2, ownPos.getZ(), awardStack);
         this.level.addFreshEntity(awardEntity);
 
         this.hasAward = false;
         this.awardPos = this.blockPosition();
 
-        player.sendMessage(new TextComponent("message.tricks.congrats"), Util.NIL_UUID);
+        if (player instanceof ServerPlayer sp) {
+            Compat.sendMessage(sp, Compat.translatable("message.tricks.congrats"));
+        }
     }
 
     @Override
@@ -283,11 +288,7 @@ public class JudgeEntity extends PathfinderMob {
     }
 
     private boolean shouldVanish() {
-        return position().distanceTo(new Vec3(
-                awardPos.getX(),
-                awardPos.getY(),
-                awardPos.getZ()
-        )) > 100;
+        return position().distanceTo(new Vec3(awardPos.getX(), awardPos.getY(), awardPos.getZ())) > 100;
     }
 
     private void vanish() {
@@ -382,7 +383,8 @@ public class JudgeEntity extends PathfinderMob {
             EntityRefBoard.toggleFromInventory(
                     this.self,
                     (ServerLevel) this.self.level,
-                    ItemsInit.BROKEN_BOARD.get().getDefaultInstance(), // Makes it land faster
+                    ItemsInit.BROKEN_BOARD.get().getDefaultInstance(),
+                    // Makes it land faster
                     EliteRefBoard.ID
             );
         }
@@ -405,19 +407,13 @@ public class JudgeEntity extends PathfinderMob {
         public void tick() {
             super.tick();
             JudgeEntity judge = (JudgeEntity) this.self;
-            logger.debug(String.format(
-                    "timeInWater %d timeOutOfWater %d", judge.timeInWater, judge.timeOutOfWater
-            ));
+            logger.debug(String.format("timeInWater %d timeOutOfWater %d", judge.timeInWater, judge.timeOutOfWater));
             Vec3 oldMov = judge.getDeltaMovement();
             if (judge.isInWater()) {
-                judge.setDeltaMovement(
-                        oldMov.x, oldMov.y + 1, oldMov.z
-                );
+                judge.setDeltaMovement(oldMov.x, oldMov.y + 1, oldMov.z);
             }
             if (judge.timeInWater > 20) {
-                judge.moveTo(
-                        oldMov.x, oldMov.y + 1, oldMov.z
-                );
+                judge.moveTo(oldMov.x, oldMov.y + 1, oldMov.z);
             }
         }
 
@@ -437,7 +433,11 @@ public class JudgeEntity extends PathfinderMob {
 
         private final JudgeEntity self;
 
-        public LookAtPlayerGoal(JudgeEntity p_i1631_1_, Class<? extends LivingEntity> p_i1631_2_, float p_i1631_3_) {
+        public LookAtPlayerGoal(
+                JudgeEntity p_i1631_1_,
+                Class<? extends LivingEntity> p_i1631_2_,
+                float p_i1631_3_
+        ) {
             super(p_i1631_1_, p_i1631_2_, p_i1631_3_);
             this.self = p_i1631_1_;
         }
@@ -508,11 +508,8 @@ public class JudgeEntity extends PathfinderMob {
 
     private void spawnRefBoard() {
         EntityRefBoard.toggleFromInventory(
-                this,
-                (ServerLevel) this.level,
-                new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
-                }),
-                EliteRefBoard.ID // TODO: Painted?
+                this, (ServerLevel) this.level, new ItemStack(() -> new RefBoardItem(BOARD_STATS, EliteRefBoard.ID) {
+                }), EliteRefBoard.ID // TODO: Painted?
         );
     }
 

@@ -1,23 +1,23 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public class RefBoardStatsUtils {
 
 
     public static RefBoardStats BoostAvg(
             Collection<RefBoardStats> stats,
-            Random random,
+            Compat.RandomSrc random,
             float baseBoost,
             float randomStatBoost
     ) {
-        RefBoardStats avgBoardStats = RefBoardStats.Average(
-                "avg",
-                stats
-        );
+        RefBoardStats avgBoardStats = RefBoardStats.Average("avg", stats);
 
         double avgAgility = avgBoardStats.agility();
         double avgSpeed = avgBoardStats.speed();
@@ -46,21 +46,23 @@ public class RefBoardStatsUtils {
             RefBoardStats defaults
     ) {
         List<Component> tooltip = new ArrayList<>();
-        stats.ifPresentOrElse(s -> {
-            tooltip.add(Prefix("speed", s.speed()));
-            tooltip.add(Prefix("agility", s.agility()));
-            tooltip.add(Prefix("lift", s.lift()));
-        }, () -> {
-            RefBoardStats best = RefBoardStats.FromReferenceWithBestOffsets(defaults);
-            RefBoardStats worst = RefBoardStats.FromReferenceWithWorstOffsets(defaults);
-            tooltip.add(range("speed", worst.speed(), best.speed()));
-            tooltip.add(range("agility", worst.agility(), best.agility()));
-            tooltip.add(range("lift", worst.lift(), best.lift()));
-        });
+        stats.ifPresentOrElse(
+                s -> {
+                    tooltip.add(Prefix("speed", s.speed()));
+                    tooltip.add(Prefix("agility", s.agility()));
+                    tooltip.add(Prefix("lift", s.lift()));
+                }, () -> {
+                    RefBoardStats best = RefBoardStats.FromReferenceWithBestOffsets(defaults);
+                    RefBoardStats worst = RefBoardStats.FromReferenceWithWorstOffsets(defaults);
+                    tooltip.add(range("speed", worst.speed(), best.speed()));
+                    tooltip.add(range("agility", worst.agility(), best.agility()));
+                    tooltip.add(range("lift", worst.lift(), best.lift()));
+                }
+        );
         return tooltip;
     }
 
-    public static TranslatableComponent Prefix(
+    public static Component Prefix(
             String name,
             double stat
     ) {
@@ -68,20 +70,18 @@ public class RefBoardStatsUtils {
         if (stat < 0) {
             value = "???";
         }
-        return new TranslatableComponent(
-                "item.eurekacraft.ref_board_stats." + name + "_prefix",
-                value
-        );
+        return Compat.translatable("item.eurekacraft.ref_board_stats." + name + "_prefix", value);
     }
 
-    private static TranslatableComponent range(
+    private static Component range(
             String name,
             double lower,
             double upper
     ) {
-        return new TranslatableComponent(
+        return Compat.translatable(
                 "item.eurekacraft.ref_board_stats." + name + "_range",
-                (int) (100 * lower), (int) (100 * upper)
+                (int) (100 * lower),
+                (int) (100 * upper)
         );
     }
 }

@@ -3,14 +3,12 @@ package ca.bradj.eurekacraft.vehicles;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.wheels.BoardWheels;
 import ca.bradj.eurekacraft.vehicles.wheels.Wheel;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -27,7 +25,10 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable, IBoardStatsGetterProvider {
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
+
+public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable,
+        IBoardStatsGetterProvider {
 
     private static final String NBT_KEY_STATS = "stats";
 
@@ -39,7 +40,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     private final StatsGetter statsGetter;
     protected boolean canFly = true;
 
-    protected RefBoardItem(RefBoardStats stats, BoardType boardId) {
+    protected RefBoardItem(
+            RefBoardStats stats,
+            BoardType boardId
+    ) {
         super(PROPS);
         this.baseStats = stats;
         this.board = boardId;
@@ -58,14 +62,16 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(
+            Level world,
+            Player player,
+            InteractionHand hand
+    ) {
         ItemStack s = player.getItemInHand(hand);
         EurekaCraft.LOGGER.debug("Using " + s.getItem());
         if (!world.isClientSide()) {
             ItemStack boardItem = player.getItemInHand(hand);
-            EntityRefBoard.toggleFromInventory(
-                    player, (ServerLevel) player.level, boardItem, this.board
-            );
+            EntityRefBoard.toggleFromInventory(player, (ServerLevel) player.level, boardItem, this.board);
         }
 
         return InteractionResultHolder.success(s);
@@ -85,19 +91,22 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return 1;
     }
 
     protected Collection<Component> getSubtitles() {
         Collection<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.boards.subtitle").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Compat.translatableStyled("item.eurekacraft.boards.subtitle", GRAY));
         return tooltip;
     }
 
     @Override
     public void appendHoverText(
-            ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn
+            ItemStack stack,
+            @Nullable Level world,
+            List<Component> tooltip,
+            TooltipFlag flagIn
     ) {
         tooltip.addAll(getSubtitles());
 
@@ -107,15 +116,20 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
 
         Optional<Wheel> wheel = BoardWheels.FromStack(stack);
         if (wheel.isEmpty()) {
-            tooltip.add(new TextComponent("Wheel: None")); // TODO: Translate
+            tooltip.add(Compat.literal("Wheel: None")); // TODO: Translate
         } else {
-            TranslatableComponent wheelName = new TranslatableComponent(wheel.get().getDescriptionId());
-            tooltip.add(new TextComponent("Wheel: " + wheelName.getString()));
+            Component wheelName = Compat.translatable(wheel.get().getDescriptionId());
+            tooltip.add(Compat.literal("Wheel: " + wheelName.getString()));
         }
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack techItem, ItemStack target, Random random) {
+    public void applyTechItem(
+            Collection<ItemStack> inputs,
+            ItemStack techItem,
+            ItemStack target,
+            Compat.RandomSrc random
+    ) {
 
         ItemStack board = null;
 
@@ -141,7 +155,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         applyBoardShaping(inputs, techItem, target);
     }
 
-    protected static void storeStatsOnStack(ItemStack target, RefBoardStats refBoardStats) {
+    protected static void storeStatsOnStack(
+            ItemStack target,
+            RefBoardStats refBoardStats
+    ) {
         CompoundTag nbt = RefBoardStats.serializeNBT(refBoardStats);
 
         if (target.getTag() == null) {
@@ -150,7 +167,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         target.getTag().put(NBT_KEY_STATS, nbt);
     }
 
-    private void applyBoardShaping(Collection<ItemStack> inputs, ItemStack techStack, ItemStack targetStack) {
+    private void applyBoardShaping(
+            Collection<ItemStack> inputs,
+            ItemStack techStack,
+            ItemStack targetStack
+    ) {
         if (inputs.size() != 1) {
             return;
         }
@@ -182,7 +203,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         storeStatsOnStack(targetStack, newStats);
     }
 
-    public RefBoardStats getStatsForStack(ItemStack stack, Random rand) {
+    public RefBoardStats getStatsForStack(
+            ItemStack stack,
+            Compat.RandomSrc rand
+    ) {
         if (!stack.getOrCreateTag().contains(NBT_KEY_STATS)) {
             RefBoardStats s = RefBoardStats.FromReferenceWithRandomOffsets(baseStats, rand);
             // TODO: Do we really need to do this?
@@ -194,7 +218,11 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public void applyPaint(Collection<ItemStack> inputs, ItemStack paint, ItemStack target) {
+    public void applyPaint(
+            Collection<ItemStack> inputs,
+            ItemStack paint,
+            ItemStack target
+    ) {
         if (!(paint.getItem() instanceof IColorSource)) {
             return;
         }
@@ -229,7 +257,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
         final ItemStack board;
         final ItemStack wheel;
 
-        public WrenchInputs(ItemStack board, ItemStack wheel) {
+        public WrenchInputs(
+                ItemStack board,
+                ItemStack wheel
+        ) {
             this.board = board;
             this.wheel = wheel;
         }
@@ -259,7 +290,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public boolean canApplyWrench(Collection<ItemStack> inputs, ItemStack techItem) {
+    public boolean canApplyWrench(
+            Collection<ItemStack> inputs,
+            ItemStack techItem
+    ) {
         WrenchInputs i = WrenchInputs.fromInputs(inputs);
         Optional<Wheel> wheel = BoardWheels.FromStack(i.board);
         if (i.wheel == null) {
@@ -271,7 +305,10 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     }
 
     @Override
-    public Optional<ItemStack> applyWrench(Collection<ItemStack> inputs, ItemStack target) {
+    public Optional<ItemStack> applyWrench(
+            Collection<ItemStack> inputs,
+            ItemStack target
+    ) {
         WrenchInputs i = WrenchInputs.fromInputs(inputs);
 
         if (i.board.getItem() != target.getItem()) {

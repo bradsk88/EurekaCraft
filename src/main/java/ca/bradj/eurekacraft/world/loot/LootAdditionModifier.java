@@ -54,7 +54,7 @@ public class LootAdditionModifier extends LootModifier {
 
         ItemStack stack = new ItemStack(addition, 1);
         if (addition instanceof IInitializable) {
-            ((IInitializable) addition).initialize(stack, () -> context.getRandom().nextDouble());
+            ((IInitializable) addition).initialize(stack, Compat.random(context::getRandom));
         }
         generatedLoot.add(stack);
         return generatedLoot;

@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.world.gen.features.trees;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.world.gen.features.ConfiguredFeatures;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
@@ -12,7 +13,7 @@ public class TraparTreeGrower extends AbstractTreeGrower {
 
     @Nullable
     @Override
-    protected Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(Random rand, boolean p_204308_) {
+    protected Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(Compat.RandomSrc rand, boolean p_204308_) {
         return ConfiguredFeatures.TRAPAR_TREE;
     }
 }

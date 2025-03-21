@@ -24,12 +24,13 @@ public class ChunkWavesData {
     public boolean isWavePresentAt(BlockPos bp) {
         BlockPos up = bp.relative(Direction.UP);
         BlockPos down = bp.relative(Direction.DOWN);
-        return waveBlocks.containsKey(bp) ||
-                waveBlocks.containsKey(up) ||
-                waveBlocks.containsKey(down);
+        return waveBlocks.containsKey(bp) || waveBlocks.containsKey(up) || waveBlocks.containsKey(down);
     }
 
-    public static ChunkWavesData generate(ChunkAccess ca, Compat.RandomSrc rand) {
+    public static ChunkWavesData generate(
+            ChunkAccess ca,
+            Compat.RandomSrc rand
+    ) {
         // TODO: Get upper and lower bound from config;
         ChunkPos cp = ca.getPos();
         int upperBound = EurekaConfig.wave_blobs_per_chunk_upper_bound.get();
@@ -43,7 +44,14 @@ public class ChunkWavesData {
         return new ChunkWavesData(wavesMap);
     }
 
-    private static void addLowWaves(ChunkPos cp, Compat.RandomSrc rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
+    private static void addLowWaves(
+            ChunkPos cp,
+            Compat.RandomSrc rand,
+            int numWaves,
+            int xRange,
+            int zRange,
+            Map<BlockPos, Boolean> wavesMap
+    ) {
         for (int i = 0; i < numWaves; i++) {
             BlockPos bp = new BlockPos(
                     cp.getMinBlockX() + rand.nextInt(xRange),
@@ -62,13 +70,23 @@ public class ChunkWavesData {
         }
     }
 
-    private static void addHighWaves(ChunkPos cp, Compat.RandomSrc rand, int numWaves, int xRange, int zRange, Map<BlockPos, Boolean> wavesMap) {
+    private static void addHighWaves(
+            ChunkPos cp,
+            Compat.RandomSrc rand,
+            int numWaves,
+            int xRange,
+            int zRange,
+            Map<BlockPos, Boolean> wavesMap
+    ) {
         for (int i = 0; i < numWaves / 2; i++) {
-            wavesMap.put(new BlockPos(
-                    cp.getMinBlockX() + rand.nextInt(xRange),
-                    100 + rand.nextInt(100), // TODO: Get max height from world
-                    cp.getMinBlockZ() + rand.nextInt(zRange)
-            ), true);
+            wavesMap.put(
+                    new BlockPos(
+                            cp.getMinBlockX() + rand.nextInt(xRange),
+                            100 + rand.nextInt(100),
+                            // TODO: Get max height from world
+                            cp.getMinBlockZ() + rand.nextInt(zRange)
+                    ), true
+            );
         }
     }
 
@@ -85,11 +103,10 @@ public class ChunkWavesData {
     }
 
     public boolean generateRavineWaves(
-            ChunkAccess ca, Random rand
+            ChunkAccess ca,
+            Compat.RandomSrc rand
     ) {
-        ChunkStatus[] statusesToCheck = new ChunkStatus[]{
-                ChunkStatus.HEIGHTMAPS, ChunkStatus.FULL
-        };
+        ChunkStatus[] statusesToCheck = new ChunkStatus[]{ChunkStatus.HEIGHTMAPS, ChunkStatus.FULL};
         if (Arrays.stream(statusesToCheck).allMatch(v -> v != ca.getStatus())) {
             return false;
         }
@@ -107,7 +124,8 @@ public class ChunkWavesData {
 
         int heightSum = 0;
         int blocks = 0;
-        int i = 0; int j = 0;
+        int i = 0;
+        int j = 0;
         for (int x = minX; x < maxX; x++) {
             j = 0;
             for (int z = minZ; z < maxZ; z++) {

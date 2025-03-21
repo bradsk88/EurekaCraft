@@ -7,12 +7,12 @@ import ca.bradj.eurekacraft.core.init.TagsInit;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.SandingMachineRecipe;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.IInitializable;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
@@ -44,18 +44,25 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     private static int outputSlot = abrasiveSlot + 1;
     private static int totalSlots = outputSlot + 1;
 
-    public SandingMachineTileEntity(BlockPos p_155229_, BlockState p_155230_) {
+    public SandingMachineTileEntity(
+            BlockPos p_155229_,
+            BlockState p_155230_
+    ) {
         super(TilesInit.SANDING_MACHINE.get(), p_155229_, p_155230_, totalSlots);
     }
 
     @Override
     public Component getDisplayName() {
-        return new TranslatableComponent("container." + EurekaCraft.MODID + ".sanding_machine");
+        return Compat.translatable("container." + EurekaCraft.MODID + ".sanding_machine");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory player, Player Player) {
+    public AbstractContainerMenu createMenu(
+            int id,
+            Inventory player,
+            Player Player
+    ) {
         return new SandingMachineContainer(id, player, this);
     }
 
@@ -75,7 +82,12 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         return tag;
     }
 
-    public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, SandingMachineTileEntity entity) {
+    public static <T extends BlockEntity> void tick(
+            Level level,
+            BlockPos pos,
+            BlockState state,
+            SandingMachineTileEntity entity
+    ) {
         if (level.isClientSide) {
             throw new IllegalStateException("Ticker should not be instantiated on client side");
         }
@@ -91,7 +103,8 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         if (active.isPresent()) {
             ItemStack outSlot = getStackInSlot(outputSlot);
             if (!outSlot.isEmpty()) {
-                if (!outSlot.getItem().getDefaultInstance().sameItemStackIgnoreDurability(active.get().getResultItem())) {
+                if (!outSlot.getItem().getDefaultInstance()
+                            .sameItemStackIgnoreDurability(active.get().getResultItem())) {
                     return;
                 }
             }
@@ -115,14 +128,10 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
     private boolean hasAbrasive() {
         Ingredient.TagValue tags = new Ingredient.TagValue(TagsInit.Items.SANDING_DISCS);
         ItemStack abrasive = getStackInSlot(abrasiveSlot);
-        boolean hasSandpaper = tags.getItems()
-                .stream()
-                .anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+        boolean hasSandpaper = tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
 
         tags = new Ingredient.TagValue(TagsInit.Items.AXES);
-        boolean hasAxe = tags.getItems()
-                .stream()
-                .anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
+        boolean hasAxe = tags.getItems().stream().anyMatch(i -> i.sameItemStackIgnoreDurability(abrasive));
 
         return hasSandpaper || hasAxe;
     }
@@ -146,10 +155,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
             useExtraIngredient();
 
             if (output.getItem() instanceof IInitializable) {
-                ((IInitializable) output.getItem()).initialize(
-                        output,
-                        level.getRandom()
-                );
+                ((IInitializable) output.getItem()).initialize(output, Compat.random(level::getRandom));
             }
 
             insertItem(outputSlot, output);
@@ -160,7 +166,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
 
     private void useExtraIngredient() {
         ItemStack stackInSlot = getStackInSlot(abrasiveSlot);
-        stackInSlot.hurt(1, new Random(), null);
+        stackInSlot.hurt(1, level.random, null);
         if (stackInSlot.getDamageValue() > stackInSlot.getMaxDamage()) {
             level.playSound(null, this.getBlockPos(), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
             extractItem(abrasiveSlot, 1);
@@ -180,9 +186,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
         }
 
         RecipeManager recipeManager = level.getRecipeManager();
-        Optional<SandingMachineRecipe> recipe = recipeManager.getRecipeFor(
-                RecipesInit.SANDING_MACHINE, inv, level
-        );
+        Optional<SandingMachineRecipe> recipe = recipeManager.getRecipeFor(RecipesInit.SANDING_MACHINE, inv, level);
 
         if (recipe.isPresent()) {
             return recipe;
@@ -196,9 +200,7 @@ public class SandingMachineTileEntity extends EurekaCraftMachineEntity implement
             inv.setItem(i, stackInSlot);
         }
 
-        recipe = recipeManager.getRecipeFor(
-                RecipesInit.SANDING_MACHINE, inv, level
-        );
+        recipe = recipeManager.getRecipeFor(RecipesInit.SANDING_MACHINE, inv, level);
 
         return recipe;
     }

@@ -7,27 +7,43 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class RefTableScreen extends AbstractContainerScreen<RefTableContainer> {
 
-    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/ref_table_screen.png");
+    private final ResourceLocation GUI = new ResourceLocation(
+            EurekaCraft.MODID,
+            "textures/screens/ref_table_screen.png"
+    );
 
-    public RefTableScreen(RefTableContainer container, Inventory playerInv, Component title) {
+    public RefTableScreen(
+            RefTableContainer container,
+            Inventory playerInv,
+            Component title
+    ) {
         super(container, playerInv, title);
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(
+            PoseStack stack,
+            int mouseX,
+            int mouseY,
+            float partialTicks
+    ) {
         super.renderBackground(stack);
         super.render(stack, mouseX, mouseY, partialTicks);
         super.renderTooltip(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float p_230450_2_, int p_230450_3_, int p_230450_4_) {
+    protected void renderBg(
+            PoseStack stack,
+            float p_230450_2_,
+            int p_230450_3_,
+            int p_230450_4_
+    ) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, GUI);

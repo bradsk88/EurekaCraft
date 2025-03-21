@@ -22,7 +22,8 @@ public class ChunkEvents {
         if (world.isClientSide()) {
             return;
         }
-        ChunkWavesDataManager.get((Level) evt.getLevel()).initData(evt.getChunk(), Compat.random(evt.getLevel()));
+        ChunkWavesDataManager.get((Level) evt.getLevel())
+                             .initData(evt.getChunk(), Compat.random(evt.getLevel()::getRandom));
     }
 
     @SubscribeEvent

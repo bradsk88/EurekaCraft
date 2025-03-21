@@ -63,7 +63,7 @@ public class ChunkWavesDataManager extends SavedData {
             ChunkPos cp
     ) {
         ChunkWavesData data = ChunkWavesDataManager.get(world).getData(
-                world.getChunk(cp.x, cp.z), Compat.random(world)
+                world.getChunk(cp.x, cp.z), Compat.random(world::getRandom)
         );
 //                EurekaCraft.LOGGER.trace("Waves at " + cp + ": " + data.getWaves());
         EurekaCraftNetwork.CHANNEL.send(

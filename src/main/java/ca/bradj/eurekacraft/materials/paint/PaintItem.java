@@ -1,10 +1,9 @@
 package ca.bradj.eurekacraft.materials.paint;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.IColorSource;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -13,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
+
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
 
 public class PaintItem extends Item implements IColorSource {
 
@@ -53,10 +54,7 @@ public class PaintItem extends Item implements IColorSource {
             List<Component> p_41423_,
             TooltipFlag p_41424_
     ) {
-        p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.paint_buckets.subtitle").
-                        withStyle(ChatFormatting.GRAY)
-        );
+        p_41423_.add(Compat.translatableStyled("item.eurekacraft.paint_buckets.subtitle", GRAY));
     }
 
     public static PaintItem black() {
@@ -123,7 +121,11 @@ public class PaintItem extends Item implements IColorSource {
         return new PaintItem(of100(100, 100, 0));
     }
 
-    public static Color of100(int r, int g, int b) {
+    public static Color of100(
+            int r,
+            int g,
+            int b
+    ) {
         int r1 = (int) (255 * (r / 100f));
         int g1 = (int) (255 * (g / 100f));
         int b1 = (int) (255 * (b / 100f));

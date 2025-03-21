@@ -1,14 +1,17 @@
 package ca.bradj.eurekacraft.integration.mc;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.materials.BlueprintFolderItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,13 +22,13 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -48,6 +51,7 @@ import java.util.function.Supplier;
 public class Compat {
     public static final Random RANDOM = new Random();
     public static final ResourceLocation OVERWORLD = Level.OVERWORLD.location();
+    public static final Style GRAY = Style.EMPTY.withColor(TextColor.parseColor("GRAY"));
 
     public static void playNeutralSound(
             ServerLevel serverLevel,
@@ -56,14 +60,7 @@ public class Compat {
     ) {
         float volume = 0.5f;
         float pitchUpOrDown = 1.0F + (serverLevel.random.nextFloat() - serverLevel.random.nextFloat()) * 0.4F;
-        serverLevel.playSound(
-                null,
-                pos,
-                sound,
-                SoundSource.NEUTRAL,
-                volume,
-                pitchUpOrDown
-        );
+        serverLevel.playSound(null, pos, sound, SoundSource.NEUTRAL, volume, pitchUpOrDown);
     }
 
     public static void playSound(
@@ -74,14 +71,7 @@ public class Compat {
     ) {
         float volume = 0.5f;
         float pitchUpOrDown = 1.0F + (serverLevel.random.nextFloat() - serverLevel.random.nextFloat()) * 0.4F;
-        serverLevel.playSound(
-                null,
-                pos,
-                sound,
-                source,
-                volume,
-                pitchUpOrDown
-        );
+        serverLevel.playSound(null, pos, sound, source, volume, pitchUpOrDown);
     }
 
     public static Component translatable(String key) {
@@ -159,12 +149,10 @@ public class Compat {
             FMLCommonSetupEvent event,
             Runnable staticInitialize
     ) {
-        event.enqueueWork(staticInitialize).exceptionally(
-                ex -> {
-                    EurekaCraft.LOGGER.error("Enqueued work failed", ex);
-                    return null;
-                }
-        );
+        event.enqueueWork(staticInitialize).exceptionally(ex -> {
+            EurekaCraft.LOGGER.error("Enqueued work failed", ex);
+            return null;
+        });
     }
 
     public static <X> Supplier<X> configGet(ForgeConfigSpec.ConfigValue<X> cfg) {
@@ -256,8 +244,8 @@ public class Compat {
         return context.getRandom().nextFloat();
     }
 
-    public static RandomSrc random(LevelAccessor level) {
-        RandomSource random = level.getRandom();
+    public static RandomSrc random(Supplier<RandomSource> level) {
+        RandomSource random = level.get();
         return new RandomSrc() {
             @Override
             public double nextDouble() {
@@ -280,6 +268,17 @@ public class Compat {
         return evt.getLevel();
     }
 
+    public static CompoundTag getPersistentData(BlockEntity e) {
+        return e.getPersistentData();
+    }
+
+    public static void openScreen(
+            ServerPlayer player,
+            BlueprintFolderItem blueprintFolderItem
+    ) {
+        NetworkHooks.openScreen(player, blueprintFolderItem);
+    }
+
     public interface RandomSrc {
         double nextDouble();
 
@@ -288,4 +287,16 @@ public class Compat {
         boolean nextBoolean();
     }
 
+    public static class RecipeType<T extends Recipe<?>> implements net.minecraft.world.item.crafting.RecipeType<T> {
+        // 1.18
+//        @Override
+//        public <C extends Container> Optional<RefTableRecipe> tryMatch(Recipe<C> p_44116_, Level p_44117_, C p_44118_) {
+//            return net.minecraft.world.item.crafting.RecipeType.super.tryMatch(p_44116_, p_44117_, p_44118_);
+//        }
+    }
+
+    public abstract static class RecipeSerializer<T extends Recipe<?>>
+//            extends ForgeRegistryEntry<net.minecraft.world.item.crafting.RecipeSerializer<?>>
+            implements net.minecraft.world.item.crafting.RecipeSerializer<T> {
+    }
 }

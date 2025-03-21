@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.data.recipes;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.RecipesInit;
 import ca.bradj.eurekacraft.core.init.TagsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
@@ -16,7 +17,6 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistryEntry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,7 +32,10 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
     private static final int recipeSize = 1;
 
     public SandingMachineRecipe(
-            ResourceLocation id, Optional<Ingredient> special, ItemStack output, NonNullList<Ingredient> recipeItems
+            ResourceLocation id,
+            Optional<Ingredient> special,
+            ItemStack output,
+            NonNullList<Ingredient> recipeItems
     ) {
         this.id = id;
         this.special = special;
@@ -41,7 +44,10 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
     }
 
     @Override
-    public boolean matches(Container inv, Level p_77569_2_) {
+    public boolean matches(
+            Container inv,
+            Level p_77569_2_
+    ) {
         Ingredient input = recipeItems.get(0);
         if (!input.test(inv.getItem(0))) {
             return false;
@@ -81,13 +87,17 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
         return RecipesInit.SANDING_MACHINE_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<SandingMachineRecipe> {
+    public static class Serializer extends Compat.RecipeSerializer<SandingMachineRecipe> {
 
         Logger logger = LogManager.getLogger(EurekaCraft.MODID + "/SandingMachine");
 
         @Override
-        public SandingMachineRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "result")).getDefaultInstance();
+        public SandingMachineRecipe fromJson(
+                ResourceLocation recipeId,
+                JsonObject json
+        ) {
+            ItemStack output = ShapedRecipe.itemFromJson(GsonHelper.getAsJsonObject(json, "result"))
+                                           .getDefaultInstance();
 
             JsonArray ingredients = GsonHelper.getAsJsonArray(json, "ingredients");
             NonNullList<Ingredient> inputs = NonNullList.withSize(ingredients.size(), Ingredient.EMPTY);
@@ -106,7 +116,10 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
 
         @Nullable
         @Override
-        public SandingMachineRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public SandingMachineRecipe fromNetwork(
+                ResourceLocation recipeId,
+                FriendlyByteBuf buffer
+        ) {
             int rSize = buffer.readInt();
             NonNullList<Ingredient> inputs = NonNullList.withSize(rSize, Ingredient.EMPTY);
             for (int i = 0; i < rSize; i++) {
@@ -121,7 +134,10 @@ public class SandingMachineRecipe implements ISandingMachineRecipe {
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, SandingMachineRecipe recipe) {
+        public void toNetwork(
+                FriendlyByteBuf buffer,
+                SandingMachineRecipe recipe
+        ) {
             buffer.writeInt(recipe.getIngredients().size());
             int i = 0;
             for (Ingredient ing : recipe.getIngredients()) {

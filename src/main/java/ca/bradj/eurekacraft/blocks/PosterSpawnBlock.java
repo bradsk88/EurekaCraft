@@ -3,12 +3,12 @@ package ca.bradj.eurekacraft.blocks;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.TilesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.wrappers.EntityBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -40,101 +40,19 @@ public class PosterSpawnBlock extends EntityBlock {
     }
 
     public static void initRecipes() {
-        recipes.put("crafting_table_recipes", new ItemProvider[][][]{
-                {
-                        new ItemProvider[]{
-                                () -> Items.COBBLESTONE, () -> Items.COBBLESTONE, () -> Items.COBBLESTONE,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.OAK_PLANKS, ItemsInit.BLUEPRINT::get, () -> Items.OAK_PLANKS,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.OAK_PLANKS, () -> Items.OAK_PLANKS, () -> Items.OAK_PLANKS,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                ItemsInit.POLISHED_OAK_SLAB::get, ItemsInit.POLISHED_OAK_SLAB::get, ItemsInit.POLISHED_OAK_SLAB::get,
-                        },
-                        new ItemProvider[]{
-                                ItemsInit.RESIN::get, ItemsInit.RESIN::get, ItemsInit.RESIN::get,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, () -> Items.IRON_BLOCK, () -> Items.AIR,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                () -> Items.FLINT, () -> Items.FLINT, () -> Items.FLINT,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.FLINT, ItemsInit.CLAY_STICKY_DISC::get, () -> Items.FLINT,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.FLINT, () -> Items.FLINT, () -> Items.FLINT,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                () -> Items.CLAY_BALL, () -> Items.PAPER, () -> Items.CLAY_BALL,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.PAPER, () -> Items.CLAY_BALL, () -> Items.PAPER,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.CLAY_BALL, () -> Items.PAPER, () -> Items.CLAY_BALL,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                ItemsInit.PRECISION_WOOD::get, ItemsInit.PRECISION_WOOD::get, ItemsInit.PRECISION_WOOD::get,
-                        },
-                        new ItemProvider[]{
-                                ItemsInit.PRECISION_WOOD::get, ItemsInit.RESIN::get, ItemsInit.PRECISION_WOOD::get,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, () -> Items.LAVA_BUCKET, () -> Items.AIR,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                () -> Items.IRON_INGOT, () -> Items.AIR, () -> Items.AIR,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, ItemsInit.PRECISION_WOOD_STICK::get, () -> Items.AIR,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, () -> Items.AIR, () -> Items.AIR,
-                        }
-                },
-                {
-                        new ItemProvider[]{
-                                ItemsInit.PRECISION_WOOD::get, () -> Items.AIR, () -> Items.AIR,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, ItemsInit.PRECISION_WOOD::get, () -> Items.AIR,
-                        },
-                        new ItemProvider[]{
-                                () -> Items.AIR, () -> Items.AIR, () -> Items.AIR,
-                        }
-                },
-        });
+        recipes.put(
+                "crafting_table_recipes",
+                new ItemProvider[][][]{{new ItemProvider[]{() -> Items.COBBLESTONE, () -> Items.COBBLESTONE, () -> Items.COBBLESTONE,}, new ItemProvider[]{() -> Items.OAK_PLANKS, ItemsInit.BLUEPRINT::get, () -> Items.OAK_PLANKS,}, new ItemProvider[]{() -> Items.OAK_PLANKS, () -> Items.OAK_PLANKS, () -> Items.OAK_PLANKS,}}, {new ItemProvider[]{ItemsInit.POLISHED_OAK_SLAB::get, ItemsInit.POLISHED_OAK_SLAB::get, ItemsInit.POLISHED_OAK_SLAB::get,}, new ItemProvider[]{ItemsInit.RESIN::get, ItemsInit.RESIN::get, ItemsInit.RESIN::get,}, new ItemProvider[]{() -> Items.AIR, () -> Items.IRON_BLOCK, () -> Items.AIR,}}, {new ItemProvider[]{() -> Items.FLINT, () -> Items.FLINT, () -> Items.FLINT,}, new ItemProvider[]{() -> Items.FLINT, ItemsInit.CLAY_STICKY_DISC::get, () -> Items.FLINT,}, new ItemProvider[]{() -> Items.FLINT, () -> Items.FLINT, () -> Items.FLINT,}}, {new ItemProvider[]{() -> Items.CLAY_BALL, () -> Items.PAPER, () -> Items.CLAY_BALL,}, new ItemProvider[]{() -> Items.PAPER, () -> Items.CLAY_BALL, () -> Items.PAPER,}, new ItemProvider[]{() -> Items.CLAY_BALL, () -> Items.PAPER, () -> Items.CLAY_BALL,}}, {new ItemProvider[]{ItemsInit.PRECISION_WOOD::get, ItemsInit.PRECISION_WOOD::get, ItemsInit.PRECISION_WOOD::get,}, new ItemProvider[]{ItemsInit.PRECISION_WOOD::get, ItemsInit.RESIN::get, ItemsInit.PRECISION_WOOD::get,}, new ItemProvider[]{() -> Items.AIR, () -> Items.LAVA_BUCKET, () -> Items.AIR,}}, {new ItemProvider[]{() -> Items.IRON_INGOT, () -> Items.AIR, () -> Items.AIR,}, new ItemProvider[]{() -> Items.AIR, ItemsInit.PRECISION_WOOD_STICK::get, () -> Items.AIR,}, new ItemProvider[]{() -> Items.AIR, () -> Items.AIR, () -> Items.AIR,}}, {new ItemProvider[]{ItemsInit.PRECISION_WOOD::get, () -> Items.AIR, () -> Items.AIR,}, new ItemProvider[]{() -> Items.AIR, ItemsInit.PRECISION_WOOD::get, () -> Items.AIR,}, new ItemProvider[]{() -> Items.AIR, () -> Items.AIR, () -> Items.AIR,}},}
+        );
     }
 
-    private static final String[] supportedRecipes = new String[]{
-            "crafting_table_recipes",
-            "ref_table_recipes",
-    };
+    private static final String[] supportedRecipes = new String[]{"crafting_table_recipes", "ref_table_recipes",};
 
     public static final String ITEM_ID = "poster_spawn_block";
     private Entity entity;
 
     public PosterSpawnBlock() {
-        super(
-                BlockBehaviour.Properties.
-                        of(Material.WOOD).
-                        strength(1f)
-        );
+        super(BlockBehaviour.Properties.of(Material.WOOD).strength(1f));
     }
 
     @Nullable
@@ -154,9 +72,7 @@ public class PosterSpawnBlock extends EntityBlock {
             BlockState blockState,
             BlockEntityType<T> entityType
     ) {
-        return level.isClientSide ? null : createTickerHelper(
-                entityType, TilesInit.POSTER_BLOCK.get(), Entity::tick
-        );
+        return level.isClientSide ? null : createTickerHelper(entityType, TilesInit.POSTER_BLOCK.get(), Entity::tick);
     }
 
     @Override
@@ -171,7 +87,7 @@ public class PosterSpawnBlock extends EntityBlock {
         int catIdx = entity.getNextRecipeCategoryIndex(level);
         if (level.isClientSide()) {
             Minecraft.getInstance().gui.setOverlayMessage(
-                    new TextComponent("setting recipe category to " + supportedRecipes[catIdx]),
+                    Compat.literal("setting recipe category to " + supportedRecipes[catIdx]),
                     false
             );
             return InteractionResult.sidedSuccess(true);
@@ -262,10 +178,10 @@ public class PosterSpawnBlock extends EntityBlock {
 
         int getRecipeCategoryIndex(Level level) {
             this.determineMainBlock(level);
-            if (this.mainBlock.getTileData().contains(NBT_RECIPE_CATEGORY)) {
-                return this.getTileData().getInt(NBT_RECIPE_CATEGORY);
+            if (Compat.getPersistentData(this.mainBlock).contains(NBT_RECIPE_CATEGORY)) {
+                return Compat.getPersistentData(this).getInt(NBT_RECIPE_CATEGORY);
             }
-            this.mainBlock.getTileData().putInt(NBT_RECIPE_CATEGORY, 0);
+            Compat.getPersistentData(this.mainBlock).putInt(NBT_RECIPE_CATEGORY, 0);
             return 0;
         }
 

@@ -1,18 +1,18 @@
 package ca.bradj.eurekacraft.vehicles.wheels;
 
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.vehicles.EurekaCraftItem;
-import ca.bradj.eurekacraft.vehicles.RefBoardStats;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
+
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
 
 public class BoardWheels {
 
@@ -29,7 +29,10 @@ public class BoardWheels {
     private static final String NBT_KEY = "ca.bradj.eurekcraft.board_wheel";
     private static final String TAG_KEY_ITEM_ID = "item_id";
 
-    public static void AddToStack(ItemStack s, EurekaCraftItem c) {
+    public static void AddToStack(
+            ItemStack s,
+            EurekaCraftItem c
+    ) {
         if (s.getTag() == null) {
             s.setTag(new CompoundTag());
         }
@@ -91,16 +94,16 @@ public class BoardWheels {
             WheelStats stats
     ) {
         List<Component> tooltip = new ArrayList<>();
-        tooltip.add(new TranslatableComponent("item.eurekacraft.wheels.subtitle").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Compat.translatableStyled("item.eurekacraft.wheels.subtitle", GRAY));
         tooltip.add(prefix("braking", stats.braking));
         tooltip.add(prefix("acceleration", stats.acceleration));
         return tooltip;
     }
 
-    private static TranslatableComponent prefix(String name, double stat) {
-        return new TranslatableComponent(
-                "item.eurekacraft.wheel_stats." + name + "_prefix",
-                (int) (stat)
-        );
+    private static Component prefix(
+            String name,
+            double stat
+    ) {
+        return Compat.translatable("item.eurekacraft.wheel_stats." + name + "_prefix", (int) (stat));
     }
 }

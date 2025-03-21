@@ -1,11 +1,10 @@
 package ca.bradj.eurekacraft.wearables;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.render.wearables.ScubGoggleHelmetModel;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
+
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
 
 public class ScubGoggles extends ArmorItem {
 
@@ -35,7 +36,12 @@ public class ScubGoggles extends ArmorItem {
         consumer.accept(new IItemRenderProperties() {
             @Nullable
             @Override
-            public HumanoidModel<?> getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
+            public HumanoidModel<?> getArmorModel(
+                    LivingEntity entityLiving,
+                    ItemStack itemStack,
+                    EquipmentSlot armorSlot,
+                    HumanoidModel<?> _default
+            ) {
                 if (EquipmentSlot.HEAD == armorSlot) {
                     return new ScubGoggleHelmetModel();
                 }
@@ -51,15 +57,17 @@ public class ScubGoggles extends ArmorItem {
             List<Component> p_41423_,
             TooltipFlag p_41424_
     ) {
-        p_41423_.add(
-                new TranslatableComponent("item.eurekacraft.scub_goggles.subtitle").
-                        withStyle(ChatFormatting.GRAY)
-        );
+        p_41423_.add(Compat.translatableStyled("item.eurekacraft.scub_goggles.subtitle", GRAY));
     }
 
     @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
+    public String getArmorTexture(
+            ItemStack stack,
+            Entity entity,
+            EquipmentSlot slot,
+            String type
+    ) {
         return "eurekacraft:textures/models/armor/scub_goggles.png";
     }
 }

@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.blocks.machines;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.materials.Blueprints;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import com.google.common.collect.ImmutableList;
@@ -193,6 +194,6 @@ public class RefTableHintRecipes {
     public static final String NBT_SPAWNED_WITH_RECIPE = "spawned_with_recipe";
 
     public interface RecipeProvider {
-        RefTableRecipe get(Random random);
+        RefTableRecipe get(Compat.RandomSrc random);
     }
 }

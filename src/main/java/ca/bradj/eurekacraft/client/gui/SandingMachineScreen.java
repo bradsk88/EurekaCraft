@@ -7,27 +7,43 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
 public class SandingMachineScreen extends AbstractContainerScreen<SandingMachineContainer> {
 
-    private final ResourceLocation GUI = new ResourceLocation(EurekaCraft.MODID, "textures/screens/sanding_machine_screen.png");
+    private final ResourceLocation GUI = new ResourceLocation(
+            EurekaCraft.MODID,
+            "textures/screens/sanding_machine_screen.png"
+    );
 
-    public SandingMachineScreen(SandingMachineContainer container, Inventory playerInv, Component title) {
+    public SandingMachineScreen(
+            SandingMachineContainer container,
+            Inventory playerInv,
+            Component title
+    ) {
         super(container, playerInv, title);
     }
 
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(
+            PoseStack stack,
+            int mouseX,
+            int mouseY,
+            float partialTicks
+    ) {
         super.renderBackground(stack);
         super.render(stack, mouseX, mouseY, partialTicks);
         super.renderTooltip(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack stack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(
+            PoseStack stack,
+            float partialTicks,
+            int mouseX,
+            int mouseY
+    ) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, GUI);
