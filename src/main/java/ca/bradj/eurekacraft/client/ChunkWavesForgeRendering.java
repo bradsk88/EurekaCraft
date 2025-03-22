@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.client;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
 import com.google.common.collect.ImmutableList;
@@ -11,7 +12,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
@@ -90,15 +90,7 @@ public class ChunkWavesForgeRendering {
             matrixStack.pushPose();
             matrixStack.translate(p.getX() - iPos.x, p.getY() - iPos.y, p.getZ() - iPos.z);
             matrixStack.scale(1, 2, 1);
-            renderer.renderSingleBlock(
-                    state,
-                    matrixStack,
-                    mc.renderBuffers().crumblingBufferSource(),
-                    15728880,
-                    OverlayTexture.NO_OVERLAY,
-                    model,
-                    RenderType.translucent()
-            );
+            Compat.renderTranslucentBlock(renderer, state, matrixStack, mc, model);
             matrixStack.popPose();
         }
     }

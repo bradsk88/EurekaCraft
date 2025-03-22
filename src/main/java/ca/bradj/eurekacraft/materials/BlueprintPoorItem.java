@@ -22,27 +22,21 @@ import java.util.Optional;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable,
-        IBoardStatsCraftable, IBoardStatsGetter {
+public class BlueprintPoorItem extends Compat.UnstackableItem implements IBoardStatsFactoryProvider, ITechAffected,
+        IInitializable, IBoardStatsCraftable, IBoardStatsGetter {
 
     public static boolean debuggerReleaseControl() {
         GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         return true;
     }
 
-    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.
-            WithFallback(RefBoardStats.BadBoard);
+    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.WithFallback(RefBoardStats.BadBoard);
 
     public static final String ITEM_ID = "blueprint_poor";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
     public BlueprintPoorItem() {
         super(PROPS);
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack stack) {
-        return 1;
     }
 
     @Override
@@ -56,9 +50,7 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
     }
 
     private Optional<RefBoardStats> getStats(ItemStack stack) {
-        return RefBoardStats.deserializeNBT(
-                stack.getOrCreateTag().getCompound(Blueprints.NBT_KEY_BOARD_STATS)
-        );
+        return RefBoardStats.deserializeNBT(stack.getOrCreateTag().getCompound(Blueprints.NBT_KEY_BOARD_STATS));
     }
 
     @Override
@@ -117,16 +109,12 @@ public class BlueprintPoorItem extends Item implements IBoardStatsFactoryProvide
             Collection<ItemStack> context,
             Compat.RandomSrc random
     ) {
-        Collection<RefBoardStats> contextStats = context.stream().
-                                                        filter(v -> v.getItem() instanceof IBoardStatsGetter).
-                                                        map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v))
+        Collection<RefBoardStats> contextStats = context.stream().filter(v -> v.getItem() instanceof IBoardStatsGetter)
+                                                        .map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v))
                                                         .toList();
         RefBoardStats stats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.BadBoard, random);
         if (contextStats.size() != 0) {
-            stats = RefBoardStats.Average(
-                    "avg",
-                    contextStats
-            );
+            stats = RefBoardStats.Average("avg", contextStats);
         }
         target.getOrCreateTag().put(Blueprints.NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
     }

@@ -27,7 +27,7 @@ import java.util.*;
 
 import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
 
-public abstract class RefBoardItem extends Item implements ITechAffected, IPaintable, IWrenchable,
+public abstract class RefBoardItem extends Compat.UnstackableItem implements ITechAffected, IPaintable, IWrenchable,
         IBoardStatsGetterProvider {
 
     private static final String NBT_KEY_STATS = "stats";
@@ -88,11 +88,6 @@ public abstract class RefBoardItem extends Item implements ITechAffected, IPaint
     public static class ItemIDs {
         public static final String REF_BOARD = "ref_board";
         public static String GLIDE_BOARD = "glide_board";
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack stack) {
-        return 1;
     }
 
     protected Collection<Component> getSubtitles() {

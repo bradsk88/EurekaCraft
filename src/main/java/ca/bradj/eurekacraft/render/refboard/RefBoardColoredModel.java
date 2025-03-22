@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.render.refboard;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -7,15 +8,13 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
-public class RefBoardColoredModel implements BakedModel {
+public class RefBoardColoredModel extends Compat.BakedModel {
 
     public static final ModelResourceLocation modelResourceLocation
             = new ModelResourceLocation("eurekacraft:ref_board", "inventory");
@@ -43,12 +42,17 @@ public class RefBoardColoredModel implements BakedModel {
     @Override
     public List<BakedQuad> getQuads(
             @Nullable BlockState state,
-            @Nullable Direction dir, RandomSource rand
+            @Nullable Direction dir, Compat.RandomSrc rand
     ) {
         if (dir != null) {
             return List.of();
         }
         return this.quads;
+    }
+
+    @Override
+    protected BakedModel getModelForParticle() {
+        return this;
     }
 
     @Override

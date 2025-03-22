@@ -24,7 +24,7 @@ import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable,
+public class BlueprintItem extends Compat.UnstackableItem implements IBoardStatsFactoryProvider, ITechAffected, IInitializable,
         IBoardStatsCraftable, IBoardStatsGetter {
 
     public static boolean debuggerReleaseControl() {
@@ -46,11 +46,6 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
 
     public BlueprintItem() {
         super(PROPS);
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack stack) {
-        return 1;
     }
 
     @Override

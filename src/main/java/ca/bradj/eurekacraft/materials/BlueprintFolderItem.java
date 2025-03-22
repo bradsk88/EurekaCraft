@@ -15,7 +15,6 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -28,7 +27,7 @@ import java.util.List;
 
 import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
 
-public class BlueprintFolderItem extends Item implements MenuProvider {
+public class BlueprintFolderItem extends Compat.UnstackableItem implements MenuProvider {
 
     private static final String STACK_ITEMS_NBT = "eurekacraft_items";
 
@@ -50,11 +49,6 @@ public class BlueprintFolderItem extends Item implements MenuProvider {
         }
         Compat.openScreen((ServerPlayer) player, this);
         return InteractionResultHolder.success(player.getItemInHand(p_41434_));
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack stack) {
-        return 1;
     }
 
     @Override

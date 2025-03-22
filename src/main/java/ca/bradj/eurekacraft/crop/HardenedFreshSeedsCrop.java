@@ -8,7 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -17,7 +16,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -26,7 +24,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class HardenedFreshSeedsCrop extends CropBlock {
+public class HardenedFreshSeedsCrop extends Compat.CropBlock {
 
     public static final String BLOCK_ID = "hardened_fresh_seeds_crop";
     public static final Double FULL_HEIGHT = 16.0D;
@@ -107,11 +105,11 @@ public class HardenedFreshSeedsCrop extends CropBlock {
             BlockState p_52292_,
             ServerLevel level,
             BlockPos blockPos,
-            RandomSource rand
+            Compat.RandomSrc rand
     ) {
         super.randomTick(p_52292_, level, blockPos, rand);
         if (isMaxAge(p_52292_)) {
-            tryChangingToSapling(level, blockPos, Compat.random(() -> rand));
+            tryChangingToSapling(level, blockPos, rand);
         }
     }
 

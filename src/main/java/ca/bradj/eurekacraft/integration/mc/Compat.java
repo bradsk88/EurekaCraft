@@ -6,9 +6,19 @@ import ca.bradj.eurekacraft.client.KeyInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.materials.BlueprintFolderItem;
+import ca.bradj.eurekacraft.world.storm.StormSavedDataHandler;
+import ca.bradj.eurekacraft.world.waves.ChunkWavesDataManager;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -25,6 +35,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
@@ -34,6 +47,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -41,8 +56,11 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -52,6 +70,9 @@ import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryObject;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -64,6 +85,10 @@ public class Compat {
     public static final Random RANDOM = new Random();
     public static final ResourceLocation OVERWORLD = Level.OVERWORLD.location();
     public static final Style GRAY = Style.EMPTY.withColor(TextColor.parseColor("GRAY"));
+    public static final IForgeRegistry<VillagerProfession> VILLAGER_PROFESSIONS = ForgeRegistries.VILLAGER_PROFESSIONS;
+    public static final IForgeRegistry<MenuType<?>> MENU_TYPES = ForgeRegistries.MENU_TYPES;
+    public static final IForgeRegistry<BlockEntityType<?>> BLOCK_ENTITY_TYPES = ForgeRegistries.BLOCK_ENTITY_TYPES;
+    public static final IForgeRegistry<EntityType<?>> ENTITY_TYPES = ForgeRegistries.ENTITY_TYPES;
 
     public static void playNeutralSound(
             ServerLevel serverLevel,
@@ -273,10 +298,19 @@ public class Compat {
             public boolean nextBoolean() {
                 return random.nextBoolean();
             }
+
+            @Override
+            public RandomSource inner() {
+                return level.get();
+            }
         };
     }
 
     public static LevelAccessor getWorld(LevelEvent evt) {
+        return evt.getLevel();
+    }
+
+    public static LevelAccessor getWorld(ChunkEvent evt) {
         return evt.getLevel();
     }
 
@@ -291,9 +325,9 @@ public class Compat {
         NetworkHooks.openScreen(player, blueprintFolderItem);
     }
 
-    public static List<? extends Player> getPlayers(Object event) {
+    public static List<Player> getPlayers(Object event) {
         if (event instanceof LevelEvent le) {
-            return le.getLevel().players();
+            return ImmutableList.copyOf(le.getLevel().players());
         }
         throw new IllegalArgumentException(String.format("Unexpected event type %s", event.getClass()));
     }
@@ -328,13 +362,41 @@ public class Compat {
             e.register(BoardItemRendering::itemColor, ItemsInit.STANDARD_REF_BOARD.get());
         });
         modEventBus.addListener((ModelEvent.BakingCompleted e) -> {
-            Map<ResourceLocation, BakedModel> models = e.getModels();
+            Map<ResourceLocation, net.minecraft.client.resources.model.BakedModel> models = e.getModels();
             BoardItemRendering.registerItemModel(models::get, models::put);
         });
 
         modEventBus.addListener((RegisterKeyMappingsEvent e) -> {
             e.register(KeyInit.accelerateFlightMapping);
             e.register(KeyInit.brakeFlightMapping);
+        });
+
+    }
+
+    public static void addForgeEventSubscribers(IEventBus modEventBus) {
+        modEventBus.addListener((ChunkEvent.Load e) -> {
+            LevelAccessor world = Compat.getWorld(e);
+            if (!(world instanceof ServerLevel sl)) {
+                return;
+            }
+            StormSavedDataHandler.chunkLoaded(() -> e.getChunk().getPos(), sl::getSeed);
+            ChunkWavesDataManager.get((Level) e.getLevel())
+                                 .initData(e.getChunk(), Compat.random(e.getLevel()::getRandom));
+        });
+        modEventBus.addListener((ChunkEvent.Unload e) -> {
+            LevelAccessor world = Compat.getWorld(e);
+            if (!(world instanceof ServerLevel sl)) {
+                return;
+            }
+            StormSavedDataHandler.chunkUnloaded(() -> e.getChunk().getPos());
+        });
+        modEventBus.addListener((TickEvent.LevelTickEvent e) -> {
+            LevelAccessor world = e.level;
+            if (!(world instanceof ServerLevel sl)) {
+                return;
+            }
+            boolean isOverworld = Compat.OVERWORLD.equals(e.level.dimension());
+            StormSavedDataHandler.worldTick(isOverworld, world.players());
         });
     }
 
@@ -354,12 +416,56 @@ public class Compat {
         playre.getLevel().getDataStorage().get(o, id);
     }
 
+    public static PoiType Poi(RegistryObject<Block> sandingMachine) {
+        return new PoiType(ImmutableSet.of(sandingMachine.get().defaultBlockState()), 1, 1);
+    }
+
+    public static void renderTranslucentBlock(
+            BlockRenderDispatcher renderer,
+            BlockState state,
+            PoseStack matrixStack,
+            Minecraft mc,
+            @NotNull ModelData model
+    ) {
+        renderer.renderSingleBlock(
+                state,
+                matrixStack,
+                mc.renderBuffers().crumblingBufferSource(),
+                15728880,
+                OverlayTexture.NO_OVERLAY,
+                model,
+                RenderType.translucent()
+        );
+    }
+
+    public static void renderTranslucentBlock(
+            BlockRenderDispatcher disp,
+            BlockState blockState,
+            PoseStack matrixStackIn,
+            MultiBufferSource bufferIn,
+            int combinedLightIn,
+            int combinedOverlayIn,
+            ModelData md
+    ) {
+        disp.renderSingleBlock(
+                blockState,
+                matrixStackIn,
+                bufferIn,
+                combinedLightIn,
+                combinedOverlayIn,
+                md,
+                RenderType.translucent()
+        );
+    }
+
     public interface RandomSrc {
         double nextDouble();
 
         int nextInt(int xRange);
 
         boolean nextBoolean();
+
+        RandomSource inner();
     }
 
     public static class RecipeType<T extends Recipe<?>> implements net.minecraft.world.item.crafting.RecipeType<T> {
@@ -388,6 +494,71 @@ public class Compat {
                 boolean p_222911_
         ) {
             return tree;
+        }
+    }
+
+    public static abstract class CropBlock extends net.minecraft.world.level.block.CropBlock {
+        public CropBlock(Properties p_52247_) {
+            super(p_52247_);
+        }
+
+        public void randomTick(
+                BlockState p_52292_,
+                ServerLevel level,
+                BlockPos blockPos,
+                RandomSrc rand
+        ) {
+            super.randomTick(p_52292_, level, blockPos, rand.inner());
+        }
+    }
+
+    public static abstract class LeavesBlock extends net.minecraft.world.level.block.LeavesBlock {
+        public LeavesBlock(Properties p_54422_) {
+            super(p_54422_);
+        }
+
+        public void randomTick(
+                BlockState p_54451_,
+                ServerLevel level,
+                BlockPos pos,
+                RandomSrc r
+        ) {
+            super.randomTick(p_54451_, level, pos, r.inner());
+        }
+    }
+
+    public static abstract class BakedModel implements net.minecraft.client.resources.model.BakedModel {
+        public abstract List<BakedQuad> getQuads(
+                @Nullable BlockState p_119123_,
+                @Nullable Direction p_119124_,
+                RandomSrc p_119125_
+        );
+
+        @Override
+        public List<BakedQuad> getQuads(
+                @Nullable BlockState blockState,
+                @Nullable Direction direction,
+                RandomSource random
+        ) {
+            return getQuads(blockState, direction, Compat.random(() -> random));
+        }
+
+        @Override
+        public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+            return getModelForParticle().getParticleIcon(data);
+        }
+
+        protected abstract net.minecraft.client.resources.model.BakedModel getModelForParticle();
+    }
+
+    public static abstract class UnstackableItem extends net.minecraft.world.item.Item {
+        public UnstackableItem(Properties props) {
+            super(props);
+        }
+
+        @Override
+        public int getMaxStackSize(ItemStack stack) {
+            return 1;
         }
     }
 }

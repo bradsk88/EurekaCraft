@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.core.init;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
 
 public class EntitiesInit {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(
-            ForgeRegistries.ENTITY_TYPES, EurekaCraft.MODID
+            Compat.ENTITY_TYPES, EurekaCraft.MODID
     );
 
     private static final String REF_BOARD_ID = new ResourceLocation(EurekaCraft.MODID, EntityRefBoard.ENTITY_ID).toString();

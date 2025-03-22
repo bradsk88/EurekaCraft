@@ -3,11 +3,11 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.wearables.deployment.DeployedPlayerGoggles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -45,14 +45,14 @@ public class WaveBlockTileEntityRenderer implements BlockEntityRenderer<TraparWa
             return;
         }
         @NotNull ModelData md = bm.getModelData(te.getLevel(), te.getBlockPos(), state, null);
-        disp.renderSingleBlock(
+        Compat.renderTranslucentBlock(
+                disp,
                 BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get().defaultBlockState(),
                 matrixStackIn,
                 bufferIn,
                 combinedLightIn,
                 combinedOverlayIn,
-                md,
-                RenderType.translucent()
+                md
         );
     }
 }

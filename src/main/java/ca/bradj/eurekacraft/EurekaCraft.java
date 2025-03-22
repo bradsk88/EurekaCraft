@@ -41,6 +41,7 @@ public class EurekaCraft {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
         Compat.addModEventSubscribers(FMLJavaModLoadingContext.get().getModEventBus());
+        Compat.addForgeEventSubscribers(MinecraftForge.EVENT_BUS);
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
@@ -70,9 +71,7 @@ public class EurekaCraft {
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         BlocksInit.RegisterTextures();
-        event.enqueueWork(
-                ModelsInit::registerModels
-        );
+        event.enqueueWork(ModelsInit::registerModels);
         event.enqueueWork(() -> {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
@@ -80,9 +79,7 @@ public class EurekaCraft {
 
         KeyInit.init();
 
-        event.enqueueWork(
-                TraparStormRendering::init
-        );
+        event.enqueueWork(TraparStormRendering::init);
     }
 
     @SubscribeEvent
@@ -97,11 +94,7 @@ public class EurekaCraft {
     public void onServerStarting(ServerAboutToStartEvent event) {
         if (EurekaConfig.crash_if_flight_disabled.get()) {
             if (!event.getServer().isFlightAllowed()) {
-                throw new IllegalStateException(
-                        "EurekaCraft is configured to crash the server if " +
-                                "flight is disabled. You can fix this by " +
-                                "updating server.properties to enable flight, " +
-                                "or by updating world/serverconfig/" + EurekaConfig.FILENAME);
+                throw new IllegalStateException("EurekaCraft is configured to crash the server if " + "flight is disabled. You can fix this by " + "updating server.properties to enable flight, " + "or by updating world/serverconfig/" + EurekaConfig.FILENAME);
             }
         }
     }

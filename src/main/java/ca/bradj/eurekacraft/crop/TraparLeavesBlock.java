@@ -3,19 +3,18 @@ package ca.bradj.eurekacraft.crop;
 import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TraparLeavesBlock extends LeavesBlock {
+public class TraparLeavesBlock extends Compat.LeavesBlock {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
@@ -32,7 +31,7 @@ public class TraparLeavesBlock extends LeavesBlock {
             BlockState p_54451_,
             ServerLevel level,
             BlockPos pos,
-            RandomSource r
+            Compat.RandomSrc r
     ) {
         Integer distanceToLog = p_54451_.getValue(DISTANCE);
         if (distanceToLog >= 7) {

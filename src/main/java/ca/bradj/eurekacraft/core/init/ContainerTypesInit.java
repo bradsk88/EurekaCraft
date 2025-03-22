@@ -7,17 +7,17 @@ import ca.bradj.eurekacraft.container.FolderContainer;
 import ca.bradj.eurekacraft.container.PhotoContainer;
 import ca.bradj.eurekacraft.container.RefTableContainer;
 import ca.bradj.eurekacraft.container.SandingMachineContainer;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ContainerTypesInit {
 
 
         public static final DeferredRegister<MenuType<?>> TYPES = DeferredRegister.create(
-                ForgeRegistries.MENU_TYPES, EurekaCraft.MODID
+                Compat.MENU_TYPES, EurekaCraft.MODID
         );
 
         public static final RegistryObject<MenuType<RefTableContainer>> REF_TABLE = TYPES.register(

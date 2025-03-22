@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.villager;
 
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -22,13 +23,14 @@ public class VillagersInit {
             EurekaCraft.MODID
     );
 
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROGRESSIONS = DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS,
+    public static final DeferredRegister<VillagerProfession> VILLAGER_PROGRESSIONS = DeferredRegister.create(
+            Compat.VILLAGER_PROFESSIONS,
             EurekaCraft.MODID
     );
 
     public static final RegistryObject<PoiType> SANDING_MACHINE_POI = POI_TYPES.register(
             "sanding_machine_poi",
-            () -> new PoiType(ImmutableSet.of(BlocksInit.SANDING_MACHINE.get().defaultBlockState()), 1, 1)
+            () -> Compat.Poi(BlocksInit.SANDING_MACHINE)
     );
 
     @SuppressWarnings("DataFlowIssue")

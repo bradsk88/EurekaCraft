@@ -9,12 +9,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -37,7 +37,11 @@ public class StormSavedData extends SavedData {
     public boolean storming = false;
     private float traparLevel;
 
-    private StormSavedData(String id, ChunkPos pos, float gainPerTick) {
+    private StormSavedData(
+            String id,
+            ChunkPos pos,
+            float gainPerTick
+    ) {
         super();
         this.gainPer100Tick = gainPerTick;
         this.lossPer100Tick = 40 * gainPerTick;
@@ -50,11 +54,17 @@ public class StormSavedData extends SavedData {
         this(p_i2141_1_, new ChunkPos(0), DEFAULT_TRAPAR_PER_100_TICK);
     }
 
-    public StormSavedData(long seed, ChunkPos cp) {
+    public StormSavedData(
+            long seed,
+            ChunkPos cp
+    ) {
         this(ID.toString(), cp, gainFromSeedAndChunk(seed, cp));
     }
 
-    private static float gainFromSeedAndChunk(long seed, ChunkPos cp) {
+    private static float gainFromSeedAndChunk(
+            long seed,
+            ChunkPos cp
+    ) {
         long posSeed = (100L * cp.x) + cp.z;
         return new Random(seed + posSeed).nextFloat() * MAX_TRAPAR_GAIN_PER_100_TICK;
     }
@@ -63,17 +73,17 @@ public class StormSavedData extends SavedData {
         return chunkData.getOrDefault(cp, StormSavedData.NOT_STORMING);
     }
 
-    public static void initChunk(long seed, ChunkPos pos) {
+    public static void initChunk(
+            long seed,
+            ChunkPos pos
+    ) {
         if (chunkData.containsKey(pos)) {
             return;
         }
         chunkData.put(pos, new StormSavedData(seed, pos));
     }
 
-    public static void tick(Level world) {
-        if (world.isClientSide()) {
-            return;
-        }
+    public static void serverTick(Collection<? extends Player> world) {
         if (chunkData.isEmpty()) {
             return;
         }
@@ -92,14 +102,15 @@ public class StormSavedData extends SavedData {
         logTraparForPlayers(world);
     }
 
-    private static void logTraparForPlayers(Level world) {
-        for (Player p : world.players()) {
+    private static void logTraparForPlayers(Collection<? extends Player> players) {
+        for (Player p : players) {
             BlockPos bp = p.blockPosition();
             StormSavedData d = chunkData.get(new ChunkPos(bp));
             if (d == null) {
                 logger.trace("Near " + p.getName().getContents() + ": null");
             } else {
-                logger.trace("Near " + p.getName().getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate["+ d.gainPer100Tick +"], p["+ d.pos+"]");
+                logger.trace("Near " + p.getName()
+                                        .getContents() + ": storming[" + d.storming + "], level[" + d.traparLevel + "], rate[" + d.gainPer100Tick + "], p[" + d.pos + "]");
             }
         }
     }
@@ -120,7 +131,11 @@ public class StormSavedData extends SavedData {
         return forChunk(new ChunkPos(blockPosition));
     }
 
-    public static void triggerTraparExplosion(BlockPos blockPosition, int blockRadius, float intensity) {
+    public static void triggerTraparExplosion(
+            BlockPos blockPosition,
+            int blockRadius,
+            float intensity
+    ) {
         ChunkPos cp = new ChunkPos(blockPosition);
         forChunk(cp).traparLevel = intensity;
         // TODO: Implement true radius
@@ -149,10 +164,7 @@ public class StormSavedData extends SavedData {
         this.traparLevel -= this.lossPer100Tick;
         if (traparLevel <= 0.0f && this.storming) {
             this.storming = false;
-            EurekaCraftNetwork.CHANNEL.send(
-                    PacketDistributor.ALL.noArg(),
-                    new TraparStormMessage(this.pos, false)
-            );
+            EurekaCraftNetwork.CHANNEL.send(PacketDistributor.ALL.noArg(), new TraparStormMessage(this.pos, false));
         }
         setDirty();
     }

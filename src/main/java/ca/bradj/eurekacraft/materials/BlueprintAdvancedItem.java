@@ -6,7 +6,6 @@ import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -18,7 +17,7 @@ import java.util.Optional;
 
 import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 
-public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryProvider, IInitializable,
+public class BlueprintAdvancedItem extends Compat.UnstackableItem implements IBoardStatsFactoryProvider, IInitializable,
         IBoardStatsCraftable, IBoardStatsGetter {
 
     private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.WithFallback(RefBoardStats.EliteBoard);
@@ -34,11 +33,6 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
 
     public BlueprintAdvancedItem() {
         super(PROPS);
-    }
-
-    @Override
-    public int getMaxStackSize(ItemStack stack) {
-        return 1;
     }
 
     @Override

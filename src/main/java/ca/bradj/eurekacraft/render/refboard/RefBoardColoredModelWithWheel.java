@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.render.refboard;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -8,10 +9,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.model.data.ModelData;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RefBoardColoredModelWithWheel implements BakedModel {
+public class RefBoardColoredModelWithWheel extends Compat.BakedModel {
 
     public static final ModelResourceLocation modelResourceLocation = new ModelResourceLocation(
             "eurekacraft:ref_board",
@@ -40,24 +38,29 @@ public class RefBoardColoredModelWithWheel implements BakedModel {
     public List<BakedQuad> getQuads(
             @Nullable BlockState state,
             @Nullable Direction side,
-            RandomSource rand
+            Compat.RandomSrc rand
     ) {
         // our chess pieces are only drawn when side is NULL.
         if (side != null) {
-            return parentModel.getQuads(state, side, rand);
+            return parentModel.getQuads(state, side, rand.inner());
         }
 
-        List<BakedQuad> combinedQuadsList = new ArrayList(parentModel.getQuads(state, side, rand));
+        List<BakedQuad> combinedQuadsList = new ArrayList(parentModel.getQuads(state, side, rand.inner()));
         combinedQuadsList.addAll(getWheelQuads(state, side, rand));
         return combinedQuadsList;
+    }
+
+    @Override
+    protected BakedModel getModelForParticle() {
+        return parentModel;
     }
 
     private Collection<? extends BakedQuad> getWheelQuads(
             @Nullable BlockState state,
             @Nullable Direction side,
-            RandomSource rand
+            Compat.RandomSrc rand
     ) {
-        List<BakedQuad> quads = this.parentModel.getQuads(state, side, rand);
+        List<BakedQuad> quads = this.parentModel.getQuads(state, side, rand.inner());
         List<BakedQuad> newQuads = new ArrayList<>();
         // TODO: Can we generate the quads, rather than just coloring them?
         // 66
@@ -202,11 +205,6 @@ public class RefBoardColoredModelWithWheel implements BakedModel {
     @Override
     public TextureAtlasSprite getParticleIcon() {
         return parentModel.getParticleIcon();
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
-        return parentModel.getParticleIcon(data);
     }
 
     @Override
