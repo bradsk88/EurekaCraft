@@ -9,6 +9,7 @@ import ca.bradj.eurekacraft.core.init.*;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.villager.VillagersInit;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -38,6 +39,8 @@ public class EurekaCraft {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the doClientStuff method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+
+        Compat.addModEventSubscribers(FMLJavaModLoadingContext.get().getModEventBus());
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);

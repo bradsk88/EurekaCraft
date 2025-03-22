@@ -1,6 +1,8 @@
 package ca.bradj.eurekacraft.entity.board;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.integration.mc.Compat;
+import ca.bradj.eurekacraft.integration.mc.ECCompat;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
@@ -11,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
@@ -27,43 +29,46 @@ public class RefBoardDataLoader {
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
     @SubscribeEvent
-    public static void PauseOrCloseServer(WorldEvent.Save event) {
-        for (Player player : event.getWorld().players()) {
-            storePlayBoard((ServerPlayer) player, (ServerLevel) event.getWorld());
+    public static void PauseOrCloseServer(LevelEvent.Save event) {
+        for (Player player : Compat.getPlayers(event)) {
+            if (!(player instanceof ServerPlayer sp)) {
+                return;
+            }
+            storePlayBoard(sp);
         }
     }
 
     @SubscribeEvent
     public static void PlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        Player player = event.getPlayer();
+        Player player = Compat.getPlayer(event);
         if (!(player.level instanceof ServerLevel)) {
             return;
         }
-        storePlayBoard((ServerPlayer) player, (ServerLevel) player.level);
+        storePlayBoard((ServerPlayer) player);
     }
 
-    private static void storePlayBoard(ServerPlayer player, ServerLevel world) {
+    private static void storePlayBoard(ServerPlayer player) {
         EntityRefBoard board = EntityRefBoard.deployedBoards.get(player.getUUID());
 
         EntityRefBoard.Data data = new EntityRefBoard.Data(player.getUUID(), board);
         data.setDirty();
-        world.getDataStorage().set(EntityRefBoard.Data.ID(player.getUUID()), data);
+        Compat.storeOnWorld(player, EntityRefBoard.Data.ID(player.getUUID()), data);
     }
 
     @SubscribeEvent
     public static void PlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getPlayer().level instanceof ServerLevel world)) {
+        Player playre = Compat.getPlayer(event);
+        if (!(playre instanceof ServerPlayer sp)) {
             return;
         }
 
-        EntityRefBoard board = new EntityRefBoard(event.getPlayer(), world);
+        EntityRefBoard board = ECCompat.newRefBoardEntityForConnectionRecovery(sp);
         AtomicBoolean loaded = new AtomicBoolean(false);
-        world.getDataStorage().get(
-                (CompoundTag t) ->  {
+        Compat.getFromWorld(
+                sp, (CompoundTag t) -> {
                     loaded.set(true);
-                    return new EntityRefBoard.Data(event.getPlayer().getUUID(), board, t);
-                },
-                EntityRefBoard.Data.ID(event.getPlayer().getUUID())
+                    return new EntityRefBoard.Data(playre.getUUID(), board, t);
+                }, EntityRefBoard.Data.ID(playre.getUUID())
         );
         if (!loaded.get()) {
             return;
@@ -71,7 +76,7 @@ public class RefBoardDataLoader {
         if (!board.isAlive()) {
             return;
         }
-        ItemStack mainHandItem = event.getPlayer().getMainHandItem();
+        ItemStack mainHandItem = playre.getMainHandItem();
         if (!(mainHandItem.getItem() instanceof RefBoardItem mainHandBoardItem)) {
             EurekaCraft.LOGGER.error("Found deployed board, but hand does not contain board.");
             EurekaCraft.LOGGER.info("Resolving discrepancy by killing board");
@@ -79,9 +84,9 @@ public class RefBoardDataLoader {
             return;
         }
 
-        if (event.getPlayer().isOnGround()) {
+        if (playre.isOnGround()) {
             PlayerDeployedBoard.DeployedBoard.RemoveFromStack(mainHandItem);
-            PlayerDeployedBoardProvider.removeBoardFor(event.getPlayer());
+            PlayerDeployedBoardProvider.removeBoardFor(playre);
         }
 
         Optional<UUID> handBoardUUID = EntityRefBoard.getItemStackBoardUUID(mainHandItem);
@@ -94,9 +99,7 @@ public class RefBoardDataLoader {
         }
         if (handBoardUUID.get().equals(entityBoardUUID.get())) {
             BoardType boardType = mainHandBoardItem.getBoardType();
-            EntityRefBoard.toggleFromInventory(
-                    event.getPlayer(), world, mainHandItem, boardType
-            );
+            EntityRefBoard.toggleFromInventory(playre, sp.getLevel(), mainHandItem, boardType);
         }
     }
 

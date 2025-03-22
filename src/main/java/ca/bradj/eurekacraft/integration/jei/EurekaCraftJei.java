@@ -19,6 +19,19 @@ import java.util.stream.Collectors;
 
 @JeiPlugin
 public class EurekaCraftJei implements IModPlugin {
+
+    public static RecipeType<RefTableRecipe> REF_TABLE_RECIPE_TYPE = RecipeType.create(
+            EurekaCraft.MODID,
+            RefTableRecipe.Type.ID.getPath(),
+            RefTableRecipe.class
+    );
+
+    public static RecipeType<SandingMachineRecipe> SANDING_MACHINE_RECIPE_TYPE = RecipeType.create(
+            EurekaCraft.MODID,
+            SandingMachineRecipe.Type.ID.getPath(),
+            SandingMachineRecipe.class
+    );
+
     @Override
     public ResourceLocation getPluginUid() {
         return new ResourceLocation(EurekaCraft.MODID, "jei_plugin");

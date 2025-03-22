@@ -2,6 +2,7 @@ package ca.bradj.eurekacraft.materials;
 
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.interfaces.*;
 import ca.bradj.eurekacraft.vehicles.RefBoardStats;
 import net.minecraft.client.Minecraft;
@@ -14,13 +15,17 @@ import net.minecraft.world.level.Level;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 
-public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable, IBoardStatsCraftable, IBoardStatsGetter {
+public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, ITechAffected, IInitializable,
+        IBoardStatsCraftable, IBoardStatsGetter {
 
     public static boolean debuggerReleaseControl() {
         GLFW.glfwSetInputMode(Minecraft.getInstance().getWindow().getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -33,7 +38,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public static final String ITEM_ID = "blueprint";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(Compat.RandomSrc rand) {
         ItemStack i = ItemsInit.BLUEPRINT.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.StandardBoard, rand);
         return i;
@@ -44,7 +49,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return 1;
     }
 
@@ -64,12 +69,22 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(
+            ItemStack stack,
+            @Nullable Level world,
+            List<Component> tooltip,
+            TooltipFlag flagIn
+    ) {
         tooltip.addAll(Blueprints.getTooltips(getStats(stack), RefBoardStats.StandardBoard));
     }
 
     @Override
-    public void applyTechItem(Collection<ItemStack> inputs, ItemStack blueprint, ItemStack target, Random random) {
+    public void applyTechItem(
+            Collection<ItemStack> inputs,
+            ItemStack blueprint,
+            ItemStack target,
+            Compat.RandomSrc random
+    ) {
         // TODO: Update this function so we can use the best blueprints (or an average?) as the basis for randomization
 
         if (!(blueprint.getItem() instanceof BlueprintItem)) {
@@ -97,7 +112,7 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     @Override
     public void initialize(
             ItemStack target,
-            Random random
+            Compat.RandomSrc random
     ) {
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(newStats));
@@ -107,11 +122,12 @@ public class BlueprintItem extends Item implements IBoardStatsFactoryProvider, I
     public void generateNewBoardStats(
             ItemStack target,
             Collection<ItemStack> context,
-            Random random
+            Compat.RandomSrc random
     ) {
         Collection<RefBoardStats> contextStats = context.stream().
-                filter(v -> v.getItem() instanceof IBoardStatsGetter).
-                map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v)).toList();
+                                                        filter(v -> v.getItem() instanceof IBoardStatsGetter).
+                                                        map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v))
+                                                        .toList();
         RefBoardStats stats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.StandardBoard, random);
         if (contextStats.size() != 0) {
             stats = RefBoardStats.Average(

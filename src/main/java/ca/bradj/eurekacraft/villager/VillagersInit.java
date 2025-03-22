@@ -18,32 +18,42 @@ import java.lang.reflect.Method;
 public class VillagersInit {
 
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(
-            ForgeRegistries.POI_TYPES, EurekaCraft.MODID
+            ForgeRegistries.POI_TYPES,
+            EurekaCraft.MODID
     );
 
-    public static final DeferredRegister<VillagerProfession> VILLAGER_PROGRESSIONS = DeferredRegister.create(
-            ForgeRegistries.PROFESSIONS, EurekaCraft.MODID
+    public static final DeferredRegister<VillagerProfession> VILLAGER_PROGRESSIONS = DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS,
+            EurekaCraft.MODID
     );
 
     public static final RegistryObject<PoiType> SANDING_MACHINE_POI = POI_TYPES.register(
             "sanding_machine_poi",
-            () -> new PoiType("sanding_machine_poi", PoiType.getBlockStates(BlocksInit.SANDING_MACHINE.get()), 1, 1)
+            () -> new PoiType(ImmutableSet.of(BlocksInit.SANDING_MACHINE.get().defaultBlockState()), 1, 1)
     );
 
+    @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<VillagerProfession> REF_DEALER = VILLAGER_PROGRESSIONS.register(
-            "ref_dealer",
-            () -> new VillagerProfession(
+            "ref_dealer", () -> new VillagerProfession(
                     "ref_dealer",
-                    SANDING_MACHINE_POI.get(),
+                    z -> z.is(SANDING_MACHINE_POI.getKey()),
+                    z -> z.is(SANDING_MACHINE_POI.getKey()),
                     ImmutableSet.of(),
-                    ImmutableSet.of(BlocksInit.REF_TABLE_BLOCK.get(), BlocksInit.FRESH_SEEDS_CROP.get(), BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()),
+                    ImmutableSet.of(
+                            BlocksInit.REF_TABLE_BLOCK.get(),
+                            BlocksInit.FRESH_SEEDS_CROP.get(),
+                            BlocksInit.FRESH_SEEDS_CROP_HARDENED.get()
+                    ),
                     SoundEvents.GRAVEL_STEP
             )
     );
 
     public static void registerPOIs() {
         try {
-            Method registerBlockStates = ObfuscationReflectionHelper.findMethod(PoiType.class, "registerBlockStates", PoiType.class);
+            Method registerBlockStates = ObfuscationReflectionHelper.findMethod(
+                    PoiType.class,
+                    "registerBlockStates",
+                    PoiType.class
+            );
             registerBlockStates.invoke(null, SANDING_MACHINE_POI.get());
         } catch (InvocationTargetException | IllegalAccessException e) {
             e.printStackTrace();

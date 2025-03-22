@@ -3,8 +3,8 @@ package ca.bradj.eurekacraft.blocks.machines;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.TilesInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.wrappers.EntityBlock;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraftforge.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -79,7 +78,7 @@ public class SandingMachineBlock extends EntityBlock {
             return;
         }
 
-        NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, blockpos);
+        Compat.openScreen((ServerPlayer) player, (MenuProvider) te, blockpos);
     }
 
     @Override

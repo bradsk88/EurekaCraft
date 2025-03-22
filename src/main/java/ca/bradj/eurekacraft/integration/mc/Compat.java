@@ -1,11 +1,17 @@
 package ca.bradj.eurekacraft.integration.mc;
 
 import ca.bradj.eurekacraft.EurekaCraft;
+import ca.bradj.eurekacraft.client.BoardItemRendering;
+import ca.bradj.eurekacraft.client.KeyInit;
+import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.materials.BlueprintFolderItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -19,6 +25,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,8 +34,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraftforge.client.event.ModelEvent;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -40,12 +54,10 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Compat {
@@ -279,6 +291,69 @@ public class Compat {
         NetworkHooks.openScreen(player, blueprintFolderItem);
     }
 
+    public static List<? extends Player> getPlayers(Object event) {
+        if (event instanceof LevelEvent le) {
+            return le.getLevel().players();
+        }
+        throw new IllegalArgumentException(String.format("Unexpected event type %s", event.getClass()));
+    }
+
+    public static Player getPlayer(Object event) {
+        if (event instanceof PlayerEvent pe) {
+            return pe.getEntity();
+        }
+        throw new IllegalArgumentException(String.format("Unexpected event type %s", event.getClass()));
+    }
+
+    public static void storeOnWorld(
+            ServerPlayer player,
+            String id,
+            EntityRefBoard.Data data
+    ) {
+        player.getLevel().getDataStorage().set(id, data);
+    }
+
+    public static void addModEventSubscribers(IEventBus modEventBus) {
+        // Only required in 1.18
+//        modEventBus.addListener((RegistryEvent.Register e) -> {
+//            Registry.register(Registry.RECIPE_TYPE, RefTableRecipe.Type.ID, RefTableRecipe.Type.INSTANCE);
+//            Registry.register(Registry.RECIPE_TYPE, SandingMachineRecipe.Type.ID, SANDING_MACHINE);
+//        });
+//        modEventBus.addListener((RegistryEvent<GlobalLootModifierSerializer<?>> e) -> {
+//            event.getRegistry().registerAll(
+//              LootAdditions.ALL.stream().map(v -> new LootAdditionModifier.Serializer().setRegistryName(new ResourceLocation(EurekaCraft.MODID, v))
+//            );
+//        });
+        modEventBus.addListener((RegisterColorHandlersEvent.Item e) -> {
+            e.register(BoardItemRendering::itemColor, ItemsInit.STANDARD_REF_BOARD.get());
+        });
+        modEventBus.addListener((ModelEvent.BakingCompleted e) -> {
+            Map<ResourceLocation, BakedModel> models = e.getModels();
+            BoardItemRendering.registerItemModel(models::get, models::put);
+        });
+
+        modEventBus.addListener((RegisterKeyMappingsEvent e) -> {
+            e.register(KeyInit.accelerateFlightMapping);
+            e.register(KeyInit.brakeFlightMapping);
+        });
+    }
+
+    public static void openScreen(
+            ServerPlayer player,
+            MenuProvider te,
+            BlockPos blockpos
+    ) {
+        NetworkHooks.openScreen(player, te, blockpos);
+    }
+
+    public static void getFromWorld(
+            ServerPlayer playre,
+            Function<CompoundTag, ? extends SavedData> o,
+            String id
+    ) {
+        playre.getLevel().getDataStorage().get(o, id);
+    }
+
     public interface RandomSrc {
         double nextDouble();
 
@@ -298,5 +373,21 @@ public class Compat {
     public abstract static class RecipeSerializer<T extends Recipe<?>>
 //            extends ForgeRegistryEntry<net.minecraft.world.item.crafting.RecipeSerializer<?>>
             implements net.minecraft.world.item.crafting.RecipeSerializer<T> {
+    }
+
+    public static abstract class AbstractTreeGrower extends net.minecraft.world.level.block.grower.AbstractTreeGrower {
+        private final Holder<ConfiguredFeature<TreeConfiguration, ?>> tree;
+
+        public AbstractTreeGrower(Holder<ConfiguredFeature<TreeConfiguration, ?>> traparTree) {
+            tree = traparTree;
+        }
+
+        @Override
+        protected @Nullable Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(
+                RandomSource p_222910_,
+                boolean p_222911_
+        ) {
+            return tree;
+        }
     }
 }

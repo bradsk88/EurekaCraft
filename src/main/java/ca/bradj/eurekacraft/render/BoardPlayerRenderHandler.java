@@ -3,7 +3,10 @@ package ca.bradj.eurekacraft.render;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModelsInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
-import ca.bradj.eurekacraft.vehicles.*;
+import ca.bradj.eurekacraft.integration.mc.Compat;
+import ca.bradj.eurekacraft.vehicles.BoardColor;
+import ca.bradj.eurekacraft.vehicles.BoardType;
+import ca.bradj.eurekacraft.vehicles.RefBoardItem;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
@@ -43,12 +46,17 @@ public class BoardPlayerRenderHandler {
 
     @SubscribeEvent
     public static void playerRender(final RenderPlayerEvent.Pre event) {
-        PlayerDeployedBoardProvider.getBoardTypeFor(event.getPlayer()).ifPresent(
-                (PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(event, bt)
-        );
+        PlayerDeployedBoardProvider.getBoardTypeFor(Compat.getPlayer(event))
+                                   .ifPresent((PlayerDeployedBoard.DeployedBoard bt) -> renderPlayerWithBoard(
+                                           event,
+                                           bt
+                                   ));
     }
 
-    private static void renderPlayerWithBoard(final RenderPlayerEvent.Pre event, PlayerDeployedBoard.DeployedBoard bt) {
+    private static void renderPlayerWithBoard(
+            final RenderPlayerEvent.Pre event,
+            PlayerDeployedBoard.DeployedBoard bt
+    ) {
         if (BoardType.NONE.equals(bt.boardType)) {
             return;
         }
@@ -58,13 +66,13 @@ public class BoardPlayerRenderHandler {
         PoseStack matrixStack = event.getPoseStack();
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
-        LivingEntity living = event.getEntityLiving();
+        LivingEntity living = Compat.getPlayer(event);
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
 
         Vec3 rv = living.getForward().normalize();
         final int tipAmt = 10;
-        switch (PlayerBoardControlProvider.getControl(event.getPlayer())) {
+        switch (PlayerBoardControlProvider.getControl(Compat.getPlayer(event))) {
             case BRAKE -> {
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (-tipAmt * rv.x)));
                 matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (-tipAmt * rv.z)));
@@ -80,16 +88,28 @@ public class BoardPlayerRenderHandler {
         VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());
         model.getModelRenderer().yRot = newYRot;
         model.renderToBuffer(
-                matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+                matrixStack,
+                ivertexbuilder,
+                event.getPackedLight(),
+                OverlayTexture.NO_OVERLAY,
+                1.0F,
+                1.0F,
+                1.0F,
+                1.0F
         );
 
         if (bt.wheel.isPresent()) {
             WheelModel wModel = new WheelModel(bt.wheel.get());
             wModel.getModelRenderer().yRot = newYRot;
             wModel.renderToBuffer(
-                    matrixStack, ivertexbuilder, event.getPackedLight(),
-                    OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+                    matrixStack,
+                    ivertexbuilder,
+                    event.getPackedLight(),
+                    OverlayTexture.NO_OVERLAY,
+                    1.0F,
+                    1.0F,
+                    1.0F,
+                    1.0F
             );
         }
     }
@@ -122,7 +142,9 @@ public class BoardPlayerRenderHandler {
     }
 
     private static void renderPlayerHandWithBoard(
-            RenderHandEvent event, BoardType bt, Color c
+            RenderHandEvent event,
+            BoardType bt,
+            Color c
     ) {
         if (BoardType.NONE.equals(bt)) {
             return;
@@ -138,8 +160,14 @@ public class BoardPlayerRenderHandler {
 
         VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());
         model.renderToBuffer(
-                matrixStack, ivertexbuilder, event.getPackedLight(),
-                OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F
+                matrixStack,
+                ivertexbuilder,
+                event.getPackedLight(),
+                OverlayTexture.NO_OVERLAY,
+                1.0F,
+                1.0F,
+                1.0F,
+                1.0F
         );
     }
 }

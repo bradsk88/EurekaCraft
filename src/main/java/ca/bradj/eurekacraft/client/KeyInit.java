@@ -3,7 +3,6 @@ package ca.bradj.eurekacraft.client;
 import ca.bradj.eurekacraft.EurekaCraft;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
 
 public final class KeyInit {
 
@@ -16,10 +15,10 @@ public final class KeyInit {
     }
 
     private static KeyMapping registerKey(
-            String name, String category, int keycode
+            String name,
+            String category,
+            int keycode
     ) {
-        final var key = new KeyMapping("key." + EurekaCraft.MODID + "." + name, keycode, category);
-        ClientRegistry.registerKeyBinding(key);
-        return key;
+        return new KeyMapping("key." + EurekaCraft.MODID + "." + name, keycode, category);
     }
 }

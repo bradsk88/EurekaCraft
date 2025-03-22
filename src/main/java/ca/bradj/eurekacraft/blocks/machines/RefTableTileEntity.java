@@ -137,7 +137,7 @@ public class RefTableTileEntity extends EurekaCraftMachineEntity implements Menu
     }
 
     @Override
-    protected Collection<ItemStack> getSelfAsItemStacks(Random rand) {
+    protected Collection<ItemStack> getSelfAsItemStacks(Compat.RandomSrc rand) {
         if (this.ancient) {
             ArrayList<ItemStack> ingredients = new ArrayList<>();
             // Top

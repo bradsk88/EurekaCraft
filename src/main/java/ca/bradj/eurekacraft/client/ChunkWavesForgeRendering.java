@@ -9,6 +9,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -17,12 +18,15 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelLastEvent;
-import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+
+import static net.minecraftforge.client.event.RenderLevelStageEvent.Stage.fromRenderType;
 
 @Mod.EventBusSubscriber(modid = EurekaCraft.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ChunkWavesForgeRendering {
@@ -31,7 +35,13 @@ public class ChunkWavesForgeRendering {
     private static Vec3 lastPos;
 
     @SubscribeEvent
-    public static void handleRenderEvent(RenderLevelLastEvent evt) {
+    public static void handleRenderEvent(RenderLevelStageEvent evt) {
+        RenderLevelStageEvent.Stage translucent = fromRenderType(RenderType.translucent());
+        assert translucent != null;
+        if (!translucent.equals(evt.getStage())) {
+            return;
+        }
+
         if (!DeployedPlayerGoggles.areGogglesBeingWorn(mc.player)) {
             return;
         }
@@ -54,7 +64,7 @@ public class ChunkWavesForgeRendering {
         evt.getLevelRenderer().renderLevel(
                 matrixStack,
                 evt.getPartialTick(),
-                evt.getStartNanos(),
+                1L,
                 true,
                 mc.gameRenderer.getMainCamera(),
                 mc.gameRenderer,
@@ -75,14 +85,10 @@ public class ChunkWavesForgeRendering {
         Collection<BlockPos> waveBlocks = ImmutableList.copyOf(ChunkWavesDataManager.getForClient(cp).getWaves());
 
         for (BlockPos p : waveBlocks) {
-            IModelData model = bm.getModelData(world, p, state, null);
+            @NotNull ModelData model = bm.getModelData(world, p, state, null);
 
             matrixStack.pushPose();
-            matrixStack.translate(
-                    p.getX() - iPos.x,
-                    p.getY() - iPos.y,
-                    p.getZ() - iPos.z
-            );
+            matrixStack.translate(p.getX() - iPos.x, p.getY() - iPos.y, p.getZ() - iPos.z);
             matrixStack.scale(1, 2, 1);
             renderer.renderSingleBlock(
                     state,
@@ -90,7 +96,8 @@ public class ChunkWavesForgeRendering {
                     mc.renderBuffers().crumblingBufferSource(),
                     15728880,
                     OverlayTexture.NO_OVERLAY,
-                    model
+                    model,
+                    RenderType.translucent()
             );
             matrixStack.popPose();
         }

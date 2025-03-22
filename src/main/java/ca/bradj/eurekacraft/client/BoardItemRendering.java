@@ -6,10 +6,8 @@ import ca.bradj.eurekacraft.render.refboard.RefBoardColoredModel;
 import ca.bradj.eurekacraft.vehicles.BoardColor;
 import ca.bradj.eurekacraft.vehicles.BoardType;
 import ca.bradj.eurekacraft.vehicles.RefBoardItem;
-import ca.bradj.eurekacraft.vehicles.StandardRefBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoard;
 import ca.bradj.eurekacraft.vehicles.deployment.PlayerDeployedBoardProvider;
-import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.renderer.item.ItemPropertyFunction;
@@ -19,44 +17,29 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-@Mod.EventBusSubscriber(modid = EurekaCraft.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class BoardItemRendering {
 
-    @SubscribeEvent
-    public static void registerColors(ColorHandlerEvent.Item event) {
-        event.getItemColors().register(new ItemColor() {
-            @Override
-            public int getColor(ItemStack p_92672_, int p_92673_) {
-                Color c = BoardColor.FromStack(p_92672_);
-                return c.getRGB();
-            }
-        }, ItemsInit.STANDARD_REF_BOARD.get());
-    }
-
-    public static StandardRefBoard refBoard;
-
-    @SubscribeEvent
-    public static void registerItemModel(ModelBakeEvent evt) {
+    public static void registerItemModel(
+            Function<ResourceLocation, BakedModel> get,
+            BiConsumer<ResourceLocation, BakedModel> put
+    ) {
         EurekaCraft.LOGGER.debug("Registering item model");
         ModelResourceLocation itemModelResourceLocation = RefBoardColoredModel.modelResourceLocation;
-        BakedModel existingModel = evt.getModelRegistry().get(itemModelResourceLocation);
+        BakedModel existingModel = get.apply(itemModelResourceLocation);
         if (existingModel == null) {
             EurekaCraft.LOGGER.warn("Did not find the expected vanilla baked model in registry: " + itemModelResourceLocation);
         } else if (existingModel instanceof RefBoardColoredModel) {
             EurekaCraft.LOGGER.warn("Tried to replace ChessboardModel twice");
         } else {
             RefBoardColoredModel customModel = new RefBoardColoredModel(existingModel);
-            evt.getModelRegistry().put(itemModelResourceLocation, customModel);
+            put.accept(itemModelResourceLocation, customModel);
         }
     }
 
@@ -93,13 +76,27 @@ public class BoardItemRendering {
         );
     }
 
+    public static int itemColor(
+            ItemStack itemStack,
+            int i
+    ) {
+        Color c = BoardColor.FromStack(itemStack);
+        return c.getRGB();
+    }
+
+
     public static class DeployedPropGetter implements ItemPropertyFunction {
 
         public DeployedPropGetter() {
         }
 
         @Override
-        public float call(ItemStack item, @Nullable ClientLevel world, @Nullable LivingEntity entity, int unused) {
+        public float call(
+                ItemStack item,
+                @Nullable ClientLevel world,
+                @Nullable LivingEntity entity,
+                int unused
+        ) {
             if (entity == null) {
                 return 0.0F;
             }
@@ -126,7 +123,12 @@ public class BoardItemRendering {
         }
 
         @Override
-        public float call(ItemStack item, @Nullable ClientLevel world, @Nullable LivingEntity entity, int unused) {
+        public float call(
+                ItemStack item,
+                @Nullable ClientLevel world,
+                @Nullable LivingEntity entity,
+                int unused
+        ) {
             if (entity == null) {
                 return 0;
             }

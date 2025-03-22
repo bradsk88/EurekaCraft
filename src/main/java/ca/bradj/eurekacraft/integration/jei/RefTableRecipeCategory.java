@@ -6,28 +6,19 @@ import ca.bradj.eurekacraft.container.SandingMachineContainer;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.data.recipes.RefTableRecipe;
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.IRecipeLayout;
+import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
-import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocusGroup;
+import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static ca.bradj.eurekacraft.core.init.TagsInit.Items.ITEMS_THAT_BURN;
 
@@ -44,24 +35,29 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
     public RefTableRecipeCategory(
             IGuiHelper helper
     ) {
-        int bgPos = SandingMachineContainer.titleBarHeight + (4 * SandingMachineContainer.boxHeight);
-        this.background = helper.createDrawable(TEXTURE, 0, 0, 176, bgPos);
-        this.icon = helper.createDrawableIngredient(new ItemStack(ItemsInit.REF_TABLE_BLOCK.get()));
+        this.background = helper.createDrawable(
+                TEXTURE,
+                0,
+                0,
+                176,
+                SandingMachineContainer.titleBarHeight + (4 * SandingMachineContainer.boxHeight)
+        );
+        this.icon = helper.createDrawableIngredient(
+                VanillaTypes.ITEM_STACK,
+                new ItemStack(ItemsInit.REF_TABLE_BLOCK.get())
+        );
     }
 
     @Override
-    public ResourceLocation getUid() {
-        return RefTableRecipe.Type.ID;
-    }
-
-    @Override
-    public Class<? extends RefTableRecipe> getRecipeClass() {
-        return RefTableRecipe.class;
+    public RecipeType<RefTableRecipe> getRecipeType() {
+        return EurekaCraftJei.REF_TABLE_RECIPE_TYPE;
     }
 
     @Override
     public Component getTitle() {
-        return new TextComponent(BlocksInit.REF_TABLE_BLOCK.get().getName().getString());
+        return Component.literal(BlocksInit.REF_TABLE_BLOCK.get()
+                                                           .getName()
+                                                           .getString());
     }
 
     @Override
@@ -74,131 +70,152 @@ public class RefTableRecipeCategory implements IRecipeCategory<RefTableRecipe> {
         return this.icon;
     }
 
-    @Override
-    public void setIngredients(
-            RefTableRecipe recipe,
-            IIngredients ingredients
-    ) {
-        NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
-        for (int j = 0; j < 8; j++) {
-            if (j < recipe.getIngredients().size()) {
-                Ingredient p_set_2_ = recipe.getIngredients().get(j);
-                if (p_set_2_.isEmpty() || p_set_2_.getItems()[0].sameItemStackIgnoreDurability(Items.AIR.getDefaultInstance())) {
-                    i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
-                } else {
-                    i.set(j, p_set_2_);
-                }
-            } else {
-                i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
-            }
-        }
-        if (recipe.requiresCooking()) {
-            i.set(6, Ingredient.of(ITEMS_THAT_BURN));
-        } else {
-            i.set(6, Ingredient.of(Items.AIR.getDefaultInstance()));
-        }
-        i.set(7, recipe.getExtraIngredient().ingredient);
-        ingredients.setInputIngredients(i);
-        ImmutableList<ItemStack> outputs = ImmutableList.of(
-                recipe.getResultItem()
-        );
-        if (!recipe.getSecondaryResultItem().output.isEmpty()) {
-            outputs = ImmutableList.of(
-                    recipe.getResultItem(),
-                    recipe.getSecondaryResultItem().output
-            );
-        }
-        ingredients.setOutputs(VanillaTypes.ITEM, outputs);
-    }
 
+    // FIXME: Needed after migration?
+//    @Override
+//    public void setIngredients(RefTableRecipe recipe, IIngredients ingredients) {
+//        NonNullList<Ingredient> i = NonNullList.withSize(8, Ingredient.EMPTY);
+//        for (int j = 0; j < 8; j++) {
+//            if (j < recipe.getIngredients().size()) {
+//                Ingredient p_set_2_ = recipe.getIngredients().get(j);
+//                if (p_set_2_.isEmpty() || p_set_2_.getItems()[0].sameItemStackIgnoreDurability(Items.AIR.getDefaultInstance())) {
+//                    i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
+//                } else {
+//                    i.set(j, p_set_2_);
+//                }
+//            } else {
+//                i.set(j, Ingredient.of(Items.AIR.getDefaultInstance()));
+//            }
+//        }
+//        if (recipe.requiresCooking()) {
+//            i.set(6, Ingredient.of(ITEMS_THAT_BURN));
+//        } else {
+//            i.set(6, Ingredient.of(Items.AIR.getDefaultInstance()));
+//        }
+//        i.set(7, recipe.getExtraIngredient().ingredient);
+//        ingredients.setInputIngredients(i);
+//        ImmutableList<ItemStack> outputs = ImmutableList.of(
+//                recipe.getResultItem()
+//        );
+//        if (!recipe.getSecondaryResultItem().output.isEmpty()) {
+//            outputs = ImmutableList.of(
+//                    recipe.getResultItem(),
+//                    recipe.getSecondaryResultItem().output
+//            );
+//        }
+//        ingredients.setOutputs(VanillaTypes.ITEM, outputs);
+//    }
+
+
+    // FIXME: Finish migrating
     @Override
     public void setRecipe(
-            IRecipeLayout recipeLayout,
+            IRecipeLayoutBuilder recipeLayout,
             RefTableRecipe recipe,
-            IIngredients ingredients
+            IFocusGroup focuses
     ) {
         int leftEdge = RefTableContainer.inventoryLeftX;
         int topEdge = RefTableContainer.topOfInputs;
         int boxSize = RefTableContainer.boxWidth;
-        this.init(recipeLayout, 0, true, leftEdge, topEdge);
-        this.init(recipeLayout, 1, true, leftEdge + boxSize, topEdge);
-        this.init(recipeLayout, 2, true, leftEdge, topEdge + boxSize);
-        this.init(recipeLayout, 3, true, leftEdge + boxSize, topEdge + boxSize);
-        this.init(recipeLayout, 4, true, leftEdge, topEdge + (2 * boxSize));
-        this.init(recipeLayout, 5, true, leftEdge + boxSize, topEdge + (2 * boxSize));
-        this.init(recipeLayout, 6, true, RefTableContainer.leftOfFuel, RefTableContainer.topOfFuel);
-        this.init(recipeLayout, 7, true, RefTableContainer.leftOfTech, RefTableContainer.topOfTech);
-        this.init(recipeLayout, 8, false, RefTableContainer.leftOfOutput, RefTableContainer.topOfOutput);
+        this.init(
+                recipeLayout,
+                recipe,
+                0,
+                true,
+                leftEdge,
+                topEdge
+        );
+        this.init(
+                recipeLayout,
+                recipe,
+                1,
+                true,
+                leftEdge + boxSize,
+                topEdge
+        );
+        this.init(
+                recipeLayout,
+                recipe,
+                2,
+                true,
+                leftEdge,
+                topEdge + boxSize
+        );
+        this.init(
+                recipeLayout,
+                recipe,
+                3,
+                true,
+                leftEdge + boxSize,
+                topEdge + boxSize
+        );
+        this.init(
+                recipeLayout,
+                recipe,
+                4,
+                true,
+                leftEdge,
+                topEdge + (2 * boxSize)
+        );
+        this.init(
+                recipeLayout,
+                recipe,
+                5,
+                true,
+                leftEdge + boxSize,
+                topEdge + (2 * boxSize)
+        );
+        if (recipe.requiresCooking()) {
+            recipeLayout.addSlot(
+                                RecipeIngredientRole.INPUT,
+                                RefTableContainer.leftOfFuel,
+                                RefTableContainer.topOfFuel
+                        ).
+                        addIngredients(Ingredient.of(ITEMS_THAT_BURN));
+        }
+        recipeLayout.addSlot(
+                            RecipeIngredientRole.INPUT,
+                            RefTableContainer.leftOfTech,
+                            RefTableContainer.topOfTech
+                    ).
+                    addIngredients(recipe.getExtraIngredient().ingredient);
+        recipeLayout.addSlot(
+                            RecipeIngredientRole.OUTPUT,
+                            RefTableContainer.leftOfOutput,
+                            RefTableContainer.topOfOutput
+                    ).
+                    addItemStack(recipe.getResultItem());
         // TODO: Render secondary chance
-        this.init(recipeLayout, 9, false, RefTableContainer.leftOfSecondary, RefTableContainer.topOfSecondary);
-        recipeLayout.getItemStacks().set(ingredients);
+        recipeLayout.addSlot(
+                            RecipeIngredientRole.OUTPUT,
+                            RefTableContainer.leftOfSecondary,
+                            RefTableContainer.topOfSecondary
+                    ).
+                    addItemStack(recipe.getSecondaryResultItem().output);
     }
 
     private void init(
-            IRecipeLayout recipeLayout,
+            IRecipeLayoutBuilder recipeLayout,
+            RefTableRecipe recipe,
             int idx,
             boolean isInput,
             int leftEdge,
             int topEdge
     ) {
-        recipeLayout.getItemStacks().init(idx, isInput, leftEdge - 1, topEdge - 1);
-    }
-
-    @Override
-    public void draw(
-            RefTableRecipe recipe,
-            IRecipeSlotsView recipeSlotsView,
-            PoseStack stack,
-            double mouseX,
-            double mouseY
-    ) {
-        IRecipeCategory.super.draw(recipe, recipeSlotsView, stack, mouseX, mouseY);
-        Font font = Minecraft.getInstance().font;
-        double chance = recipe.getSecondaryResultItem().chance;
-        EurekaCraft.LOGGER.trace(String.format("Recipe secondary chance %f", chance));
-        if (chance >= 1 || chance <= 0) {
+        NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        if (ingredients.size() <= idx) {
             return;
         }
 
-        font.drawShadow(
-                stack,
-                String.format("%d%%", (int) (chance * 100)),
-                RefTableContainer.leftOfSecondary,
-                RefTableContainer.topOfSecondary + RefTableContainer.boxHeight,
-                0xFFFFFFFF
-        );
-    }
-
-    @Override
-    public List<Component> getTooltipStrings(
-            RefTableRecipe recipe,
-            IRecipeSlotsView recipeSlotsView,
-            double mouseX,
-            double mouseY
-    ) {
-        if (mouseX < RefTableContainer.leftOfSecondary) {
-            return ImmutableList.of();
+        RecipeIngredientRole role = RecipeIngredientRole.OUTPUT;
+        if (isInput) {
+            role = RecipeIngredientRole.INPUT;
         }
-        if (mouseX >= RefTableContainer.leftOfSecondary + RefTableContainer.boxWidth) {
-            return ImmutableList.of();
-        }
-        if (mouseY < RefTableContainer.topOfSecondary + RefTableContainer.boxHeight) {
-            return ImmutableList.of();
-        }
-        if (mouseY >= RefTableContainer.topOfSecondary + RefTableContainer.boxHeight + RefTableContainer.boxHeight) {
-            return ImmutableList.of();
-        }
-        double chance = recipe.getSecondaryResultItem().chance;
-        if (chance == 1 || chance <= 0) {
-            return ImmutableList.of();
-        }
-        List<Component> strs = new ArrayList<>(IRecipeCategory.super.getTooltipStrings(
-                recipe,
-                recipeSlotsView,
-                mouseX,
-                mouseY
-        ));
-        strs.add(new TranslatableComponent("items.chance", (int) (chance * 100)));
-        return strs;
+        recipeLayout.addSlot(
+                            role,
+                            leftEdge,
+                            topEdge
+                    )
+                    .addIngredients(ingredients.get(idx));
     }
 }

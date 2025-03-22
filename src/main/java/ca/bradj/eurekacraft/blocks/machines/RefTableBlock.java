@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.blocks.machines;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.ModItemGroup;
 import ca.bradj.eurekacraft.core.init.TilesInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.wrappers.EntityBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -122,7 +123,7 @@ public class RefTableBlock extends EntityBlock {
             return;
         }
 
-        NetworkHooks.openGui((ServerPlayer) player, (MenuProvider) te, blockpos);
+        Compat.openScreen((ServerPlayer) player, (MenuProvider) te, blockpos);
     }
 
     @Override

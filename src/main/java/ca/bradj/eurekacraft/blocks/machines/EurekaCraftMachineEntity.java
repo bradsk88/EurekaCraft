@@ -1,5 +1,6 @@
 package ca.bradj.eurekacraft.blocks.machines;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.materials.NoisyCraftingItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -85,7 +86,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         return super.getCapability(cap, side);
     }
 
-    private List<ItemStack> getItemsStacksForDrop(Random random) {
+    private List<ItemStack> getItemsStacksForDrop(Compat.RandomSrc random) {
         List<ItemStack> items = new ArrayList<>();
         for (int i = 0; i < this.itemHandler.getSlots(); i++) {
             ItemStack iStack = itemHandler.getStackInSlot(i);
@@ -98,7 +99,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         return items;
     }
 
-    protected abstract Collection<ItemStack> getSelfAsItemStacks(Random random);
+    protected abstract Collection<ItemStack> getSelfAsItemStacks(Compat.RandomSrc random);
 
     protected CompoundTag store(CompoundTag tag) {
         tag.put("inv", itemHandler.serializeNBT());
@@ -176,7 +177,7 @@ public abstract class EurekaCraftMachineEntity extends BlockEntity {
         if (!(level instanceof ServerLevel sl)) {
             return;
         }
-        for (ItemStack itemStack : getItemsStacksForDrop(sl.random)) {
+        for (ItemStack itemStack : getItemsStacksForDrop(Compat.random(level::getRandom))) {
             ItemEntity ie = new ItemEntity(sl, pos.getX(), pos.getY(), pos.getZ(), itemStack);
             sl.addFreshEntity(ie);
         }

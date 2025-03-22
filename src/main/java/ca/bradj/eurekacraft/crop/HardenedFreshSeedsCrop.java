@@ -3,10 +3,12 @@ package ca.bradj.eurekacraft.crop;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -24,8 +26,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-import java.util.Random;
-
 public class HardenedFreshSeedsCrop extends CropBlock {
 
     public static final String BLOCK_ID = "hardened_fresh_seeds_crop";
@@ -35,13 +35,10 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     public static final int MAX_AGE = 5;
 
 
-    private static final VoxelShape SHAPE = Block.box(
-            0.0D, 0.0D, 0.0D, 16.0D, FULL_HEIGHT, 16.0D
-    );
+    private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, FULL_HEIGHT, 16.0D);
 
     public HardenedFreshSeedsCrop() {
-        super(Properties.copy(Blocks.WHEAT).
-                lightLevel((BlockState bs) -> 10));
+        super(Properties.copy(Blocks.WHEAT).lightLevel((BlockState bs) -> 10));
     }
 
     public IntegerProperty getAgeProperty() {
@@ -57,12 +54,20 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     @Override
-    protected boolean mayPlaceOn(BlockState p_200014_1_, BlockGetter p_200014_2_, BlockPos p_200014_3_) {
+    protected boolean mayPlaceOn(
+            BlockState p_200014_1_,
+            BlockGetter p_200014_2_,
+            BlockPos p_200014_3_
+    ) {
         return false; // Cannot be placed
     }
 
-    public VoxelShape getShape(BlockState p_220053_1_, BlockGetter p_220053_2_, BlockPos p_220053_3_,
-                               CollisionContext p_220053_4_) {
+    public VoxelShape getShape(
+            BlockState p_220053_1_,
+            BlockGetter p_220053_2_,
+            BlockPos p_220053_3_,
+            CollisionContext p_220053_4_
+    ) {
         return SHAPE;
     }
 
@@ -73,8 +78,12 @@ public class HardenedFreshSeedsCrop extends CropBlock {
 
     @Override
     public InteractionResult use(
-            BlockState blockState, Level world, BlockPos blockPos,
-            Player player, InteractionHand hand, BlockHitResult rtr
+            BlockState blockState,
+            Level world,
+            BlockPos blockPos,
+            Player player,
+            InteractionHand hand,
+            BlockHitResult rtr
     ) {
         if (world.isClientSide()) {
             return InteractionResult.CONSUME;
@@ -94,15 +103,22 @@ public class HardenedFreshSeedsCrop extends CropBlock {
     }
 
     @Override
-    public void randomTick(BlockState p_52292_, ServerLevel level, BlockPos blockPos, Random rand) {
+    public void randomTick(
+            BlockState p_52292_,
+            ServerLevel level,
+            BlockPos blockPos,
+            RandomSource rand
+    ) {
         super.randomTick(p_52292_, level, blockPos, rand);
         if (isMaxAge(p_52292_)) {
-            tryChangingToSapling(level, blockPos, rand);
+            tryChangingToSapling(level, blockPos, Compat.random(() -> rand));
         }
     }
 
     private void tryChangingToSapling(
-            ServerLevel level, BlockPos blockPos, Random rand
+            ServerLevel level,
+            BlockPos blockPos,
+            Compat.RandomSrc rand
     ) {
         for (Direction d : Direction.Plane.HORIZONTAL) {
             BlockState blockState = level.getBlockState(blockPos.relative(d));

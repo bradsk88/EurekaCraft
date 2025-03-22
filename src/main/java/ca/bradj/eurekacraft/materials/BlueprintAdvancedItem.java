@@ -15,19 +15,18 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import static ca.bradj.eurekacraft.materials.Blueprints.NBT_KEY_BOARD_STATS;
 
-public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryProvider, IInitializable, IBoardStatsCraftable, IBoardStatsGetter {
+public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryProvider, IInitializable,
+        IBoardStatsCraftable, IBoardStatsGetter {
 
-    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.
-            WithFallback(RefBoardStats.EliteBoard);
+    private static final IBoardStatsFactory FACTORY_INSTANCE = Blueprints.FACTORY_INSTANCE.WithFallback(RefBoardStats.EliteBoard);
 
     public static final String ITEM_ID = "blueprint_advanced";
     private static final Properties PROPS = new Properties().tab(ModItemGroup.EUREKACRAFT_GROUP);
 
-    public static ItemStack getRandom(Random rand) {
+    public static ItemStack getRandom(Compat.RandomSrc rand) {
         ItemStack i = ItemsInit.BLUEPRINT_ADVANCED.get().getDefaultInstance();
         FACTORY_INSTANCE.getBoardStatsFromNBTOrCreate(i, RefBoardStats.EliteBoard, rand);
         return i;
@@ -38,7 +37,7 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     }
 
     @Override
-    public int getItemStackLimit(ItemStack stack) {
+    public int getMaxStackSize(ItemStack stack) {
         return 1;
     }
 
@@ -66,7 +65,12 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(
+            ItemStack stack,
+            @Nullable Level world,
+            List<Component> tooltip,
+            TooltipFlag flagIn
+    ) {
         tooltip.addAll(Blueprints.getTooltips(getStats(stack), RefBoardStats.EliteBoard));
     }
 
@@ -74,17 +78,14 @@ public class BlueprintAdvancedItem extends Item implements IBoardStatsFactoryPro
     public void generateNewBoardStats(
             ItemStack target,
             Collection<ItemStack> context,
-            Random random
+            Compat.RandomSrc random
     ) {
-        Collection<RefBoardStats> contextStats = context.stream().
-                filter(v -> v.getItem() instanceof IBoardStatsGetter).
-                map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v)).toList();
+        Collection<RefBoardStats> contextStats = context.stream().filter(v -> v.getItem() instanceof IBoardStatsGetter)
+                                                        .map(v -> ((IBoardStatsGetter) v.getItem()).getBoardStats(v))
+                                                        .toList();
         RefBoardStats stats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.EliteBoard, random);
         if (contextStats.size() != 0) {
-            stats = RefBoardStats.Average(
-                    "avg",
-                    contextStats
-            );
+            stats = RefBoardStats.Average("avg", contextStats);
         }
         target.getOrCreateTag().put(NBT_KEY_BOARD_STATS, RefBoardStats.serializeNBT(stats));
     }

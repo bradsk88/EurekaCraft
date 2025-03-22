@@ -1,8 +1,7 @@
 package ca.bradj.eurekacraft.vehicles;
 
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.world.item.ItemStack;
-
-import java.util.Random;
 
 public class GlideBoard extends RefBoardItem {
 
@@ -15,7 +14,7 @@ public class GlideBoard extends RefBoardItem {
     @Override
     public RefBoardStats getStatsForStack(
             ItemStack stack,
-            Random rand
+            Compat.RandomSrc rand
     ) {
         return super.getStatsForStack(stack, rand).WithLift(0);
     }

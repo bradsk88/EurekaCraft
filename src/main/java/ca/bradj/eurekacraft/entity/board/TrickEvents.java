@@ -3,8 +3,10 @@ package ca.bradj.eurekacraft.entity.board;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -19,13 +21,14 @@ public class TrickEvents {
             return;
         }
 
-        if (event.getPlayer().level.isClientSide()) {
+        Player player = Compat.getPlayer(event);
+        if (!(player instanceof ServerPlayer sp)) {
             return;
         }
         ResourceLocation firstFlight = new ResourceLocation(EurekaCraft.MODID, AdvancementsInit.IDs.FirstFlight);
         ResourceLocation id = event.getAdvancement().getId();
         if (firstFlight.equals(id)) {
-            JudgeEntity.spawnToRewardPlayer((ServerPlayer) event.getPlayer());
+            JudgeEntity.spawnToRewardPlayer(sp);
         }
     }
 }

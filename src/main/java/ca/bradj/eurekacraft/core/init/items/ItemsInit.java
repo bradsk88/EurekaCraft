@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
+
 public class ItemsInit {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(
             ForgeRegistries.ITEMS,

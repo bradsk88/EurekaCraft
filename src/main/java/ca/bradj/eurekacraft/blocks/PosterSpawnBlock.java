@@ -285,8 +285,8 @@ public class PosterSpawnBlock extends EntityBlock {
         public int getNextRecipeCategoryIndex(Level level) {
             this.determineMainBlock(level);
             int newValue;
-            if (mainBlock.getTileData().contains(NBT_RECIPE_CATEGORY)) {
-                newValue = mainBlock.getTileData().getInt(NBT_RECIPE_CATEGORY) + 1;
+            if (Compat.getPersistentData(mainBlock).contains(NBT_RECIPE_CATEGORY)) {
+                newValue = Compat.getPersistentData(mainBlock).getInt(NBT_RECIPE_CATEGORY) + 1;
                 int maxValue = supportedRecipes.length;
                 newValue = newValue % maxValue;
             } else {
@@ -300,7 +300,7 @@ public class PosterSpawnBlock extends EntityBlock {
                 int catIdx
         ) {
             this.determineMainBlock(level);
-            mainBlock.getTileData().putInt(NBT_RECIPE_CATEGORY, catIdx);
+            Compat.getPersistentData(mainBlock).putInt(NBT_RECIPE_CATEGORY, catIdx);
         }
     }
 }

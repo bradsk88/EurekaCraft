@@ -11,6 +11,7 @@ import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
 import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.core.network.msg.OnGroundMessage;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
@@ -117,18 +118,33 @@ public class EntityRefBoard extends Entity {
     private double lastSpeed;
     private int tickOf100 = 0;
 
-    public EntityRefBoard(EntityType<? extends Entity> entity, Level world) {
+    public EntityRefBoard(
+            EntityType<? extends Entity> entity,
+            Level world
+    ) {
         super(entity, world);
         this.createdAtTick = world.getGameTime();
     }
 
-    EntityRefBoard(Entity player, Level world) {
+    /**
+     * @deprecated Do not use (except for recovering from lost server connection)
+     */
+    @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated(since = "1.3.0")
+    public EntityRefBoard(
+            Entity player,
+            Level world
+    ) {
         super(EntitiesInit.REF_BOARD.get(), world);
         this.playerOrNull = player;
         this.createdAtTick = world.getGameTime();
     }
 
-    public EntityRefBoard(Entity player, Level world, ItemStack boardItem) {
+    public EntityRefBoard(
+            Entity player,
+            Level world,
+            ItemStack boardItem
+    ) {
         super(EntitiesInit.REF_BOARD.get(), world);
         this.createdAtTick = world.getGameTime();
 
@@ -147,7 +163,7 @@ public class EntityRefBoard extends Entity {
 
         damaged = ((RefBoardItem) itemStack.getItem()).isDamagedBoard();
         canFly = ((RefBoardItem) itemStack.getItem()).canFly();
-        boardStats = ((RefBoardItem) itemStack.getItem()).getStatsForStack(itemStack, level.getRandom());
+        boardStats = ((RefBoardItem) itemStack.getItem()).getStatsForStack(itemStack, Compat.random(level::getRandom));
         wheelStats = WheelStats.GetStatsFromNBT(itemStack);
 
         this.playerOrNull = player;
@@ -190,7 +206,10 @@ public class EntityRefBoard extends Entity {
     }
 
     public static void toggleFromInventory(
-            Entity player, ServerLevel level, ItemStack boardItem, BoardType board
+            Entity player,
+            ServerLevel level,
+            ItemStack boardItem,
+            BoardType board
     ) {
         if (level.isClientSide()) {
             return;
@@ -267,8 +286,12 @@ public class EntityRefBoard extends Entity {
     }
 
     static void spawn(
-            Entity player, ServerLevel level, EntityRefBoard board,
-            BoardType bt, Color c, Optional<? extends IWheel> wheelItem
+            Entity player,
+            ServerLevel level,
+            EntityRefBoard board,
+            BoardType bt,
+            Color c,
+            Optional<? extends IWheel> wheelItem
     ) {
         level.addFreshEntity(board);
         PlayerDeployedBoardProvider.setBoardTypeFor(player, bt, c, wheelItem, true);
@@ -496,7 +519,10 @@ public class EntityRefBoard extends Entity {
         this.moveTo(this.playerOrNull.position());
     }
 
-    private double applyBoost(float blockLift, double liftFactor) {
+    private double applyBoost(
+            float blockLift,
+            double liftFactor
+    ) {
         double liftOrFall;
         double floorY = level.getSeaLevel();
         double playerY = this.getY();
@@ -523,7 +549,10 @@ public class EntityRefBoard extends Entity {
         }
     }
 
-    private float calculateYRot(int turnDir, float turnSpeed) {
+    private float calculateYRot(
+            int turnDir,
+            float turnSpeed
+    ) {
         if (turnDir > 0) {
             this.lastYRot += (1 + (5 * turnSpeed));
         } else if (turnDir < 0) {
@@ -532,7 +561,10 @@ public class EntityRefBoard extends Entity {
         return this.lastYRot;
     }
 
-    private Vec3 convertYRotToDirection(float nextYRot, boolean applyDamagedEffect) {
+    private Vec3 convertYRotToDirection(
+            float nextYRot,
+            boolean applyDamagedEffect
+    ) {
         nextYRot = nextYRot + 90;
         double x = Math.cos(Math.PI * (nextYRot / 180));
         double z = Math.sin(Math.PI * (nextYRot / 180));
@@ -559,7 +591,11 @@ public class EntityRefBoard extends Entity {
         return nextDir;
     }
 
-    private void storeForNextTick(double liftOrFall, double flightSpeed, Vec3 nextDir) {
+    private void storeForNextTick(
+            double liftOrFall,
+            double flightSpeed,
+            Vec3 nextDir
+    ) {
         if (Math.abs(nextDir.x) > 0 || Math.abs(nextDir.z) > 0) {
             this.lastDirection = nextDir;
         }
@@ -641,7 +677,7 @@ public class EntityRefBoard extends Entity {
 
         ChunkPos cp = new ChunkPos(this.blockPosition());
         if (ChunkWavesDataManager.get(level).getData(
-                level.getChunk(cp.x, cp.z), level.getRandom()
+                level.getChunk(cp.x, cp.z), Compat.random(level::getRandom)
         ).isWavePresentAt(this.blockPosition())) {
             boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
             if (Control.BRAKE.equals(c)) {
@@ -728,7 +764,8 @@ public class EntityRefBoard extends Entity {
             board.initialSpeed = nbt.getFloat("initial_speed");
             board.damaged = nbt.getBoolean("damaged");
             board.canFly = nbt.getBoolean("can_fly");
-            board.boardStats = RefBoardStats.deserializeNBT(nbt.getCompound("stats")).orElse(RefBoardStats.StandardBoard);
+            board.boardStats = RefBoardStats.deserializeNBT(nbt.getCompound("stats"))
+                                            .orElse(RefBoardStats.StandardBoard);
             board.lastYRot = nbt.getFloat("last_yrot");
             board.lastDirection = deserializePos(nbt.getCompound("last_dir"));
             board.lastLift = nbt.getDouble("last_lift");
@@ -769,7 +806,11 @@ public class EntityRefBoard extends Entity {
             return data;
         }
 
-        public static Data get(Level level, UUID playerUUID, @Nullable EntityRefBoard board) {
+        public static Data get(
+                Level level,
+                UUID playerUUID,
+                @Nullable EntityRefBoard board
+        ) {
             if (level.isClientSide) {
                 throw new RuntimeException("EntityRefBoard.Data should only be used on server side");
             }
@@ -781,12 +822,19 @@ public class EntityRefBoard extends Entity {
             );
         }
 
-        public Data(UUID playerUUID, @Nullable EntityRefBoard board) {
+        public Data(
+                UUID playerUUID,
+                @Nullable EntityRefBoard board
+        ) {
             super();
             this.board = board;
         }
 
-        public Data(UUID playerUUID, @Nullable EntityRefBoard board, CompoundTag worldNBT) {
+        public Data(
+                UUID playerUUID,
+                @Nullable EntityRefBoard board,
+                CompoundTag worldNBT
+        ) {
             this(playerUUID, board);
             if (this.board == null) {
                 throw new IllegalStateException("Cannot load from world into null board");
@@ -823,7 +871,13 @@ public class EntityRefBoard extends Entity {
         }
 
         @Override
-        public boolean shouldRender(EntityRefBoard p_114491_, Frustum p_114492_, double p_114493_, double p_114494_, double p_114495_) {
+        public boolean shouldRender(
+                EntityRefBoard p_114491_,
+                Frustum p_114492_,
+                double p_114493_,
+                double p_114494_,
+                double p_114495_
+        ) {
             return false;
         }
     }

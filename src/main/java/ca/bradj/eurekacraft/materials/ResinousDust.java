@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static ca.bradj.eurekacraft.integration.mc.Compat.GRAY;
+
 public class ResinousDust extends Item {
 
     public static final String ITEM_ID = "resinous_dust";

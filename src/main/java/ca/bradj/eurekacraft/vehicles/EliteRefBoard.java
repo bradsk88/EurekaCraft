@@ -35,7 +35,7 @@ public class EliteRefBoard extends RefBoardItem {
         return subtitles;
     }
 
-    public static ItemStack getWithRandomStats(Random rand) {
+    public static ItemStack getWithRandomStats(Compat.RandomSrc rand) {
         ItemStack i = ItemsInit.ELITE_BOARD.get().getDefaultInstance();
         RefBoardStats newStats = RefBoardStats.FromReferenceWithRandomOffsets(RefBoardStats.EliteBoard, rand);
         storeStatsOnStack(i, newStats);

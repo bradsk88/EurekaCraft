@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.villager;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.init.items.WheelItemsInit;
+import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.materials.BlueprintAdvancedItem;
 import ca.bradj.eurekacraft.materials.BlueprintItem;
 import ca.bradj.eurekacraft.vehicles.EliteRefBoard;
@@ -97,7 +98,7 @@ public class VillagerEvents {
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(ItemsInit.REF_BOARD_CORE.get(), 1),
                         new ItemStack(Items.EMERALD, 4),
-                        StandardRefBoard.getWithRandomBadStats(rand),
+                        StandardRefBoard.getWithRandomBadStats(Compat.random(() -> rand)),
                         1, 8, 0.0F
                 ),
                 (trader, rand) -> new MerchantOffer(
@@ -208,17 +209,20 @@ public class VillagerEvents {
                 (trader, rand) -> new MerchantOffer(
                         new ItemStack(Items.PAPER, 24),
                         new ItemStack(Items.EMERALD, 2),
-                        BlueprintItem.getRandom(rand),
+                        BlueprintItem.getRandom(Compat.random(() -> rand)),
                         1, 4, 0.125F
                 ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 8),
                         new ItemStack(ItemsInit.BLUEPRINT.get(), 1),
-                        BlueprintAdvancedItem.getRandom(random),
+                        BlueprintAdvancedItem.getRandom(Compat.random(() -> random)),
                         4, 8, 0.125F
                 ) {
                     @Override
-                    public boolean satisfiedBy(ItemStack stack1, ItemStack stack2) {
+                    public boolean satisfiedBy(
+                            ItemStack stack1,
+                            ItemStack stack2
+                    ) {
                         return stack2.sameItem(ItemsInit.BLUEPRINT.get().getDefaultInstance());
                     }
                 },
@@ -229,12 +233,12 @@ public class VillagerEvents {
                 ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 6),
-                        StandardRefBoard.getWithRandomBadStats(random),
+                        StandardRefBoard.getWithRandomBadStats(Compat.random(() -> random)),
                         1, 8, 0.125F
                 ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 6),
-                        StandardRefBoard.getWithRandomBadStats(random),
+                        StandardRefBoard.getWithRandomBadStats(Compat.random(() -> random)),
                         1, 8, 0.125F
                 )
         );
@@ -242,48 +246,56 @@ public class VillagerEvents {
         // Level 4: Goggles, Mid-Tier Wheels, Boards with Stats
         final List<VillagerTrades.ItemListing> refDealerTrades4 = ImmutableList.of(
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 6),
-                            new ItemStack(ItemsInit.REFLECTION_FILM.get(), 8),
-                            new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
-                            1, 8, 0.125F),
+                        new ItemStack(Items.EMERALD, 6),
+                        new ItemStack(ItemsInit.REFLECTION_FILM.get(), 8),
+                        new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
+                        1, 8, 0.125F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 32),
-                            new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
-                            1, 8, 0.125F),
+                        new ItemStack(Items.EMERALD, 32),
+                        new ItemStack(ItemsInit.SCUB_GOGGLES.get(), 1),
+                        1, 8, 0.125F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 1),
-                            new ItemStack(WheelItemsInit.SOCKET_WRENCH.get(), 1),
-                            1, 8, 0.0F),
+                        new ItemStack(Items.EMERALD, 1),
+                        new ItemStack(WheelItemsInit.SOCKET_WRENCH.get(), 1),
+                        1, 8, 0.0F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 2),
-                            new ItemStack(WheelItemsInit.WHEEL_BEARING_ITEM.get(), 1),
-                            1, 8, 0.5F),
+                        new ItemStack(Items.EMERALD, 2),
+                        new ItemStack(WheelItemsInit.WHEEL_BEARING_ITEM.get(), 1),
+                        1, 8, 0.5F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 1),
-                            new ItemStack(WheelItemsInit.WHEEL_BEARING_MOLD_ITEM.get(), 1),
-                            1, 8, 0.0F),
+                        new ItemStack(Items.EMERALD, 1),
+                        new ItemStack(WheelItemsInit.WHEEL_BEARING_MOLD_ITEM.get(), 1),
+                        1, 8, 0.0F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 1),
-                            new ItemStack(WheelItemsInit.OAK_WOOD_WHEEL_ITEM.get(), 1),
-                            1, 8, 0.0F),
+                        new ItemStack(Items.EMERALD, 1),
+                        new ItemStack(WheelItemsInit.OAK_WOOD_WHEEL_ITEM.get(), 1),
+                        1, 8, 0.0F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 2),
-                            new ItemStack(WheelItemsInit.STONE_WHEEL_ITEM.get(), 1),
-                            1, 8, 0.0F),
+                        new ItemStack(Items.EMERALD, 2),
+                        new ItemStack(WheelItemsInit.STONE_WHEEL_ITEM.get(), 1),
+                        1, 8, 0.0F
+                ),
                 (trader, random) -> new MerchantOffer(
-                            new ItemStack(Items.EMERALD, 3),
-                            new ItemStack(WheelItemsInit.IRON_WHEEL_ITEM.get(), 1),
-                            1, 8, 0.0F),
+                        new ItemStack(Items.EMERALD, 3),
+                        new ItemStack(WheelItemsInit.IRON_WHEEL_ITEM.get(), 1),
+                        1, 8, 0.0F
+                ),
                 // Random stats board 1
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 16),
-                        StandardRefBoard.getWithRandomStats(random),
+                        StandardRefBoard.getWithRandomStats(Compat.random(() -> random)),
                         1, 8, 0.125F
                 ),
                 // Random stats board 2
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 16),
-                        StandardRefBoard.getWithRandomStats(random),
+                        StandardRefBoard.getWithRandomStats(Compat.random(() -> random)),
                         1, 8, 0.125F
                 )
         );
@@ -292,17 +304,19 @@ public class VillagerEvents {
         final List<VillagerTrades.ItemListing> refDealerTrades5 = ImmutableList.of(
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD_BLOCK, 4),
-                        EliteRefBoard.getWithRandomStats(random),
+                        EliteRefBoard.getWithRandomStats(Compat.random(() -> random)),
                         1, 8, 0.25F
                 ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 16),
                         new ItemStack(WheelItemsInit.GOLD_WHEEL_ITEM.get(), 1),
-                        1, 8, 0.125F),
+                        1, 8, 0.125F
+                ),
                 (trader, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 32),
                         new ItemStack(WheelItemsInit.DIAMOND_WHEEL_ITEM.get(), 1),
-                        1, 8, 0.125F)
+                        1, 8, 0.125F
+                )
         );
 
         if (event.getType() == VillagersInit.REF_DEALER.get()) {

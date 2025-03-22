@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +43,7 @@ public class RefBoardColoredModel implements BakedModel {
     @Override
     public List<BakedQuad> getQuads(
             @Nullable BlockState state,
-            @Nullable Direction dir, Random rand
+            @Nullable Direction dir, RandomSource rand
     ) {
         if (dir != null) {
             return List.of();
