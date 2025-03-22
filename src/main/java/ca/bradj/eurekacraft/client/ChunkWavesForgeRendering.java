@@ -61,16 +61,16 @@ public class ChunkWavesForgeRendering {
                 renderChunkWaves(renderer, eyePos, world, state, bm, matrixStack, cpj);
             }
         }
-        evt.getLevelRenderer().renderLevel(
-                matrixStack,
-                evt.getPartialTick(),
-                1L,
-                true,
-                mc.gameRenderer.getMainCamera(),
-                mc.gameRenderer,
-                new LightTexture(mc.gameRenderer, mc),
-                evt.getProjectionMatrix()
-        );
+//        evt.getLevelRenderer().renderLevel(
+//                matrixStack,
+//                evt.getPartialTick(),
+//                1L,
+//                true,
+//                mc.gameRenderer.getMainCamera(),
+//                mc.gameRenderer,
+//                new LightTexture(mc.gameRenderer, mc),
+//                evt.getProjectionMatrix()
+//        );
     }
 
     private static void renderChunkWaves(
