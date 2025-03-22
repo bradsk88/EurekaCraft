@@ -67,13 +67,24 @@ public class BoardPlayerRenderHandler {
         matrixStack.mulPose(Vector3f.YP.rotationDegrees(90));
 
         LivingEntity living = Compat.getPlayer(event);
+
+        if (living.isCrouching()) {
+            float yawRad = (float) Math.toRadians(living.yBodyRot);
+            float pushAmount = 0.25f;
+
+            float xOffset = -pushAmount * (float) Math.sin(yawRad);
+            float zOffset = pushAmount * (float) Math.cos(yawRad);
+
+            matrixStack.translate(xOffset, 0, zOffset);
+        }
+
         living.animationSpeed = 0;
         living.yHeadRot = living.yBodyRot + 90;
 
         Vec3 rv = living.getForward().normalize();
         final int tipAmt = 10;
         switch (PlayerBoardControlProvider.getControl(Compat.getPlayer(event))) {
-            case BRAKE -> {
+            case BRAKE, LIFT -> {
                 matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) (-tipAmt * rv.x)));
                 matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) (-tipAmt * rv.z)));
             }
@@ -87,6 +98,15 @@ public class BoardPlayerRenderHandler {
 
         VertexConsumer ivertexbuilder = event.getMultiBufferSource().getBuffer(model.getRenderType());
         model.getModelRenderer().yRot = newYRot;
+        if (living.isCrouching()) {
+            float yawRad = (float) Math.toRadians(living.yBodyRot);
+            float pushAmount = 4f;
+
+            float xOffset = -pushAmount * (float) Math.sin(yawRad);
+            float zOffset = pushAmount * (float) Math.cos(yawRad);
+
+            model.getModelRenderer().offsetPos(new Vector3f(-xOffset, 0, -zOffset));
+        }
         model.renderToBuffer(
                 matrixStack,
                 ivertexbuilder,

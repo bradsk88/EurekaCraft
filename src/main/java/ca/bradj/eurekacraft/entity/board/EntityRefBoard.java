@@ -430,7 +430,12 @@ public class EntityRefBoard extends Entity {
     }
 
     private void flyOrSurf(Control c) {
-        float blockLift = this.calculateBoost(c);
+        float blockLift = 0;
+        if (c == Control.LIFT) {
+            blockLift = BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
+        } else {
+            blockLift = this.calculateBoost(c);
+        }
         if (blockLift > 0) {
             EurekaCraft.LOGGER.trace("Boosted at " + this.blockPosition());
         }
@@ -496,7 +501,7 @@ public class EntityRefBoard extends Entity {
                     liftOrFall = Math.max(liftOrFall * 0.25, 0);
                 }
             }
-            case NONE -> {
+            case LIFT, NONE -> {
             }
             default -> throw new IllegalArgumentException("Unexpected control value: " + c);
         }

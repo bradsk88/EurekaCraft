@@ -33,6 +33,8 @@ public final class KeyEvents {
                         setControl(player, Control.BRAKE);
                     } else if (KeyInit.accelerateFlightMapping.isDown()) {
                         setControl(player, Control.ACCELERATE);
+                    } else if (KeyInit.liftFlightMapping.isDown()) {
+                        setControl(player, Control.LIFT);
                     } else {
                         setControl(player, Control.NONE);
                     }

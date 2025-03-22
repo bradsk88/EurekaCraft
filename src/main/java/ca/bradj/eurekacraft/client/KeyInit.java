@@ -8,10 +8,12 @@ public final class KeyInit {
 
     public static KeyMapping brakeFlightMapping;
     public static KeyMapping accelerateFlightMapping;
+    public static KeyMapping liftFlightMapping;
 
-    public static void init() {
+    static {
         brakeFlightMapping = registerKey("flight.brake", "key.eurekacraft.flight", InputConstants.KEY_S);
         accelerateFlightMapping = registerKey("flight.accelerate", "key.eurekacraft.flight", InputConstants.KEY_W);
+        liftFlightMapping = registerKey("flight.lift", "key.eurekacraft.flight", InputConstants.KEY_SPACE);
     }
 
     private static KeyMapping registerKey(

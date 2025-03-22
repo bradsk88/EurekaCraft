@@ -76,9 +76,6 @@ public class EurekaCraft {
             EntityRenderers.register(EntitiesInit.REF_BOARD.get(), EntityRefBoard.Renderer::new);
         });
         event.enqueueWork(BoardItemRendering::initItemProperties);
-
-        KeyInit.init();
-
         event.enqueueWork(TraparStormRendering::init);
     }
 

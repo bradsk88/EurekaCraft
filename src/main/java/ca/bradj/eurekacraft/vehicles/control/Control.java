@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 public enum Control {
     NONE,
     ACCELERATE,
+    LIFT,
     BRAKE;
 
     private static String NBT_KEY = "ca.bradj.board_control.value";
