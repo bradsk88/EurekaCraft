@@ -33,6 +33,9 @@ public class FreshSeedsCrop extends Compat.CropBlock {
     public static final IntegerProperty AGE = BlockStateProperties.AGE_15;
     public static final int MAX_AGE = 15;
 
+    public static int getAgeFrom(BlockState bs) {
+        return bs.getValue(AGE);
+    }
 
     private static final VoxelShape[] SHAPE_BY_AGE = new VoxelShape[]{Block.box(
             0.0D,

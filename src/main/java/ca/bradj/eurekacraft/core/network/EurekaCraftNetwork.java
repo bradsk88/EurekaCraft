@@ -46,6 +46,11 @@ public class EurekaCraftNetwork {
                 decoder(OnGroundMessage::decode).
                 consumer(OnGroundMessage::handle).
                 add();
+        registerMessage(PlayerChargeUpdate.class, NetworkDirection.PLAY_TO_CLIENT).
+                encoder(PlayerChargeUpdate::encode).
+                decoder(PlayerChargeUpdate::decode).
+                consumer(PlayerChargeUpdate::handle).
+                add();
     }
 
     public static <T> SimpleChannel.MessageBuilder<T> registerMessage(Class<T> msgClass, NetworkDirection dir) {

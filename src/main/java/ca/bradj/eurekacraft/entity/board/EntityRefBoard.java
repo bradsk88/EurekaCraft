@@ -8,8 +8,8 @@ import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
 import ca.bradj.eurekacraft.core.init.items.ItemsInit;
 import ca.bradj.eurekacraft.core.network.EurekaCraftNetwork;
-import ca.bradj.eurekacraft.core.network.msg.DeployedBoardMessage;
 import ca.bradj.eurekacraft.core.network.msg.OnGroundMessage;
+import ca.bradj.eurekacraft.core.network.msg.PlayerChargeUpdate;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.vehicles.*;
@@ -57,7 +57,10 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 // TODO: Destroy ref board on player disconnect
 
@@ -78,17 +81,52 @@ public class EntityRefBoard extends Entity {
 
     static Map<UUID, EntityRefBoard> deployedBoards = new HashMap();
     private static Map<Integer, Integer> boostedPlayers = new HashMap();
-    private static Block[] PASSABLE_BLOCKS = {
-            Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS, Blocks.WATER,
-            BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(), Blocks.SNOW
-    };
+
+    public static void addBoost(
+            ServerLevel level,
+            UUID player,
+            int amount,
+            BlockPos p
+    ) {
+        ServerPlayer playerByUUID = (ServerPlayer) level.getPlayerByUUID(player);
+        int id = playerByUUID.getId();
+        Integer cur = boostedPlayers.get(id);
+        if (cur == null) {
+            cur = 0;
+        }
+        boostedPlayers.put(id, cur + amount);
+        PlayerChargeUpdate message = new PlayerChargeUpdate(player, cur + amount);
+        EurekaCraftNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> playerByUUID), message);
+        EurekaCraft.LOGGER.debug("Boost {} - {}", cur + amount, player);
+
+        Vec3 p2 = Vec3.atCenterOf(p.above());
+        double x = p2.x;
+        double y = p2.y;
+        double z = p2.z;
+        int xDist = 0;
+        int yDist = 1;
+        int zDist = 0;
+        int maxSpeed = 3;
+        int count = 1;
+        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, x, y, z, count, xDist, yDist, zDist, maxSpeed);
+    }
+
+    public static int getBoost(
+            ServerLevel level,
+            UUID uuid
+    ) {
+        int id = level.getPlayerByUUID(uuid).getId();
+        Integer cur = boostedPlayers.get(id);
+        if (cur == null) {
+            cur = 0;
+        }
+        return cur;
+    }
+
+    private static Block[] PASSABLE_BLOCKS = {Blocks.AIR, Blocks.CAVE_AIR, Blocks.TALL_GRASS, Blocks.GRASS, Blocks.WATER, BlocksInit.TRAPAR_WAVE_CHILD_BLOCK.get(), Blocks.SNOW};
     // Prefer PASSABLE_BLOCKS when possible
-    private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{
-            FlowerBlock.class, TallGrassBlock.class,
-    };
-    private static final Class<?>[] DESTROYABLE_BLOCK_CLASSES = new Class[]{
-            FlowerBlock.class, TallGrassBlock.class, VineBlock.class, SnowLayerBlock.class
-    };
+    private static final Class<?>[] PASSABLE_BLOCK_CLASSES = new Class[]{FlowerBlock.class, TallGrassBlock.class,};
+    private static final Class<?>[] DESTROYABLE_BLOCK_CLASSES = new Class[]{FlowerBlock.class, TallGrassBlock.class, VineBlock.class, SnowLayerBlock.class};
 
     public static Logger logger = LogManager.getLogger(EurekaCraft.MODID);
 
@@ -301,9 +339,7 @@ public class EntityRefBoard extends Entity {
         }
         deployedBoards.put(player.getUUID(), board);
 
-        logger.debug(String.format(
-                "Deployed ref board for %s with stats %s", player.getName(), board.boardStats
-        ));
+        logger.debug(String.format("Deployed ref board for %s with stats %s", player.getName(), board.boardStats));
     }
 
     @Override
@@ -430,18 +466,16 @@ public class EntityRefBoard extends Entity {
     }
 
     private void flyOrSurf(Control c) {
-        float blockLift = 0;
-        if (c == Control.LIFT) {
+        EurekaCraft.LOGGER.debug("Boost: {}", boostedPlayers.getOrDefault(this.playerOrNull.getId(), 0));
+
+        float blockLift;
+        if (c == Control.LIFT && this.consumeBoost()) {
             blockLift = BLOCK_LIFT_WAVE_BLOCK_DEFAULT;
         } else {
             blockLift = this.calculateBoost(c);
         }
         if (blockLift > 0) {
             EurekaCraft.LOGGER.trace("Boosted at " + this.blockPosition());
-        }
-        boolean boosted = this.consumeBoost();
-        if (boosted && blockLift == 0) {
-            blockLift = BLOCK_LIFT_RESIDUAL;
         }
 
         if (this.playerOrNull instanceof JudgeEntity && !damaged) {
@@ -673,7 +707,7 @@ public class EntityRefBoard extends Entity {
 
     private float calculateBoost(Control c) {
         if (StormSavedData.forBlockPosition(this.blockPosition()).storming) {
-            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            addBoost((ServerLevel) level, playerOrNull.getUUID(), BOOST_TICKS, blockPosition());
             if (Control.BRAKE.equals(c)) {
                 return BLOCK_LIFT_STORM_BRAKING;
             }
@@ -681,10 +715,9 @@ public class EntityRefBoard extends Entity {
         }
 
         ChunkPos cp = new ChunkPos(this.blockPosition());
-        if (ChunkWavesDataManager.get(level).getData(
-                level.getChunk(cp.x, cp.z), Compat.random(level::getRandom)
-        ).isWavePresentAt(this.blockPosition())) {
-            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+        if (ChunkWavesDataManager.get(level).getData(level.getChunk(cp.x, cp.z), Compat.random(level::getRandom))
+                                 .isWavePresentAt(this.blockPosition())) {
+            addBoost((ServerLevel) level, playerOrNull.getUUID(), BOOST_TICKS, blockPosition());
             if (Control.BRAKE.equals(c)) {
                 return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
             }
@@ -695,7 +728,7 @@ public class EntityRefBoard extends Entity {
         BlockPos inFront = new BlockPos(this.playerOrNull.position()).relative(faceDir);
         BlockState blockInFront = this.level.getBlockState(inFront);
         if (blockInFront.hasProperty(TraparWaveChildBlock.BOOST)) {
-            boostedPlayers.put(playerOrNull.getId(), BOOST_TICKS);
+            addBoost((ServerLevel) level, playerOrNull.getUUID(), BOOST_TICKS, blockPosition());
             if (Control.BRAKE.equals(c)) {
                 return BLOCK_LIFT_WAVE_BLOCK_BRAKING;
             }
@@ -710,7 +743,7 @@ public class EntityRefBoard extends Entity {
         int boost = boostedPlayers.getOrDefault(playerId, 0);
         if (boost > 0) {
             boosted = true;
-            boostedPlayers.put(playerId, boost - 1);
+            addBoost((ServerLevel) level, playerOrNull.getUUID(), -1, blockPosition());
         }
         return boosted;
     }
@@ -823,7 +856,8 @@ public class EntityRefBoard extends Entity {
             return storage.computeIfAbsent(
                     (CompoundTag tag) -> new Data(playerUUID, board, tag),
                     () -> new Data(playerUUID, board),
-                    "board_saved_data" // TODO: does this ID matter?
+                    "board_saved_data"
+                    // TODO: does this ID matter?
             );
         }
 

@@ -1,0 +1,176 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "eurekacraft:items/compac_drive_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "eurekacraft:charge": 1
+      },
+      "model": "eurekacraft:item/compac_drive_1"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 2
+      },
+      "model": "eurekacraft:item/compac_drive_2"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 3
+      },
+      "model": "eurekacraft:item/compac_drive_3"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 4
+      },
+      "model": "eurekacraft:item/compac_drive_4"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 5
+      },
+      "model": "eurekacraft:item/compac_drive_5"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 6
+      },
+      "model": "eurekacraft:item/compac_drive_6"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 7
+      },
+      "model": "eurekacraft:item/compac_drive_7"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 8
+      },
+      "model": "eurekacraft:item/compac_drive_8"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 9
+      },
+      "model": "eurekacraft:item/compac_drive_9"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 10
+      },
+      "model": "eurekacraft:item/compac_drive_10"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 11
+      },
+      "model": "eurekacraft:item/compac_drive_11"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 12
+      },
+      "model": "eurekacraft:item/compac_drive_12"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 13
+      },
+      "model": "eurekacraft:item/compac_drive_13"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 14
+      },
+      "model": "eurekacraft:item/compac_drive_14"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 15
+      },
+      "model": "eurekacraft:item/compac_drive_15"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 16
+      },
+      "model": "eurekacraft:item/compac_drive_16"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 17
+      },
+      "model": "eurekacraft:item/compac_drive_17"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 18
+      },
+      "model": "eurekacraft:item/compac_drive_18"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 19
+      },
+      "model": "eurekacraft:item/compac_drive_19"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 20
+      },
+      "model": "eurekacraft:item/compac_drive_20"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 21
+      },
+      "model": "eurekacraft:item/compac_drive_21"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 22
+      },
+      "model": "eurekacraft:item/compac_drive_22"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 23
+      },
+      "model": "eurekacraft:item/compac_drive_23"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 24
+      },
+      "model": "eurekacraft:item/compac_drive_24"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 25
+      },
+      "model": "eurekacraft:item/compac_drive_25"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 26
+      },
+      "model": "eurekacraft:item/compac_drive_26"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 27
+      },
+      "model": "eurekacraft:item/compac_drive_27"
+    },
+    {
+      "predicate": {
+        "eurekacraft:charge": 28
+      },
+      "model": "eurekacraft:item/compac_drive_28"
+    }
+  ]
+}

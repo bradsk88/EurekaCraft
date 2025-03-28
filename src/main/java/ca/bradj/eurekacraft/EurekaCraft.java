@@ -12,6 +12,8 @@ import ca.bradj.eurekacraft.entity.board.EntityRefBoard;
 import ca.bradj.eurekacraft.integration.mc.Compat;
 import ca.bradj.eurekacraft.villager.VillagersInit;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -77,6 +79,13 @@ public class EurekaCraft {
         });
         event.enqueueWork(BoardItemRendering::initItemProperties);
         event.enqueueWork(TraparStormRendering::init);
+        event.enqueueWork(() -> {
+            ItemProperties.register(
+                    ItemsInit.COMPAC_DRIVE.get(),
+                    ResourceLocation.tryBuild(MODID, "charge"),
+                    (stack, level, living, id) -> stack.getOrCreateTag().getInt("charge")
+            );
+        });
     }
 
     @SubscribeEvent

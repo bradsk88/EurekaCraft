@@ -12,6 +12,7 @@ public class EurekaConfig {
     public static final String KEY_TRAPAR_SAPLING_DROP_RARITY = "Fresh sapling drop rarity";
     public static final String KEY_WAVE_BLOBS_PER_CHUNK_UPPER_BOUND = "Wave blobs per chunk (max)";
     public static final String KEY_WAVE_BLOBS_PER_CHUNK_LOWER_BOUND = "Wave blobs per chunk (min)";
+    public static final String KEY_TRAPAR_AMOUNT_FROM_FRESH_CROP = "Trapar amount from fresh crop";
 
     public static final String KEY_EMPTY_SHACK_WORLDGEN_RATE = "Empty shack world gen rate";
     public static final String KEY_TALL_SHACK_WORLDGEN_RATE = "Tall shack world gen rate";
@@ -24,6 +25,7 @@ public class EurekaConfig {
     public static final ForgeConfigSpec.IntValue fresh_sapling_drop_rarity;
     public static final ForgeConfigSpec.IntValue wave_blobs_per_chunk_upper_bound;
     public static final ForgeConfigSpec.IntValue wave_blobs_per_chunk_lower_bound;
+    public static final ForgeConfigSpec.IntValue trapar_amount_from_fresh_crop;
 
     public static final ForgeConfigSpec.IntValue empty_shack_worldgen_rate;
     public static final ForgeConfigSpec.IntValue tall_shack_worldgen_rate;
@@ -68,6 +70,12 @@ public class EurekaConfig {
                 "The minimum number of waves randomly generated in each chunk. (Higher may increase lag)"
         ).defineInRange(
                 KEY_WAVE_BLOBS_PER_CHUNK_LOWER_BOUND, 0, 0, Integer.MAX_VALUE
+        );
+
+        trapar_amount_from_fresh_crop = BUILDER.comment(
+                "The amount of trapar boost gained when the player stands on a fresh crop block"
+        ).defineInRange(
+                KEY_TRAPAR_AMOUNT_FROM_FRESH_CROP, 1, 0, Integer.MAX_VALUE
         );
 
         empty_shack_worldgen_rate = BUILDER.comment(
