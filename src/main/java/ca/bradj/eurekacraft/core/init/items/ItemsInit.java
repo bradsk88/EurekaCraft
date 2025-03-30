@@ -303,7 +303,7 @@ public class ItemsInit {
     );
 
     public static final RegistryObject<Item> PHOTO = ITEMS.register(Photo.ITEM_ID, Photo::new);
-    public static final RegistryObject<Item> COMPAC_DRIVE = ITEMS.register(CompacDrive.ITEM_ID, CompacDrive::new);
+    public static final RegistryObject<Item> COMPAC_DRIVE = ITEMS.register(IronCompacDrive.ITEM_ID, IronCompacDrive::new);
 
     public static void register(IEventBus bus) {
         ITEMS.register(bus);

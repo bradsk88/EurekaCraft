@@ -3,6 +3,7 @@ package ca.bradj.eurekacraft.entity.board;
 import ca.bradj.eurekacraft.EurekaCraft;
 import ca.bradj.eurekacraft.advancements.BoardTrickTrigger;
 import ca.bradj.eurekacraft.blocks.TraparWaveChildBlock;
+import ca.bradj.eurekacraft.core.config.EurekaConfig;
 import ca.bradj.eurekacraft.core.init.AdvancementsInit;
 import ca.bradj.eurekacraft.core.init.BlocksInit;
 import ca.bradj.eurekacraft.core.init.EntitiesInit;
@@ -12,6 +13,7 @@ import ca.bradj.eurekacraft.core.network.msg.OnGroundMessage;
 import ca.bradj.eurekacraft.core.network.msg.PlayerChargeUpdate;
 import ca.bradj.eurekacraft.entity.JudgeEntity;
 import ca.bradj.eurekacraft.integration.mc.Compat;
+import ca.bradj.eurekacraft.materials.TraparCapacityGiven;
 import ca.bradj.eurekacraft.vehicles.*;
 import ca.bradj.eurekacraft.vehicles.control.Control;
 import ca.bradj.eurekacraft.vehicles.control.PlayerBoardControlProvider;
@@ -94,10 +96,11 @@ public class EntityRefBoard extends Entity {
         if (cur == null) {
             cur = 0;
         }
-        boostedPlayers.put(id, cur + amount);
-        PlayerChargeUpdate message = new PlayerChargeUpdate(player, cur + amount);
+        int v = Math.min(cur + amount, playerMax(playerByUUID));
+        boostedPlayers.put(id, v);
+        PlayerChargeUpdate message = new PlayerChargeUpdate(player, v);
         EurekaCraftNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> playerByUUID), message);
-        EurekaCraft.LOGGER.debug("Boost {} - {}", cur + amount, player);
+        EurekaCraft.LOGGER.debug("Boost {} - {}", v, player);
 
         Vec3 p2 = Vec3.atCenterOf(p.above());
         double x = p2.x;
@@ -109,6 +112,16 @@ public class EntityRefBoard extends Entity {
         int maxSpeed = 3;
         int count = 1;
         level.sendParticles(ParticleTypes.HAPPY_VILLAGER, x, y, z, count, xDist, yDist, zDist, maxSpeed);
+    }
+
+    private static Integer playerMax(ServerPlayer playerByUUID) {
+        int val = EurekaConfig.min_trapar_storage.get();
+        for (ItemStack item : playerByUUID.getInventory().items) {
+            if (item.getItem() instanceof TraparCapacityGiven tc) {
+                val = Math.max(tc.getTraparCapacity(), val);
+            }
+        }
+        return val;
     }
 
     public static int getBoost(

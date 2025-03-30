@@ -13,6 +13,8 @@ public class EurekaConfig {
     public static final String KEY_WAVE_BLOBS_PER_CHUNK_UPPER_BOUND = "Wave blobs per chunk (max)";
     public static final String KEY_WAVE_BLOBS_PER_CHUNK_LOWER_BOUND = "Wave blobs per chunk (min)";
     public static final String KEY_TRAPAR_AMOUNT_FROM_FRESH_CROP = "Trapar amount from fresh crop";
+    public static final String KEY_MAX_TRAPAR_STORAGE = "Max Trapar Storage";
+    public static final String KEY_MIN_TRAPAR_STORAGE = "Min Trapar Storage";
 
     public static final String KEY_EMPTY_SHACK_WORLDGEN_RATE = "Empty shack world gen rate";
     public static final String KEY_TALL_SHACK_WORLDGEN_RATE = "Tall shack world gen rate";
@@ -26,6 +28,8 @@ public class EurekaConfig {
     public static final ForgeConfigSpec.IntValue wave_blobs_per_chunk_upper_bound;
     public static final ForgeConfigSpec.IntValue wave_blobs_per_chunk_lower_bound;
     public static final ForgeConfigSpec.IntValue trapar_amount_from_fresh_crop;
+    public static final ForgeConfigSpec.IntValue min_trapar_storage;
+    public static final ForgeConfigSpec.IntValue max_trapar_storage;
 
     public static final ForgeConfigSpec.IntValue empty_shack_worldgen_rate;
     public static final ForgeConfigSpec.IntValue tall_shack_worldgen_rate;
@@ -76,6 +80,19 @@ public class EurekaConfig {
                 "The amount of trapar boost gained when the player stands on a fresh crop block"
         ).defineInRange(
                 KEY_TRAPAR_AMOUNT_FROM_FRESH_CROP, 1, 0, Integer.MAX_VALUE
+        );
+
+        max_trapar_storage = BUILDER.comment(
+                "The max amount of trapar charge that can be stored on a player. (May be buggy above 500)"
+        ).defineInRange(
+                KEY_MAX_TRAPAR_STORAGE, 100, 0, Integer.MAX_VALUE
+        );
+
+        min_trapar_storage = BUILDER.comment(
+                "The amount of trapar charge that can be stored on any player - ",
+                "regardless of held items. (May be buggy above 500)"
+        ).defineInRange(
+                KEY_MIN_TRAPAR_STORAGE, 10, 0, Integer.MAX_VALUE
         );
 
         empty_shack_worldgen_rate = BUILDER.comment(
